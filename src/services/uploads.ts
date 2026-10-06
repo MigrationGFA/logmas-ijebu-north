@@ -1,6 +1,12 @@
 import { api } from "@/lib/api";
 
-export type UploadType = "passports" | "complaints" | "permits" | "receipts" | "general";
+export type UploadType =
+  | "passports"
+  | "complaints"
+  | "permits"
+  | "receipts"
+  | "general"
+  | "news";
 
 export interface UploadResult {
   url: string;

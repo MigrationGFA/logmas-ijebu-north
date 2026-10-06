@@ -45,6 +45,7 @@ import {
 } from "@/components/ui/carousel";
 import { SiteHeader, SiteFooter, NAVBAR_SERVICES } from "@/components/site-chrome";
 import { useServices } from "@/hooks/queries/useServices";
+import { usePublicNews } from "@/hooks/queries/useNews";
 import { LGA_SERVICES } from "@/config/lgaServices";
 import { SITE_CONTACT } from "@/config/siteContact";
 import { LGA_CONFIG } from "@/config/lga.config";
@@ -607,6 +608,26 @@ function FeaturedServices() {
 }
 
 function NewsSection() {
+  const { data, isLoading } = usePublicNews({ limit: 3 });
+  const apiArticles = data?.data ?? [];
+  const newsItems =
+    apiArticles.length > 0
+      ? apiArticles.map((a) => ({
+          title: a.title,
+          tag: a.tag,
+          href: `/news/${a.slug}`,
+          date: a.publishedAt
+            ? new Date(a.publishedAt).toLocaleDateString("en-GB", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })
+            : "—",
+        }))
+      : !isLoading
+        ? NEWS.map((n) => ({ ...n, href: "/news" }))
+        : [];
+
   return (
     <section className="container mx-auto px-4 py-16 md:py-20">
       <div className="flex items-end justify-between mb-8">
@@ -620,7 +641,7 @@ function NewsSection() {
         </div>
       </div>
       <div className="grid md:grid-cols-3 gap-5">
-        {NEWS.map((n) => (
+        {newsItems.map((n) => (
           <Card
             key={n.title}
             className="p-6 bg-gradient-card border-border/40 hover:shadow-elegant transition-smooth"
@@ -633,7 +654,7 @@ function NewsSection() {
             </div>
             <h3 className="mt-3 font-semibold leading-snug">{n.title}</h3>
             <Link
-              href="/"
+              href={n.href}
               className="mt-4 inline-flex items-center text-sm text-primary font-medium gap-1 hover:gap-2 transition-all"
             >
               Read more <ArrowRight className="h-3.5 w-3.5" />
