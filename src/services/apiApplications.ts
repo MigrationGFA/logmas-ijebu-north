@@ -291,6 +291,66 @@ export const apiApplications = {
     return res;
   },
   /**
+   * Public lookup used by the "Track My Application" page. Accepts an
+   * application number (e.g. "ODE-APP-2026-000101"), a raw UUID, or a payment
+   * reference ("PAY-..."). Backends differ in which lookup routes they expose,
+   * so this cascades through strategies until one resolves:
+   *   1. GET /applications/reference/:reference — skip-auth public track route.
+   *   2. GET /applications/:id — the standard single-application route; the
+   *      session token is attached when the citizen is signed in.
+   *   3. GET /applications?search= — authenticated list search with an exact
+   *      applicationNumber/id match preferred over the first hit.
+   */
+  getApplicationByReference: async (
+    reference: string,
+  ): Promise<Application> => {
+    const ref = (reference || "").trim();
+    if (!ref) {
+      throw new Error("An application reference is required");
+    }
+
+    // 1) Public reference endpoint (auth header deliberately stripped).
+    try {
+      const res = await api.get<any>(
+        `/applications/reference/${encodeURIComponent(ref)}`,
+        { headers: { "skip-auth": "true" } },
+      );
+      if (res) return res;
+    } catch {
+      // Route missing on this backend build — try the next strategy.
+    }
+
+    // 2) Direct fetch by id (or by number where the backend resolves it).
+    try {
+      const res = await api.get<any>(`/applications/${encodeURIComponent(ref)}`);
+      if (res) return res;
+    } catch {
+      // Fall through to the list search.
+    }
+
+    // 3) Authenticated search fallback with exact-match preference.
+    const res = await api.get<any>("/applications", {
+      params: { search: ref, limit: 25 },
+    });
+    const list: any[] = Array.isArray(res)
+      ? res
+      : Array.isArray(res?.data)
+        ? res.data
+        : [];
+    const needle = ref.toLowerCase();
+    const exact = list.find(
+      (a) =>
+        a?.id === ref ||
+        String(a?.applicationNumber || "").toLowerCase() === needle,
+    );
+    const match = exact;
+    if (!match) {
+      throw new Error(`No application found for "${ref}"`);
+    }
+    return match;
+  },
+
+  /**
    * Transition status: Submitted -> Under Review
    */
   moveToUnderReview: async (

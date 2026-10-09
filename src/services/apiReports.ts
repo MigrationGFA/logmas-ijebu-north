@@ -49,6 +49,15 @@ export interface ReportInvoice {
   amount: number;
   dueDate: string;
   paidAt: string | null;
+  // Payer contact + provenance fields — consumed by the dashboard tables
+  // and the CSV exports on the reports page.
+  applicationNumber?: string | null;
+  service?: { name?: string; revenueHead?: string } | null;
+  paymentStatus?: string;
+  createdAt?: string;
+  phone?: string | null;
+  email?: string | null;
+  date_of_payment?: string | null;
 }
 
 export interface ReportReceipt {
@@ -60,6 +69,13 @@ export interface ReportReceipt {
   amount: number;
   levyType: string;
   paidAt: string;
+  invoiceNumber?: string | null;
+  applicationNumber?: string | null;
+  service?: { name?: string; revenueHead?: string } | null;
+  issuedAt?: string;
+  phone?: string | null;
+  email?: string | null;
+  date_of_payment?: string | null;
 }
 
 export interface ReportsOverviewResponse {
@@ -82,6 +98,9 @@ export interface ExportInvoice {
   balanceDue: number;
   dueDate: string;
   createdAt: string;
+  phone?: string | null;
+  email?: string | null;
+  date_of_payment?: string | null;
 }
 
 export interface ExportReceipt {
@@ -92,6 +111,9 @@ export interface ExportReceipt {
   officerName: string;
   amount: number;
   paidAt: string;
+  phone?: string | null;
+  email?: string | null;
+  date_of_payment?: string | null;
 }
 
 // Service functions

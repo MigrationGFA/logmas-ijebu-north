@@ -118,6 +118,7 @@ type NavGroup = { label: string; items: NavItem[] };
 
 const NAV: (NavItem | NavGroup)[] = [
   { to: "/", label: "Home" } as NavItem,
+  { to: "/track", label: "Track Application" } as NavItem,
   {
     label: "Government",
     items: [

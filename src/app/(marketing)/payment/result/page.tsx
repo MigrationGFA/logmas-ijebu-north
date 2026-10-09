@@ -334,6 +334,15 @@ function PaymentResultPage() {
                   </Button>
                 )}
 
+                {applicationId && (
+                  <Button asChild variant="outline" className="w-full text-xs font-semibold">
+                    <Link href={`/track/${applicationId}`}>
+                      Track My Application
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
+                  </Button>
+                )}
+
                 <div className="flex gap-2">
                   {invoiceNumber && (
                     <Button

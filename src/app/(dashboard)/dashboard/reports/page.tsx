@@ -34,9 +34,39 @@ import { useServices } from "@/hooks/queries/useServices";
 // Each preset computes its own from/to as YYYY-MM-DD strings, sent as a custom
 // range to the existing backend  -  no backend changes needed, since explicit
 // from/to already overrides everything else server-side.
-type PresetKey = "yesterday" | "this_month" | "last_month" | "last_6_months" | "all" | "custom";
+type PresetKey =
+  | "yesterday"
+  | "this_week"
+  | "this_month"
+  | "last_month"
+  | "last_6_months"
+  | "all"
+  | "custom";
 
-const toDateStr = (d: Date) => d.toISOString().split("T")[0];
+// Date range comparisons must run in Lagos time (WAT, UTC+1): toISOString()
+// round trips through UTC and shifts every day by one, which is what made
+// the report filters off by one.
+const toLocalISO = (d: Date): string =>
+  `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+
+function endOfMonth(d: Date): Date {
+  return new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59, 999);
+}
+
+function startOfWeekISO(d: Date): Date {
+  // Monday-based week (ISO): 0 = Monday ... 6 = Sunday
+  const weekday = (d.getDay() + 6) % 7;
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() - weekday, 0, 0, 0, 0);
+}
+
+// Local (Lagos, UTC+1) display helper for date strings like "2026-10-09".
+const formatReportDate = (d: string | undefined | null): string =>
+  d ? new Date(`${d}T00:00:00+01:00`).toLocaleDateString("en-NG", { year: "numeric", month: "short", day: "numeric" }) : "-";
+
+function endOfWeekISO(d: Date): Date {
+  const weekday = (d.getDay() + 6) % 7;
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate() + (6 - weekday), 23, 59, 59, 999);
+}
 
 function computePreset(key: PresetKey): { from?: string; to?: string } | undefined {
   const now = new Date();
@@ -44,20 +74,25 @@ function computePreset(key: PresetKey): { from?: string; to?: string } | undefin
   switch (key) {
     case "yesterday": {
       const y = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
-      return { from: toDateStr(y), to: toDateStr(y) };
+      return { from: toLocalISO(y), to: toLocalISO(y) };
+    }
+    case "this_week": {
+      const start = startOfWeekISO(now);
+      const end = endOfWeekISO(now);
+      return { from: toLocalISO(start), to: toLocalISO(end) };
     }
     case "this_month": {
       const start = new Date(now.getFullYear(), now.getMonth(), 1);
-      return { from: toDateStr(start), to: toDateStr(now) };
+      return { from: toLocalISO(start), to: toLocalISO(now) };
     }
     case "last_month": {
       const start = new Date(now.getFullYear(), now.getMonth() - 1, 1);
       const end = new Date(now.getFullYear(), now.getMonth(), 0); // day 0 = last day of prev month
-      return { from: toDateStr(start), to: toDateStr(end) };
+      return { from: toLocalISO(start), to: toLocalISO(endOfMonth(start)) };
     }
     case "last_6_months": {
       const start = new Date(now.getFullYear(), now.getMonth() - 6, now.getDate());
-      return { from: toDateStr(start), to: toDateStr(now) };
+      return { from: toLocalISO(start), to: toLocalISO(now) };
     }
     case "all":
       return undefined; // no filter at all
@@ -68,6 +103,7 @@ function computePreset(key: PresetKey): { from?: string; to?: string } | undefin
 
 const PRESETS: { key: PresetKey; label: string }[] = [
   { key: "yesterday", label: "Yesterday" },
+  { key: "this_week", label: "This Week" },
   { key: "this_month", label: "This Month" },
   { key: "last_month", label: "Last Month" },
   { key: "last_6_months", label: "Last 6 Months" },
@@ -85,6 +121,7 @@ export default function ReportsPage() {
   const [filterRange, setFilterRange] = useState<{ from?: string; to?: string } | undefined>(
     computePreset("this_month"),
   );
+  const [appliedRange, setAppliedRange] = useState<{ from?: string; to?: string }>({});
 
   // Fetch services for filter
   const { services, isLoading: servicesLoading } = useServices();
@@ -102,6 +139,7 @@ export default function ReportsPage() {
     setActivePreset(key);
     if (key === "custom") return;
     setFilterRange(computePreset(key));
+    setAppliedRange(computePreset(key) ?? {});
   };
 
   const handleApplyCustom = () => {
@@ -110,6 +148,7 @@ export default function ReportsPage() {
       return;
     }
     setFilterRange({ from: fromDate, to: toDate });
+    setAppliedRange({ from: fromDate, to: toDate });
   };
 
   const handleExportInvoices = () => {
@@ -123,9 +162,16 @@ export default function ReportsPage() {
       Customer: inv.customerName,
       Service: inv.service?.name || " - ",
       "Revenue Head": inv.service?.revenueHead || " - ",
-      Status: inv.paymentStatus,
+      Status: inv.paymentStatus || " - ",
       Amount: inv.amount,
-      "Created At": new Date(inv.createdAt).toLocaleDateString(),
+      "Created At": inv.createdAt
+        ? new Date(inv.createdAt).toLocaleDateString()
+        : " - ",
+      Phone: inv.phone || " - ",
+      Email: inv.email || " - ",
+      "Date of Payment": inv.date_of_payment
+        ? new Date(inv.date_of_payment).toLocaleDateString()
+        : " - ",
     }));
     downloadCSV(exportData, "invoices_export");
   };
@@ -144,7 +190,14 @@ export default function ReportsPage() {
       "Payment Method": rec.paymentMethod,
       Officer: rec.officerName || " - ",
       Amount: rec.amount,
-      "Issued At": new Date(rec.issuedAt).toLocaleDateString(),
+      "Issued At": rec.issuedAt
+        ? new Date(rec.issuedAt).toLocaleDateString()
+        : " - ",
+      Phone: rec.phone || " - ",
+      Email: rec.email || " - ",
+      "Date of Payment": rec.date_of_payment
+        ? new Date(rec.date_of_payment).toLocaleDateString()
+        : " - ",
     }));
     downloadCSV(exportData, "receipts_export");
   };
@@ -216,8 +269,8 @@ export default function ReportsPage() {
 
           {data?.period && activePreset !== "custom" && (
             <span className="text-xs text-muted-foreground ml-1">
-              {data.period.from && data.period.to
-                ? `${new Date(data.period.from).toLocaleDateString()} - ${new Date(data.period.to).toLocaleDateString()}`
+              {appliedRange.from && appliedRange.to
+                ? `${formatReportDate(appliedRange.from)} - ${formatReportDate(appliedRange.to)}`
                 : "All time"}
             </span>
           )}
@@ -247,10 +300,10 @@ export default function ReportsPage() {
             <Button onClick={handleApplyCustom} size="sm">
               Apply
             </Button>
-            {data?.period?.from && (
+            {appliedRange.from && appliedRange.to && (
               <span className="text-xs text-muted-foreground ml-auto">
-                {new Date(data.period.from).toLocaleDateString()} -{" "}
-                {new Date(data.period.to).toLocaleDateString()}
+                {formatReportDate(appliedRange.from)} -{" "}
+                {formatReportDate(appliedRange.to)}
               </span>
             )}
           </div>
