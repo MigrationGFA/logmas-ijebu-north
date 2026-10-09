@@ -167,6 +167,9 @@ export default function ReportsPage() {
       "Created At": inv.createdAt
         ? new Date(inv.createdAt).toLocaleDateString()
         : " - ",
+      "Date of Application": inv.date_of_application
+        ? new Date(inv.date_of_application).toLocaleDateString()
+        : " - ",
       Phone: inv.phone || " - ",
       Email: inv.email || " - ",
       "Date of Payment": inv.date_of_payment
@@ -192,6 +195,9 @@ export default function ReportsPage() {
       Amount: rec.amount,
       "Issued At": rec.issuedAt
         ? new Date(rec.issuedAt).toLocaleDateString()
+        : " - ",
+      "Date of Application": rec.date_of_application
+        ? new Date(rec.date_of_application).toLocaleDateString()
         : " - ",
       Phone: rec.phone || " - ",
       Email: rec.email || " - ",

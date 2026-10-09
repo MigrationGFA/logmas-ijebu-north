@@ -113,13 +113,29 @@ export interface InvoiceStats {
 export interface InvoiceList {
   id: string;
   reference: string;
-  customerName: string;
-  levyType: string;
-  invoiceType: string;
-  dueDate: string;
+  customerName: string | null;
+  levyType?: string | null;
+  invoiceType?: string;
+  dueDate?: string;
   amount: number;
-  status: InvoiceStatus;
-  receiptId: string | null;
+  status?: InvoiceStatus;
+  paymentStatus: string;
+  paidAt?: string | null;
+  createdAt?: string | null;
+  dateOfApplication?: string | null;
+  application?: {
+    id: string;
+    applicationNumber: string;
+    applicantId: string;
+  } | null;
+  service?: {
+    id: string;
+    code: string;
+    name: string;
+    category: string;
+  } | null;
+  receipts?: { id: string; receiptNumber: string }[];
+  receiptId?: string | null;
 }
 
 export interface InvoicesHubResponse {

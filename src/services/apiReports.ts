@@ -58,6 +58,7 @@ export interface ReportInvoice {
   phone?: string | null;
   email?: string | null;
   date_of_payment?: string | null;
+  date_of_application?: string | null;
 }
 
 export interface ReportReceipt {
@@ -76,6 +77,7 @@ export interface ReportReceipt {
   phone?: string | null;
   email?: string | null;
   date_of_payment?: string | null;
+  date_of_application?: string | null;
 }
 
 export interface ReportsOverviewResponse {
@@ -101,6 +103,7 @@ export interface ExportInvoice {
   phone?: string | null;
   email?: string | null;
   date_of_payment?: string | null;
+  date_of_application?: string | null;
 }
 
 export interface ExportReceipt {
@@ -114,6 +117,7 @@ export interface ExportReceipt {
   phone?: string | null;
   email?: string | null;
   date_of_payment?: string | null;
+  date_of_application?: string | null;
 }
 
 // Service functions

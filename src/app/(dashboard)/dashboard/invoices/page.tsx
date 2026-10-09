@@ -40,6 +40,9 @@ export default function InvoicesPage() {
   const [q, setQ] = useState("");
 
   const { user } = useAuth();
+  // "Pay now" is an applicant action; staff roles only manage/record payments.
+  const isPayer =
+    user?.role === "citizen" || user?.role === "business_owner";
 
   // Use the real API hook
   const {
@@ -64,7 +67,12 @@ export default function InvoicesPage() {
       (tab === "all" ||
         i.paymentStatus === tab ||
         (tab === "pending" && i.paymentStatus === "pending")) &&
-      (i.reference + i.customerName + i.levyType)
+      (
+        i.reference +
+        (i.customerName ?? "") +
+        (i.service?.name ?? "") +
+        (i.application?.applicationNumber ?? "")
+      )
         .toLowerCase()
         .includes(q.toLowerCase()),
   );
@@ -76,15 +84,21 @@ export default function InvoicesPage() {
     }
 
     const rows = filtered.map((i) => ({
-      ref: i.reference,
-      customer: i.customerName,
-      levy: i.levyType,
-      amount: i.amount,
-      status: i.status,
-      due: i.dueDate,
+      Reference: i.reference,
+      "Application No": i.application?.applicationNumber ?? " - ",
+      Customer: i.customerName ?? " - ",
+      Service: i.service?.name ?? " - ",
+      Amount: i.amount,
+      Status: i.paymentStatus,
+      "Date of Application": i.dateOfApplication
+        ? new Date(i.dateOfApplication).toLocaleDateString()
+        : " - ",
+      "Payment Date": i.paidAt
+        ? new Date(i.paidAt).toLocaleDateString()
+        : " - ",
     }));
 
-    const headers = ["Reference,Customer,Levy Type,Amount,Status,Due Date"];
+    const headers = [Object.keys(rows[0]).join(",")];
     const csvRows = rows.map((r) => Object.values(r).join(","));
     const csv = [...headers, ...csvRows].join("\n");
 
@@ -207,6 +221,7 @@ export default function InvoicesPage() {
                 {/* <TableHead>Due</TableHead> */}
                 <TableHead>Amount</TableHead>
                 <TableHead>Status</TableHead>
+                <TableHead>Payment Date</TableHead>
                 <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -217,7 +232,7 @@ export default function InvoicesPage() {
                     {invoice.reference}
                   </TableCell>
                   <TableCell className="font-medium">
-                    {invoice.service.name}
+                    {invoice.service?.name ?? " - "}
                   </TableCell>
                   {/* <TableCell>{invoice.invoiceType}</TableCell> */}
                   {/* <TableCell>{invoice.dueDate}</TableCell> */}
@@ -227,6 +242,11 @@ export default function InvoicesPage() {
                   <TableCell>
                     <StatusBadge status={invoice.paymentStatus} />
                   </TableCell>
+                  <TableCell className="text-xs text-muted-foreground">
+                    {invoice.paidAt
+                      ? new Date(invoice.paidAt).toLocaleDateString("en-NG")
+                      : " - "}
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
                       {/* <Button asChild variant="ghost" size="sm">
@@ -235,22 +255,29 @@ export default function InvoicesPage() {
                         </Link>
                       </Button> */}
 
-                      {invoice.paymentStatus === "confirmed" && invoice?.receipt?.receiptId ? (
+                      {invoice.paymentStatus === "confirmed" &&
+                      invoice.receipts?.[0]?.id ? (
                         <Button asChild variant="outline" size="sm">
                           <Link
-                            href={`/dashboard/receipts/${invoice.receiptId}`}
+                            href={`/dashboard/receipts/${invoice.receipts[0].id}`}
                           >
                             Receipt
                           </Link>
                         </Button>
-                      ) : (invoice.paymentStatus === "pending" || invoice.paymentStatus !== "confirmed") ? (
-                        <Button asChild size="sm" className="bg-gradient-hero">
-                          <Link
-                            href={`/dashboard/invoices/${invoice.reference}`}
-                          >
-                            Pay now
-                          </Link>
-                        </Button>
+                      ) : invoice.paymentStatus !== "confirmed" ? (
+                        isPayer ? (
+                          <Button asChild size="sm" className="bg-gradient-hero">
+                            <Link
+                              href={`/dashboard/invoices/${invoice.reference}`}
+                            >
+                              Pay now
+                            </Link>
+                          </Button>
+                        ) : (
+                          <span className="text-xs text-muted-foreground px-2">
+                            -
+                          </span>
+                        )
                       ) : null}
                     </div>
                   </TableCell>

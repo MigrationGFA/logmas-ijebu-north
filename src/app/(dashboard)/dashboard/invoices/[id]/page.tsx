@@ -59,6 +59,9 @@ export default function InvoiceDetail({
   const userRole = user?.role;
 
   const isOfficer = userRole === "field_officer";
+  // Online "Pay now" is an applicant action (citizens/business owners);
+  // staff roles only view/confirm payments.
+  const isPayer = userRole === "citizen" || userRole === "business_owner";
 
   // Use real API hooks
   const { invoice, isLoading, error, isPayable, paymentProgress } =
@@ -286,9 +289,11 @@ export default function InvoiceDetail({
               <h3 className="font-semibold mb-4">Payment Options</h3>
               <Tabs defaultValue="transfer">
                 <TabsList className="mb-4">
-                  <TabsTrigger value="online">
-                    <Link2 className="h-4 w-4 mr-1.5" /> Online
-                  </TabsTrigger>
+                  {isPayer && (
+                    <TabsTrigger value="online">
+                      <Link2 className="h-4 w-4 mr-1.5" /> Online
+                    </TabsTrigger>
+                  )}
                   <TabsTrigger value="transfer">
                     <Banknote className="h-4 w-4 mr-1.5" /> Bank Transfer
                   </TabsTrigger>
