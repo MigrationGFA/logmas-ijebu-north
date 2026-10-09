@@ -270,6 +270,20 @@ export default function ApplicationsPage() {
     return app.ward || app.formData?.ward || "Ward 7";
   };
 
+  // Helper function to format when the application was created
+  const getAppliedAt = (app: Application) => {
+    if (!app.createdAt) return null;
+    const d = new Date(app.createdAt);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleString("en-NG", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
+
   console.log(selectedApp,"selectedApp")
 
   return (
@@ -453,6 +467,11 @@ export default function ApplicationsPage() {
                     <span className="text-[11px] text-muted-foreground">
                       Ward: <strong>{getWard(app)}</strong>
                     </span>
+                    {getAppliedAt(app) && (
+                      <span className="text-[11px] text-muted-foreground">
+                        Applied: <strong>{getAppliedAt(app)}</strong>
+                      </span>
+                    )}
                   </div>
 
                   <div>
@@ -600,6 +619,8 @@ export default function ApplicationsPage() {
                   </div>
                   <DialogDescription className="text-xs font-mono mt-0.5">
                     Application No: {getApplicationNumber(selectedApp)}
+                    {" "}
+                    • Applied: {getAppliedAt(selectedApp) ?? "N/A"}
                   </DialogDescription>
                 </div>
 
