@@ -279,8 +279,8 @@ export default function ApplicationsPage() {
       day: "2-digit",
       month: "short",
       year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+      // hour: "2-digit",
+      // minute: "2-digit",
     });
   };
 
@@ -461,12 +461,12 @@ export default function ApplicationsPage() {
                       {getApplicationNumber(app)}
                     </span>
                     {getStatusBadge(app.status)}
-                    <Badge variant="secondary" className="text-[10px] font-normal">
+                    {/* <Badge variant="secondary" className="text-[10px] font-normal">
                       {getServiceCategory(app)}
                     </Badge>
                     <span className="text-[11px] text-muted-foreground">
                       Ward: <strong>{getWard(app)}</strong>
-                    </span>
+                    </span> */}
                     {getAppliedAt(app) && (
                       <span className="text-[11px] text-muted-foreground">
                         Applied: <strong>{getAppliedAt(app)}</strong>
