@@ -33,10 +33,15 @@ import {
   Link2,
   CheckCircle2,
   Loader2,
+  Clock,
+  Zap,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import {
   useInvoiceDetails,
   useInvoicePayment,
+  useInvoiceDynamicPayment,
 } from "@/hooks/queries/useInvoices";
 import { invoicesService } from "@/services/apiInvoice";
 import { ApiError } from "@/lib/api";
@@ -47,6 +52,32 @@ import Link from "next/link";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { DetailSkeleton } from "@/components/ui/LoadingSkeleton";
 import { readPendingPayment, resolvePaymentProvider } from "@/config/paymentGateway";
+
+/** Live mm:ss countdown to an ISO expiry. Turns red under 60s. */
+function DynCountdown({ expiresAt }: { expiresAt: string }) {
+  const [now, setNow] = React.useState(() => Date.now());
+  React.useEffect(() => {
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, []);
+  const remaining = Math.max(
+    0,
+    Math.floor((new Date(expiresAt).getTime() - now) / 1000),
+  );
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
+  const urgent = remaining <= 60;
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 font-mono font-semibold tabular-nums ${
+        urgent ? "text-destructive" : "text-foreground"
+      }`}
+    >
+      <Clock className="h-3.5 w-3.5" />
+      {mins}:{secs.toString().padStart(2, "0")}
+    </span>
+  );
+}
 
 export default function InvoiceDetail({
   params,
@@ -78,6 +109,15 @@ export default function InvoiceDetail({
     verifyPayment,
     isVerifyingPayment,
   } = useInvoicePayment(invoiceId, invoice?.invoiceNumber);
+
+  // Authenticated dynamic (15-min, auto-confirm) transfer for payers.
+  const {
+    dynamicAccount,
+    dynamicAccountError,
+    isCheckingDynamic,
+    createDynamicInvoice,
+    verifyDynamicPayment: checkDynamicPayment,
+  } = useInvoiceDynamicPayment(invoiceId, invoice?.invoiceNumber);
 
   // Auto-verify if we're landing back from a gateway redirect. The provider was
   React.useEffect(() => {
@@ -294,6 +334,11 @@ export default function InvoiceDetail({
                       <Link2 className="h-4 w-4 mr-1.5" /> Online
                     </TabsTrigger>
                   )}
+                  {isPayer && (
+                    <TabsTrigger value="dynamic">
+                      <Zap className="h-4 w-4 mr-1.5" /> Instant Transfer
+                    </TabsTrigger>
+                  )}
                   <TabsTrigger value="transfer">
                     <Banknote className="h-4 w-4 mr-1.5" /> Bank Transfer
                   </TabsTrigger>
@@ -425,6 +470,137 @@ export default function InvoiceDetail({
                       )}
                       Pay online
                     </Button>
+                  </div>
+                </TabsContent>
+                <TabsContent value="dynamic">
+                  <div className="p-4 rounded-lg border border-border/60 bg-background space-y-3">
+                    {!dynamicAccount && !dynamicAccountError && (
+                      <>
+                        <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                          Instant bank transfer
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Generate a dedicated Providus Bank account for exactly
+                          ₦{balanceDue.toLocaleString()}. It stays open for 15
+                          minutes and{" "}
+                          <span className="font-semibold text-foreground">
+                            auto-confirms
+                          </span>{" "}
+                          the moment your transfer settles — no treasurer step.
+                        </p>
+                        <Button
+                          className="w-full bg-gradient-hero"
+                          onClick={() => createDynamicInvoice()}
+                        >
+                          <Zap className="h-4 w-4 mr-1.5" /> Generate transfer
+                          account
+                        </Button>
+                      </>
+                    )}
+
+                    {dynamicAccountError && !dynamicAccount && (
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                          <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
+                          We could not create a transfer account
+                        </div>
+                        <p className="text-xs text-muted-foreground">
+                          {dynamicAccountError}
+                        </p>
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => createDynamicInvoice()}
+                        >
+                          <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Try again
+                        </Button>
+                      </div>
+                    )}
+
+                    {dynamicAccount && (
+                      <>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                            Transfer to this account
+                          </div>
+                          <DynCountdown expiresAt={dynamicAccount.expiresAt} />
+                        </div>
+                        <div className="flex items-center justify-between gap-2">
+                          <div>
+                            <div className="text-2xl font-mono font-bold">
+                              {dynamicAccount.accountNumber}
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              {dynamicAccount.bankName} &bull;{" "}
+                              {dynamicAccount.accountName}
+                            </div>
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              copy(
+                                dynamicAccount.accountNumber,
+                                "Account number",
+                              )
+                            }
+                          >
+                            <Copy className="h-3.5 w-3.5 mr-1.5" /> Copy
+                          </Button>
+                        </div>
+
+                        <div className="flex items-center justify-between gap-2 text-xs">
+                          <span className="text-muted-foreground">
+                            Amount / Reference
+                          </span>
+                          <span className="flex items-center gap-2">
+                            <span className="font-semibold">
+                              ₦{dynamicAccount.amount.toLocaleString()}
+                            </span>
+                            <span className="font-mono font-semibold">
+                              {dynamicAccount.reference}
+                            </span>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                copy(dynamicAccount.reference, "Reference")
+                              }
+                            >
+                              <Copy className="h-3.5 w-3.5 mr-1.5" /> Copy
+                            </Button>
+                          </span>
+                        </div>
+
+                        <p className="text-xs text-muted-foreground">
+                          Transfer the exact amount before the timer runs out.
+                          This account{" "}
+                          <span className="font-semibold text-foreground">
+                            auto-confirms
+                          </span>{" "}
+                          — your receipt follows automatically.
+                        </p>
+
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => checkDynamicPayment()}
+                          disabled={isCheckingDynamic}
+                        >
+                          {isCheckingDynamic ? (
+                            <>
+                              <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />{" "}
+                              Checking payment...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> I
+                              have paid — check now
+                            </>
+                          )}
+                        </Button>
+                      </>
+                    )}
                   </div>
                 </TabsContent>
                 <TabsContent value="pos">
