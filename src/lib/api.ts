@@ -75,6 +75,19 @@ const axiosInstance = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+/**
+ * Dedicated instance for the token-refresh call. It intentionally has NO
+ * response interceptor: the refresh request must never re-enter the 401
+ * refresh logic below. If it did, a failed refresh would queue itself into
+ * `failedQueue` while `isRefreshing` is already true and await
+ * `processQueue` — which only the (now-blocked) outer flow can call —
+ * deadlocking the app in a permanent loading state until the cache is cleared.
+ */
+const refreshAxios = axios.create({
+  baseURL: API_BASE_URL,
+  headers: { "Content-Type": "application/json" },
+});
+
 // Request interceptor for adding token
 axiosInstance.interceptors.request.use((config) => {
   if (
@@ -154,17 +167,28 @@ axiosInstance.interceptors.response.use(
 
       const refreshToken = getRefreshToken();
       if (!refreshToken) {
+        isRefreshing = false;
         setAuthToken(null);
         setRefreshToken(null);
+        tokenManager.clearAllTokens();
         return Promise.reject(error);
       }
 
       try {
-        const response = await axiosInstance.post<
-          ApiEnvelope<{ accessToken: string }>
-        >("/auth/refresh", { refreshToken });
+        // Use the interceptor-free instance so a failed refresh can't re-enter
+        // this handler and deadlock (see refreshAxios above).
+        const response = await refreshAxios.post<{
+          data?: { accessToken: string };
+          accessToken?: string;
+        }>("/auth/refresh", { refreshToken });
 
-        const newAccessToken = response.data.data.accessToken;
+        // Backend wraps the payload in an envelope ({ status, data }); tolerate
+        // a flat { accessToken } shape too.
+        const newAccessToken =
+          response.data?.data?.accessToken ?? response.data?.accessToken;
+        if (!newAccessToken) {
+          throw new Error("Refresh succeeded but returned no access token");
+        }
         setAuthToken(newAccessToken);
 
         processQueue(null, newAccessToken);
@@ -172,8 +196,14 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError as Error, null);
+        // Refresh token invalid/expired - hard-stop instead of leaving the app
+        // stuck on a spinner. Clear everything and send the user to login.
         setAuthToken(null);
         setRefreshToken(null);
+        tokenManager.clearAllTokens();
+        if (typeof window !== "undefined") {
+          window.location.href = "/login?reason=expired";
+        }
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
