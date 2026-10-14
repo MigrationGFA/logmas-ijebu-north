@@ -542,10 +542,19 @@ export function PaymentReviewDialog({
                       type="button"
                       className="w-full bg-gradient-hero text-primary-foreground font-semibold shadow-elegant"
                       onClick={onStartDynamicTransfer}
-                      disabled={isProcessing}
+                      disabled={isProcessing || isCreatingDynamicAccount}
                     >
-                      <Zap className="mr-1.5 h-4 w-4" /> Generate transfer
-                      account
+                      {isCreatingDynamicAccount ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <Zap className="mr-1.5 h-4 w-4" /> Generate transfer
+                          account
+                        </>
+                      )}
                     </Button>
                   ) : null}
                 </>
