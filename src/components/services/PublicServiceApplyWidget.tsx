@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, Suspense } from "react";
+import React, { useState, useEffect, useMemo, useRef, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useServices } from "@/hooks/queries/useServices";
 import {
@@ -13,7 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { ServiceApplicationGuideSteps } from "./ServiceApplicationGuideSteps";
-import { invoicesService } from "@/services/apiInvoice";
+import { invoicesService, type DynamicVirtualAccount } from "@/services/apiInvoice";
 import { toast } from "sonner";
 import {
   User,
@@ -86,6 +86,14 @@ function PublicServiceApplyWidgetInner({
   // Applicant details are reviewed in a dialog before any checkout session is
   // created, so nothing is charged until they confirm there.
   const [isReviewOpen, setIsReviewOpen] = useState(false);
+
+  // ── Dynamic (15-min, auto-confirm) transfer account ──────────────────────
+  const [dynamicAccount, setDynamicAccount] =
+    useState<DynamicVirtualAccount | null>(null);
+  const [dynamicAccountError, setDynamicAccountError] = useState("");
+  const [isCreatingDynamic, setIsCreatingDynamic] = useState(false);
+  const [isCheckingDynamic, setIsCheckingDynamic] = useState(false);
+  const dynamicPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Sync state when URL serviceId or initialServiceId changes
   useEffect(() => {
@@ -343,6 +351,105 @@ function PublicServiceApplyWidgetInner({
       setIsProcessing(false);
     }
   };
+
+  // ── Dynamic transfer-account handlers ────────────────────────────────────
+  const stopDynamicPoll = () => {
+    if (dynamicPollRef.current) {
+      clearInterval(dynamicPollRef.current);
+      dynamicPollRef.current = null;
+    }
+  };
+
+  // Poll the gateway for settlement of the minted dynamic account. On confirm
+  // we redirect to the shared result page — settlement (invoice/receipt/portal
+  // account) already happened server-side inside settleIntent.
+  const pollDynamicStatus = async (reference: string): Promise<boolean> => {
+    try {
+      const result = await invoicesService.verifyDynamicPayment(reference);
+      if (result.status === "confirmed") {
+        stopDynamicPoll();
+        toast.success("Payment confirmed — preparing your receipt...");
+        window.location.href = `/payment/result?reference=${encodeURIComponent(
+          reference,
+        )}`;
+        return true;
+      }
+      if (result.status === "failed" || result.status === "expired") {
+        stopDynamicPoll();
+        setDynamicAccountError(
+          "This transfer account has expired. Please generate a new one.",
+        );
+        return false;
+      }
+    } catch (err: any) {
+      console.error("Dynamic payment poll failed:", err);
+    }
+    return false;
+  };
+
+  const handleCheckDynamicStatus = async () => {
+    if (!dynamicAccount) return;
+    setIsCheckingDynamic(true);
+    await pollDynamicStatus(dynamicAccount.reference);
+    setIsCheckingDynamic(false);
+  };
+
+  const handleStartDynamicTransfer = async () => {
+    setFormError("");
+    setDynamicAccountError("");
+    stopDynamicPoll();
+
+    const { error, phone: formattedPhone } = validateDetails();
+    if (error) {
+      setFormError(error);
+      toast.error(error);
+      return;
+    }
+
+    const serviceId = selectedService?.id || selectedServiceId;
+    setIsCreatingDynamic(true);
+    try {
+      const va = await invoicesService.createDynamicPublicPayment({
+        serviceId,
+        fullName: fullName.trim(),
+        email: email.trim(),
+        phone: formattedPhone,
+      });
+      setDynamicAccount(va);
+      // Stash so /payment/result can verify even if the tab navigates away.
+      stashPendingPayment(va.reference, "gpay");
+      sessionStorage.setItem("publicPaymentServiceId", serviceId);
+      toast.success("Transfer account ready — it expires in 15 minutes.");
+      // Gentle auto-poll (webhook is primary; this keeps the page live).
+      stopDynamicPoll();
+      dynamicPollRef.current = setInterval(() => {
+        void pollDynamicStatus(va.reference);
+      }, 5000);
+    } catch (err: any) {
+      console.error("Dynamic account creation failed:", err);
+      const msg =
+        err?.message ||
+        err?.response?.data?.message ||
+        "Could not create a transfer account. Please try the online option.";
+      setDynamicAccountError(msg);
+      toast.error(msg);
+    } finally {
+      setIsCreatingDynamic(false);
+    }
+  };
+
+  // Stop polling when the dialog closes or the component unmounts.
+  useEffect(() => {
+    if (!isReviewOpen) stopDynamicPoll();
+    return () => stopDynamicPoll();
+  }, [isReviewOpen]);
+
+  // A minted account is tied to one amount; reset it if the service changes.
+  useEffect(() => {
+    stopDynamicPoll();
+    setDynamicAccount(null);
+    setDynamicAccountError("");
+  }, [selectedServiceId]);
 
   return (
     <div
@@ -644,6 +751,12 @@ function PublicServiceApplyWidgetInner({
         provider={getActivePaymentProvider()}
         isProcessing={isProcessing}
         virtualAccount={virtualAccount}
+        dynamicAccount={dynamicAccount}
+        isCreatingDynamicAccount={isCreatingDynamic}
+        dynamicAccountError={dynamicAccountError}
+        isCheckingDynamicStatus={isCheckingDynamic}
+        onStartDynamicTransfer={handleStartDynamicTransfer}
+        onCheckDynamicStatus={handleCheckDynamicStatus}
         onCheckout={startCheckout}
         onEditDetails={() => setIsReviewOpen(false)}
         onCheckTransferStatus={() => setIsReviewOpen(false)}
