@@ -787,7 +787,7 @@ function ChairmanSection() {
       <Card className="overflow-hidden border-border/40 bg-gradient-card shadow-elegant">
         <div className="grid md:grid-cols-5">
           {/* Executive Chairman Image: order-2 on mobile (shows below message), md:order-1 on desktop (left col) */}
-          <div className="order-2 md:order-1 md:col-span-2 relative min-h-[380px] sm:min-h-[460px] md:min-h-[520px] bg-gradient-hero text-primary-foreground">
+          <div className="order-2 md:order-1 md:col-span-2 relative min-h-[320px] sm:min-h-[360px] md:min-h-[400px] bg-gradient-hero text-primary-foreground">
             {c.image && (
               <Image
                 src={c.image}
@@ -1184,7 +1184,7 @@ function WardsMap() {
                   <div className="text-xs text-muted-foreground uppercase tracking-wider">
                     Ward
                   </div>
-                  <div className="text-xl font-bold">{ward.name}</div>
+                  <div className="text-xl font-bold">{ward.name} Lga</div>
                 </div>
                 <Badge className="ml-auto" variant="outline">
                   {ward.population} residents

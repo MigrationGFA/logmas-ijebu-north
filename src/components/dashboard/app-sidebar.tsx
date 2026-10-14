@@ -58,6 +58,7 @@ import { useAuth } from "@/hooks/queries/useAuth";
 // import { tokenManager } from "@/services/apiAuth";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { LGA_CONFIG } from "@/config";
 
 type Item = { title: string; url: string; icon: any };
 
@@ -290,7 +291,7 @@ export function AppSidebar() {
             <div className="leading-tight">
               <div className="font-bold text-sidebar-foreground text-sm">LOGMAS</div>
               <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/70">
-                the LGA
+              {LGA_CONFIG.identity.name} Lga
               </div>
             </div>
           )}

@@ -295,9 +295,9 @@ export default function ApplicationsPage() {
             title={isAdmin ? "Statutory Service Applications" : isFieldOfficer ? "Field Officer Applications Registry" : "My Applications"}
             subtitle={
               isAdmin
-                ? "Review, verify documents, and issue official certificates and licences for the LGA."
+                ? `Review, verify documents, and issue official certificates and licences for ${LGA_CONFIG.identity.name}.`
                 : isFieldOfficer
-                ? "Submit and track citizen and business service applications across the LGA wards."
+                ? `Submit and track citizen and business service applications across ${LGA_CONFIG.identity.name} wards.`
                 : "Track the status of your statutory certificates, permits, and licence applications."
             }
           />
@@ -402,7 +402,7 @@ export default function ApplicationsPage() {
                 <SelectValue placeholder="All Wards" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All the LGA Wards</SelectItem>
+                <SelectItem value="all">All {LGA_CONFIG.identity.name} Wards</SelectItem>
                 {WARDS.map((w) => (
                   <SelectItem key={w} value={w}>
                     {w} Ward

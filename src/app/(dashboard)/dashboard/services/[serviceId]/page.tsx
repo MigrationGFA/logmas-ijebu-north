@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import React, { useState, use } from "react";
 import {
@@ -60,12 +60,17 @@ export default function ServiceDetailPage({ params }: PageProps) {
   const serviceId = resolvedParams.serviceId;
   const router = useRouter();
 
-  const { useGetServiceBySlug } = useServices();
+  const { services: allServices, useGetServiceBySlug } = useServices();
+  const matchedFromList: any = allServices.find(
+    (s: any) => s.id === serviceId || s.code === serviceId || s.slug === serviceId
+  );
+  const lookupKey = matchedFromList?.code || matchedFromList?.slug || serviceId;
   const {
-    data: service,
+    data: fetchedService,
     isLoading: isServiceLoading,
     error,
-  } = useGetServiceBySlug(serviceId);
+  } = useGetServiceBySlug(lookupKey);
+  const service: any = matchedFromList || fetchedService;
 
   const currentUser = tokenManager.getUser();
   const userRole = currentUser?.role || "citizen";
@@ -247,7 +252,7 @@ export default function ServiceDetailPage({ params }: PageProps) {
               Statutory Fee
             </span>
             <span className="text-base sm:text-lg font-black text-primary">
-              ₦{currentFee.toLocaleString()}
+              â‚¦{currentFee.toLocaleString()}
             </span>
           </div>
           <Badge
@@ -340,7 +345,7 @@ export default function ServiceDetailPage({ params }: PageProps) {
                     Calculated Statutory Fee:
                   </span>
                   <span className="font-bold text-foreground">
-                    ₦
+                    â‚¦
                     {Number(
                       submittedApp.application?.feeAmount ||
                         submittedApp.invoice?.amount ||
@@ -418,7 +423,7 @@ export default function ServiceDetailPage({ params }: PageProps) {
                       Amount:
                     </span>
                     <span className="font-bold text-foreground">
-                      ₦{Number(submittedApp.invoice.amount)?.toLocaleString()}
+                      â‚¦{Number(submittedApp.invoice.amount)?.toLocaleString()}
                     </span>
                   </div>
                 </div>

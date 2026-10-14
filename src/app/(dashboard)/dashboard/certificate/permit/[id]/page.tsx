@@ -7,7 +7,7 @@ import React from "react";
 import Link from "next/link";
 import { useBusinessPermits } from "@/hooks/queries/useBusiness";
 import { format, parseISO } from "date-fns";
-
+import { LGA_CONFIG } from "@/config/lga.config";
 interface PermitCertificatePageProps {
   params: Promise<{ id: string }>;
 }
@@ -256,8 +256,8 @@ const issuedDate = cert.updatedAt
                 style={{ fontFamily: "'EB Garamond', serif" }}
               >
                 <p>
-                  is a registered business operating in <span className="font-semibold">{cert.business.ward?.name || "the LGA"}</span>{" "}
-                  Ward, within the <span className="font-semibold">the Local Government Area</span> of{" "}
+                  is a registered business operating in <span className="font-semibold">{cert.business.ward?.name || LGA_CONFIG.identity.name}</span>{" "}
+                  Ward, within the <span className="font-semibold">Local Government Area</span> of{" "}
                   <span className="font-semibold">Ogun State</span>, and is duly licensed to engage in{" "}
                   <span className="font-semibold">{categoryDisplay}</span> activities in accordance with the Local
                   Government Bye-Laws and Trade Regulations.
@@ -284,13 +284,13 @@ const issuedDate = cert.updatedAt
                   <div className="font-semibold text-[13px]" style={{ fontFamily: "'Libertinus Serif', serif" }}>
                     Hon. Local Government Chairman
                   </div>
-                  <div className="text-[11px] text-[#6B6558] italic" style={{ fontFamily: "'EB Garamond', serif" }}>the LGA</div>
+                  <div className="text-[11px] text-[#6B6558] italic" style={{ fontFamily: "'EB Garamond', serif" }}>{LGA_CONFIG.identity.name}</div>
                 </div>
               </div>
 
               <div className="text-center text-[10.5px] text-[#6B6558]" style={{ fontFamily: "'Arimo', sans-serif" }}>
                 <span className="italic">
-                  This certificate is electronically issued and remains the property of the LGA Council.
+                  This certificate is electronically issued and remains the property of {LGA_CONFIG.identity.name} Council.
                 </span>
                 <span className="flex items-center justify-center gap-1 mt-1 text-[#8C3E23] font-semibold not-italic">
                   <CheckCircle2 className="h-3 w-3" />

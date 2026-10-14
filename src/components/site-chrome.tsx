@@ -118,7 +118,6 @@ type NavGroup = { label: string; items: NavItem[] };
 
 const NAV: (NavItem | NavGroup)[] = [
   { to: "/", label: "Home" } as NavItem,
-  { to: "/track", label: "Track Application" } as NavItem,
   {
     label: "Government",
     items: [
@@ -167,6 +166,8 @@ const NAV: (NavItem | NavGroup)[] = [
     label: "Resources",
     items: [
       { to: "/news", label: "News & Events", desc: "Updates from the council" },
+      { to: "/track", label: "Track Application" } as NavItem,
+
       {
         to: "/verify",
         label: "Verify Certificate",
@@ -224,7 +225,6 @@ export function SiteHeader() {
     return [];
   }, [servicesData]);
 
-
   return (
     <>
       <div className="hidden md:block bg-primary text-primary-foreground text-xs">
@@ -247,7 +247,10 @@ export function SiteHeader() {
             <div className="text-[11px] opacity-80">
               {SITE_CONTACT.operatingDays}
             </div>
-            <LanguageSwitcher variant="compact" className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground" />
+            <LanguageSwitcher
+              variant="compact"
+              className="bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/20 hover:text-primary-foreground"
+            />
           </div>
         </div>
       </div>
@@ -256,10 +259,17 @@ export function SiteHeader() {
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2.5 group shrink-0">
             <div className="relative flex items-center justify-center rounded-xl bg-white shadow-elegant group-hover:scale-105 transition-bounce w-10 h-10 overflow-hidden">
-              <Image src={logo} alt="the LGA Logo" className="h-8 w-8" fill/>
+              <Image
+                src={logo}
+                alt={`${LGA_CONFIG.identity.name} Logo`}
+                className="h-8 w-8"
+                fill
+              />
             </div>
             <div className="leading-tight">
-              <div className="text-sm font-bold tracking-tight">{LGA_CONFIG.identity.name} LGA</div>
+              <div className="text-sm font-bold tracking-tight">
+                {LGA_CONFIG.identity.name} LGA
+              </div>
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
                 {LGA_CONFIG.identity.state} · Official Portal
               </div>
@@ -459,7 +469,9 @@ export function SiteHeader() {
           <div className="lg:hidden border-t border-border/40 bg-background max-h-[80vh] overflow-y-auto">
             <div className="container mx-auto flex flex-col gap-1 p-4">
               <div className="flex items-center justify-between pb-3 mb-2 border-b border-border/40">
-                <span className="text-xs font-semibold text-muted-foreground">Select Language / Yan Èdè</span>
+                <span className="text-xs font-semibold text-muted-foreground">
+                  Select Language / Yan Èdè
+                </span>
                 <LanguageSwitcher variant="compact" />
               </div>
               {NAV.flatMap((n) => ("to" in n ? [n] : n.items)).map((l) => (
@@ -494,8 +506,13 @@ export function SiteFooter() {
       <div className="container mx-auto grid grid-cols-2 md:grid-cols-5 gap-8 px-4 py-14">
         <div className="col-span-2">
           <div className="flex items-center gap-2.5">
-            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-gold">
-              <ShieldCheck className="h-6 w-6 text-gold-foreground" />
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white overflow-hidden relative shadow-elegant">
+              <Image
+                src={logo}
+                alt={`${LGA_CONFIG.identity.name} Logo`}
+                className="h-8 w-8"
+                fill
+              />
             </div>
             <div>
               <div className="font-bold">{LGA_CONFIG.identity.fullName}</div>
@@ -505,9 +522,9 @@ export function SiteFooter() {
             </div>
           </div>
           <p className="mt-4 text-sm opacity-70 max-w-md leading-relaxed">
-            The official digital home of {LGA_CONFIG.identity.fullName}  -  bringing
-            transparent governance, modern services and economic opportunity to
-            every citizen, business and investor.
+            The official digital home of {LGA_CONFIG.identity.fullName} -
+            bringing transparent governance, modern services and economic
+            opportunity to every citizen, business and investor.
           </p>
           <div className="mt-5 space-y-2 text-sm opacity-80">
             <div className="flex items-center gap-2">
@@ -571,7 +588,8 @@ export function SiteFooter() {
       <div className="border-t border-sidebar-border/40">
         <div className="container mx-auto px-4 py-5 text-xs opacity-60 flex flex-col md:flex-row justify-between gap-2">
           <span>
-            Â© {new Date().getFullYear()} {LGA_CONFIG.identity.fullName}, {LGA_CONFIG.identity.state}. All rights reserved.
+            Â© {new Date().getFullYear()} {LGA_CONFIG.identity.fullName},{" "}
+            {LGA_CONFIG.identity.state}. All rights reserved.
           </span>
           <span>Official Website · {LGA_CONFIG.identity.fullName}</span>
         </div>
@@ -602,4 +620,3 @@ function FooterCol({
     </div>
   );
 }
-

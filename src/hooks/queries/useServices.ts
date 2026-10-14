@@ -29,7 +29,7 @@ export function useServices() {
     if (!Array.isArray(data)) return [];
     
     const LGA_SERVICES_ICONS = [
-      { id: "certificate_of_origin", name: "Certificate of Origin", icon: "FileBadge" },
+      { id: "certificate_of_origin", name: "State of Origin", icon: "FileBadge" },
       { id: "club_registration", name: "Certificate of Club Registration", icon: "Users" },
       { id: "cda_registration", name: "Certificate of Community Development Association Registration", icon: "Building2" },
       { id: "farmers_registration", name: "Certificate of Farmers Registration", icon: "Sprout" },

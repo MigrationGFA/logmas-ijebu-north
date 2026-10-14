@@ -64,8 +64,13 @@ export default function PublicServiceDetailPage({ params }: PublicServicePagePro
   const resolvedParams = use(params);
   const serviceId = resolvedParams.serviceId;
 
-  const { useGetServiceBySlug } = useServices();
-  const { data: service } = useGetServiceBySlug(serviceId);
+  const { services: allServices, useGetServiceBySlug } = useServices();
+  const matchedFromList: any = allServices.find(
+    (s: any) => s.id === serviceId || s.code === serviceId || s.slug === serviceId
+  );
+  const lookupKey = matchedFromList?.code || matchedFromList?.slug || serviceId;
+  const { data: fetchedService } = useGetServiceBySlug(lookupKey);
+  const service: any = matchedFromList || fetchedService;
 
   const [activeTab, setActiveTab] = useState<"apply" | "requirements" | "workflow" | "faq">("apply");
 

@@ -41,6 +41,7 @@ import { tokenManager } from "@/services/apiAuth";
 import { CreateServiceModal } from "@/components/treasurer/CreateServiceModal";
 import { EditServiceModal } from "@/components/treasurer/EditServiceModal";
 import { ErrorState } from "@/components/ui/ErrorState";
+import { LGA_CONFIG } from "@/config/lga.config";
 
 const ICON_MAP: Record<string, any> = {
   FileBadge,
@@ -86,7 +87,7 @@ export default function ServicesPage() {
     return (
       <div className="space-y-6">
         <PageHeader
-          title="the LGA Government Services Catalogue"
+          title={`${LGA_CONFIG.identity.name} Government Services Catalogue`}
           subtitle="Select an official local government service to apply, obtain statutory assessments, or pay levies online."
         />
         <ErrorState
@@ -98,21 +99,29 @@ export default function ServicesPage() {
     );
   }
 
-  const filteredServices = services.filter((service) => {
-    const matchesSearch =
-      service.name.toLowerCase().includes(search.toLowerCase()) ||
-      service.description.toLowerCase().includes(search.toLowerCase()) ||
-      service.revenueHead.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "All" || service.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredServices = services
+    .filter((service) => {
+      const matchesSearch =
+        service.name.toLowerCase().includes(search.toLowerCase()) ||
+        service.description.toLowerCase().includes(search.toLowerCase()) ||
+        service.revenueHead.toLowerCase().includes(search.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "All" || service.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a: any, b: any) => {
+      const aIsCoo = a.id === "certificate_of_origin" || a.code === "certificate_of_origin";
+      const bIsCoo = b.id === "certificate_of_origin" || b.code === "certificate_of_origin";
+      if (aIsCoo && !bIsCoo) return -1;
+      if (!aIsCoo && bIsCoo) return 1;
+      return 0;
+    });
 
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <PageHeader
-          title="the LGA Government Services Catalogue"
+          title={`${LGA_CONFIG.identity.name} Government Services Catalogue`}
           subtitle="Select an official local government service to apply, obtain statutory assessments, or pay levies online."
         />
 

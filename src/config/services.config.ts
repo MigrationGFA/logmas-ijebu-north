@@ -67,7 +67,7 @@ export function createLgaServiceCatalog(lga: LgaConfiguration = LGA_CONFIG): Ser
   return [
     {
       id: "certificate_of_origin",
-      name: "Certificate of Origin",
+      name: "State of Origin",
       category: "Certificates",
       description: `Official indigene certificate issued to born residents and descendants of ${formalTitle}.`,
       revenueHead: "1001 - Certificate Fees",

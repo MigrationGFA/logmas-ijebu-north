@@ -37,7 +37,7 @@ import { useRouter } from "next/navigation";
 import logo from "@/assets/logo.png";
 import { formatAndValidateNigerianPhoneNumber } from "@/lib/helper";
 import Image from "next/image";
-
+import { LGA_CONFIG } from "@/config/lga.config";
 // Form schema with validation including confirm password
 const registerSchema = z
   .object({
@@ -312,7 +312,7 @@ export default function RegisterPage() {
         >
           <Image src={logo} alt="LOGMAS" className="h-12 w-12" />
           <div className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground">
-            the LGA
+            {LGA_CONFIG.identity.name}
           </div>
         </Link>
 

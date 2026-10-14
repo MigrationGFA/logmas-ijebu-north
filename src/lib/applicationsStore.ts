@@ -114,7 +114,7 @@ const INITIAL_SEED_APPLICATIONS: LgaApplication[] = [
     id: "ODE-2026-001",
     applicationNo: "ODE/COO/2026/0001",
     serviceId: "certificate_of_origin",
-    serviceName: "Certificate of Origin",
+    serviceName: "State of Origin",
     category: "Certificates",
     applicant: "Adebayo Citizen",
     phone: "08077778888",

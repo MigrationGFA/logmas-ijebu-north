@@ -24,7 +24,7 @@ import {
 const MODULES = [
     {
         icon: FileBadge,
-        title: "Certificate of Origin",
+        title: "State of Origin",
         desc: "Apply, pay ₦3,500 statutory fee and download QR-verified indigene certificates.",
         to: "/services/certificate_of_origin",
     },

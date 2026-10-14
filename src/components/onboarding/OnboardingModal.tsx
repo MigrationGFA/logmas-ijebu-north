@@ -38,6 +38,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { uploadsService } from "@/services/uploads";
+import { LGA_CONFIG } from "@/config/lga.config";
 import Image from "next/image";
 
 
@@ -235,7 +236,7 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
           <div className="flex items-center gap-2 mb-1 text-primary">
             <ShieldCheck className="h-5 w-5" />
             <span className="text-xs uppercase tracking-wider font-semibold">
-              the LGA Citizen Registry
+              Odeda LGA Citizen Registry
             </span>
           </div>
           <DialogTitle className="text-xl sm:text-2xl font-bold">
@@ -255,6 +256,7 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
                   src={avatarPreview}
                   alt="Passport preview"
                   fill
+                  unoptimized
                   className="object-cover"
                 />
               ) : (
@@ -367,7 +369,7 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
           {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border/40">
             <div>
               <Label htmlFor="ward" className="text-xs font-semibold">
-                the LGA Ward <span className="text-destructive">*</span>
+                {LGA_CONFIG.identity.name} Ward <span className="text-destructive">*</span>
               </Label>
               <Controller
                 name="ward"
@@ -400,7 +402,7 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
                 name="town"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} id="town" placeholder="e.g. Osiele, the LGA, Ilugun" className="mt-1.5" />
+                  <Input {...field} id="town" placeholder="e.g. Osiele, Odeda, Ilugun" className="mt-1.5" />
                 )}
               />
               {errors.town && (
@@ -514,8 +516,16 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
                     <Input
                       {...field}
                       id="identificationNumber"
+                      type="text"
+                      inputMode="numeric"
+                      pattern="[0-9]*"
+                      maxLength={11}
                       placeholder="e.g. 11-digit NIN"
                       className="mt-1.5"
+                      onChange={(e) => {
+                        const digitsOnly = e.target.value.replace(/\D/g, "");
+                        field.onChange(digitsOnly);
+                      }}
                     />
                   )}
                 />
@@ -555,7 +565,7 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
                     <Input
                       {...field}
                       id="businessName"
-                      placeholder="e.g. the LGA Agro Allied Enterprises"
+                      placeholder="e.g. Odeda LGA Agro Allied Enterprises"
                       className="mt-1.5"
                     />
                   )}

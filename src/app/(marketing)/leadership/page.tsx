@@ -86,7 +86,7 @@ export default function LeadershipPage() {
             <section className="container mx-auto px-4 py-14">
                 <Card className="overflow-hidden border-border/40 bg-gradient-card shadow-elegant">
                     <div className="grid md:grid-cols-3">
-                        <div className="order-2 md:order-1 relative bg-gradient-hero text-primary-foreground min-h-[360px] sm:min-h-[420px] md:min-h-80">
+                        <div className="order-2 md:order-1 relative bg-gradient-hero text-primary-foreground min-h-[320px] sm:min-h-[360px] md:min-h-[400px]">
                             {chairman.image ? (
                                 <Image
                                     src={chairman.image}

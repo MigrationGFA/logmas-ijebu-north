@@ -11,6 +11,7 @@ import {  getConfiguredFeeForService } from "@/config/lgaServices";
 import { useServices } from "@/hooks/queries/useServices";
 import { ServiceApplicationGuideSteps } from "@/components/services/ServiceApplicationGuideSteps";
 import { PublicServiceApplyWidget } from "@/components/services/PublicServiceApplyWidget";
+import { LGA_CONFIG } from "@/config/lga.config";
 import {
   FileBadge,
   Users,
@@ -91,14 +92,22 @@ function ServicesPageContent() {
     "Urban Development",
   ];
 
-  const filteredServices = services.filter((service: any) => {
-    const matchesSearch =
-      (service.name || "").toLowerCase().includes(search.toLowerCase()) ||
-      (service.description || "").toLowerCase().includes(search.toLowerCase()) ||
-      (service.revenueHead || "").toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = selectedCategory === "All" || service.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredServices = services
+    .filter((service: any) => {
+      const matchesSearch =
+        (service.name || "").toLowerCase().includes(search.toLowerCase()) ||
+        (service.description || "").toLowerCase().includes(search.toLowerCase()) ||
+        (service.revenueHead || "").toLowerCase().includes(search.toLowerCase());
+      const matchesCategory = selectedCategory === "All" || service.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a: any, b: any) => {
+      const aIsCoo = a.id === "certificate_of_origin" || a.code === "certificate_of_origin";
+      const bIsCoo = b.id === "certificate_of_origin" || b.code === "certificate_of_origin";
+      if (aIsCoo && !bIsCoo) return -1;
+      if (!aIsCoo && bIsCoo) return 1;
+      return 0;
+    });
 
   const handleApplyClick = (serviceId: string) => {
     setSelectedQuickService(serviceId);
@@ -129,10 +138,10 @@ function ServicesPageContent() {
               Official LGA Services & Portal
             </Badge>
             <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
-              Statutory Services & Licences for the LGA
+              Statutory Services & Licences for {LGA_CONFIG.identity.name}
             </h1>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto text-base">
-              Apply for Certificate of Origin, business permits, haulage passes, property rates, and trade licences online with end-to-end digital verification.
+              Apply for State of Origin, business permits, haulage passes, property rates, and trade licences online with end-to-end digital verification.
             </p>
 
             <div className="mt-6 flex flex-wrap justify-center gap-3">

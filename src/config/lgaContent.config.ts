@@ -10,7 +10,7 @@ export const STATS = [
 export const SERVICES = [
   {
     icon: "FileBadge",
-    title: "Certificate of Origin",
+    title: "State of Origin",
     desc: `Apply, pay and download your ${LGA_CONFIG.identity.name} LGA indigene certificate online with QR verification.`,
     color: "primary",
   },
@@ -107,7 +107,7 @@ export const APPLICATIONS: ApplicationRecord[] = [
     ward: "the LGA",
     phone: "+2348012345678",
     email: "adebayo@example.com",
-    type: "Certificate of Origin",
+    type: "State of Origin",
     serviceId: "certificate_of_origin",
     status: "pending",
     paymentStatus: "paid",
@@ -203,7 +203,7 @@ export const WARDS_INFO: {
   accent: string;
 }[] = [
   {
-    name: "the LGA",
+    name: "Odeda",
     x: 50,
     y: 42,
     population: "38,400",
@@ -327,7 +327,7 @@ export const DOWNLOADS = [
 ];
 
 export const FAQS = [
-  { question: `How do I apply for Certificate of Origin in ${LGA_CONFIG.identity.formalTitle}?`, answer: "Navigate to Services Catalogue, select Certificate of Origin, fill in ancestral details, upload required documents, and complete online payment." },
+  { question: `How do I apply for State of Origin in ${LGA_CONFIG.identity.formalTitle}?`, answer: "Navigate to Services Catalogue, select State of Origin, fill in ancestral details, upload required documents, and complete online payment." },
   { question: `What is the fee for Tenement Rate in ${LGA_CONFIG.identity.name}?`, answer: "Tenement rates vary based on property classification (Residential, Commercial, Industrial). You can calculate and pay directly on the portal." },
   { question: "How do haulage drivers pay transit fees?", answer: "Haulage drivers or dispatch officers generate instant transit passes via the Haulage Fees service page and present the QR receipt at inspection points." },
   { question: "Can I verify an issued certificate?", answer: `Yes, all ${LGA_CONFIG.identity.formalTitle} certificates and licences contain a unique QR code and verification token that can be verified online instantly.` },

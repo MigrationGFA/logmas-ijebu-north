@@ -38,20 +38,10 @@ import {
 import { uploadsService } from "@/services/uploads";
 import { FullPageLoader } from "@/components/ProtectedRoute";
 import { formatAndValidateNigerianPhoneNumber } from "@/lib/helper";
+import { LGA_CONFIG } from "@/config/lga.config";
 
-// Ward options - adjust based on your LGA
-const WARDS = [
-  "the LGA Ward 1",
-  "the LGA Ward 2",
-  "the LGA Ward 3",
-  "the LGA Ward 4",
-  "the LGA Ward 5",
-  "the LGA Ward 6",
-  "the LGA Ward 7",
-  "the LGA Ward 8",
-  "the LGA Ward 9",
-  "the LGA Ward 10",
-];
+// Ward options - sourced from LGA_CONFIG
+const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
 
 const GENDER_OPTIONS = ["Male", "Female", "Other"];
 const IDENTIFICATION_TYPES = [

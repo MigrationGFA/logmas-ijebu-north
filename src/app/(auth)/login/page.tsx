@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 import { Suspense, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { ShieldCheck, Eye, EyeOff, Loader2, MailCheck } from "lucide-react";
@@ -14,6 +14,7 @@ import { useSearchParams } from "next/navigation";
 import { FullPageLoader } from "@/components/ProtectedRoute";
 import logo from "@/assets/logo.png";
 import Image from "next/image";
+import { LGA_CONFIG } from "@/config/lga.config";
 
 export default function Page() {
   return (
@@ -53,7 +54,7 @@ function LoginPage() {
   useEffect(() => {
     if (reason === "suspended") {
       toast.error(
-        "Your account has been suspended. Please contact the LGA Secretariat.",
+        "Your account has been suspended. Please contact Odeda LGA Secretariat.",
       );
     } else if (reason === "unverified") {
       const message = emailParam
@@ -148,12 +149,12 @@ function LoginPage() {
         <Link href="/" className="relative flex flex-col items-center gap-2.5 w-fit">
           <Image src={logo} alt="LOGMAS" className="h-12 w-12" />
           <div className="text-[10px] uppercase font-bold tracking-wider text-muted-background">
-            the LGA
+            {LGA_CONFIG.identity.name} Lga
           </div>
         </Link>
         <div className="relative space-y-6">
           <h1 className="text-4xl font-bold tracking-tight leading-tight">
-            Building a Smarter the Local Government
+            Building a Smarter Local Government
           </h1>
           <p className="opacity-90">
             Delivering transparent governance, digital public services, and
@@ -177,7 +178,7 @@ function LoginPage() {
           </div>
         </div>
         <div className="relative text-xs opacity-70">
-          © {new Date().getFullYear()} the Local Government Area
+          © {new Date().getFullYear()} Odeda LGA
         </div>
       </div>
 

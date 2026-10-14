@@ -101,8 +101,8 @@ function CitizenOverview({ role }: { role: Role }) {
           items={[
             {
               icon: FileBadge,
-              label: "Apply for Certificate of Origin",
-              to: "/dashboard/services/certificate_of_origin",
+              label: "Apply for State of Origin",
+              to: "/dashboard/services/state_of_origin",
             },
             {
               icon: FileBadge,
