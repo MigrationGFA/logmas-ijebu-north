@@ -33,6 +33,13 @@ import {
 } from "lucide-react";
 import { tokenManager } from "@/services/apiAuth";
 import { useSubmitApplication } from "@/hooks/queries/useApplications";
+import {
+  useStaticAccountApplications,
+} from "@/hooks/queries/useFieldOfficer";
+import type {
+  StaticAccountApplicationResponse,
+} from "@/services/apiFieldOfficer";
+import FoBankTransferPanel from "@/components/services/FoBankTransferPanel";
 import { ApplicantSnapshot } from "@/components/services/ApplicantSelectionStep";
 import { Application } from "@/types/application";
 
@@ -77,7 +84,18 @@ export default function ServiceDetailPage({ params }: PageProps) {
   const isFieldOfficer = userRole === "field_officer";
 
   const submitApplicationMutation = useSubmitApplication();
+  const {
+    createStaticAccountApplicationAsync,
+    isCreatingStaticAccountApplication,
+  } = useStaticAccountApplications();
   const [submittedApp, setSubmittedApp] = useState<Application | null>(null);
+  // Field-officer assisted payment: "online" (citizen gateway) or
+  // "bank_transfer" (FO-only static account + treasurer confirmation).
+  const [payMethod, setPayMethod] = useState<"online" | "bank_transfer">(
+    "online",
+  );
+  const [staticResult, setStaticResult] =
+    useState<StaticAccountApplicationResponse | null>(null);
 
   // Loading UI
   if (isServiceLoading) {
@@ -149,6 +167,28 @@ export default function ServiceDetailPage({ params }: PageProps) {
 
     }
 
+    // FO assisted bank-transfer path: park at awaiting_payment_confirmation
+    // with a static-account transfer + proof upload for the treasurer.
+    if (isFieldOfficer && payMethod === "bank_transfer") {
+      try {
+        const [firstName, ...rest] = String(applicant?.fullName || "").trim().split(" ");
+        const lastName = rest.join(" ");
+        const res = await createStaticAccountApplicationAsync({
+          serviceId: service.id,
+          formData,
+          applicantId: applicant?.applicantId || undefined,
+          firstName: applicant?.applicantId ? undefined : firstName,
+          lastName: applicant?.applicantId ? undefined : lastName,
+          email: applicant?.email || undefined,
+          phone: applicant?.phone || undefined,
+        });
+        setStaticResult(res);
+      } catch (err) {
+        console.error("Assisted application failed:", err);
+      }
+      return;
+    }
+
     try {
       const res = await submitApplicationMutation.mutateAsync({
         serviceId: service.id,
@@ -181,7 +221,9 @@ export default function ServiceDetailPage({ params }: PageProps) {
     const commonProps = {
       service,
       onSubmit: handleSubmit,
-      isSubmitting: submitApplicationMutation.isPending,
+      isSubmitting:
+        submitApplicationMutation.isPending ||
+        isCreatingStaticAccountApplication,
       mode: (isFieldOfficer
         ? "field_officer"
         : userRole === "business_owner"
@@ -267,7 +309,12 @@ export default function ServiceDetailPage({ params }: PageProps) {
       </div>
 
       {/* SUCCESS CONFIRMATION STATE */}
-      {submittedApp ? (
+      {staticResult ? (
+        <FoBankTransferPanel
+          result={staticResult}
+          onReset={() => setStaticResult(null)}
+        />
+      ) : submittedApp ? (
         <Card className="border-2 border-emerald-500/30 bg-emerald-500/5 shadow-md">
           <CardHeader className="text-center pb-3">
             <div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-600 flex items-center justify-center mx-auto mb-3">
@@ -478,7 +525,44 @@ export default function ServiceDetailPage({ params }: PageProps) {
         </Card>
       ) : (
         /* SERVICE FORM WIZARD */
-        <div>{renderForm()}</div>
+        <div className="space-y-4">
+          {isFieldOfficer && (
+            <Card className="p-4">
+              <p className="text-xs uppercase font-bold tracking-wider text-muted-foreground mb-2">
+                Payment method (field officer)
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={payMethod === "online" ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setPayMethod("online")}
+                >
+                  Pay online (card / transfer)
+                </Button>
+                <Button
+                  variant={
+                    payMethod === "bank_transfer" ? "default" : "outline"
+                  }
+                  size="sm"
+                  onClick={() => setPayMethod("bank_transfer")}
+                >
+                  Bank transfer (assisted)
+                </Button>
+              </div>
+              {payMethod === "bank_transfer" && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  The application is parked at{" "}
+                  <span className="font-medium text-foreground">
+                    awaiting payment confirmation
+                  </span>{" "}
+                  until the applicant transfers to the LGA account, you upload
+                  proof, and the treasurer confirms it.
+                </p>
+              )}
+            </Card>
+          )}
+          {renderForm()}
+        </div>
       )}
     </div>
   );
