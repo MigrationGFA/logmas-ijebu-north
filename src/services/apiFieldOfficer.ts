@@ -335,6 +335,42 @@ export interface Violation {
   loggedBy?: { firstName: string; lastName: string };
 }
 
+// ── Static-account (bank-transfer) assisted applications ──────
+
+export interface CreateStaticAccountApplicationData {
+  serviceId: string;
+  formData?: Record<string, unknown>;
+  // Either an existing citizen…
+  applicantId?: string;
+  // …or the details to register a new one on the spot.
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  phone?: string;
+}
+
+export interface TransferInstructions {
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  amount: number;
+  reference: string;
+}
+
+export interface StaticAccountApplicationResponse {
+  application: { id: string; applicationNumber: string; status: string };
+  invoice: { id: string; invoiceNumber: string; amount: number };
+  payment: { id: string; status: string; reference: string };
+  transferInstructions: TransferInstructions;
+  newCitizenCreated: boolean;
+}
+
+export interface PaymentProofResult {
+  id: string;
+  proofUrl: string;
+  proofUploadedAt: string;
+}
+
 // Service functions
 export const fieldOfficerService = {
   // Business Registration
@@ -387,4 +423,29 @@ export const fieldOfficerService = {
   // Log violation
   logViolation: (data: ViolationData) =>
     api.post<Violation>("/field-officer/violations", data),
+
+  // ── Static-account assisted applications ─────────────────────
+
+  /**
+   * POST /field-officer/applications
+   * Register (or reuse) a citizen and submit an application paid via the
+   * FO-only static bank account. Parked at `awaiting_payment_confirmation`
+   * until a treasurer confirms the uploaded proof.
+   */
+  createStaticAccountApplication: (
+    data: CreateStaticAccountApplicationData,
+  ) => api.post<StaticAccountApplicationResponse>("/field-officer/applications", data),
+
+  /**
+   * POST /field-officer/payments/:paymentId/proof (multipart: `proof` file)
+   * Upload evidence of the transfer. Does NOT confirm the payment.
+   */
+  uploadPaymentProof: (paymentId: string, file: File) => {
+    const formData = new FormData();
+    formData.append("proof", file, file.name);
+    return api.upload<PaymentProofResult>(
+      `/field-officer/payments/${paymentId}/proof`,
+      formData,
+    );
+  },
 };

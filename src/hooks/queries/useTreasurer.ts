@@ -31,7 +31,76 @@ export const treasurerKeys = {
   
   // NEW: Field Officers Keys
   fieldOfficers: (params?: any) => [...treasurerKeys.all, "field-officers", params] as const,
+
+  // Field-officer static-account payment confirmation
+  awaitingConfirmation: (params?: any) =>
+    [...treasurerKeys.all, "awaiting-confirmation", params] as const,
 };
+
+// ============================================================
+// Field-officer static-account payment confirmation hooks
+// ============================================================
+
+export function useAwaitingConfirmation() {
+  const queryClient = useQueryClient();
+
+  const useGetAwaitingConfirmation = (params?: {
+    page?: number;
+    limit?: number;
+  }) => {
+    return useQuery({
+      queryKey: treasurerKeys.awaitingConfirmation(params),
+      queryFn: () => treasurerService.listAwaitingConfirmation(params),
+      staleTime: 15 * 1000, // worklist moves fast — 15s
+    });
+  };
+
+  const confirmPaymentMutation = useMutation({
+    mutationFn: (paymentId: string) =>
+      treasurerService.confirmStaticAccountPayment(paymentId),
+    onSuccess: (data) => {
+      toast.success(
+        `Payment confirmed — receipt ${data.receipt.receiptNumber} issued`,
+      );
+      queryClient.invalidateQueries({
+        queryKey: treasurerKeys.awaitingConfirmation(),
+      });
+      queryClient.invalidateQueries({ queryKey: treasurerKeys.treasuryOverview() });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to confirm payment");
+    },
+  });
+
+  const declinePaymentMutation = useMutation({
+    mutationFn: ({
+      paymentId,
+      reason,
+    }: {
+      paymentId: string;
+      reason: string;
+    }) => treasurerService.declineStaticAccountPayment(paymentId, reason),
+    onSuccess: () => {
+      toast.success("Payment proof declined — application declined");
+      queryClient.invalidateQueries({
+        queryKey: treasurerKeys.awaitingConfirmation(),
+      });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to decline payment");
+    },
+  });
+
+  return {
+    useGetAwaitingConfirmation,
+    confirmPayment: confirmPaymentMutation.mutate,
+    confirmPaymentAsync: confirmPaymentMutation.mutateAsync,
+    isConfirming: confirmPaymentMutation.isPending,
+    declinePayment: declinePaymentMutation.mutate,
+    declinePaymentAsync: declinePaymentMutation.mutateAsync,
+    isDeclining: declinePaymentMutation.isPending,
+  };
+}
 
 // ============================================================
 // NEW: Service Fee Management Hooks

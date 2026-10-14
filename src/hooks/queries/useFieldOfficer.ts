@@ -8,6 +8,7 @@ import {
   RecordPaymentData,
   IssuePermitData,
   ViolationData,
+  CreateStaticAccountApplicationData,
 } from "@/services/apiFieldOfficer";
 import { businessKeys } from "./useBusiness";
 
@@ -18,7 +19,66 @@ export const fieldOfficerKeys = {
   collections: () => [...fieldOfficerKeys.all, "collections"] as const,
   collectionsSummary: () => [...fieldOfficerKeys.all, "collections", "summary"] as const,
   verifyReceipt: (code: string) => [...fieldOfficerKeys.all, "verify", code] as const,
+  staticApplications: () => [...fieldOfficerKeys.all, "static-applications"] as const,
 };
+
+// ============================================================
+// Static-account (bank-transfer) assisted applications
+// ============================================================
+
+export function useStaticAccountApplications() {
+  const queryClient = useQueryClient();
+
+  const createApplicationMutation = useMutation({
+    mutationFn: (data: CreateStaticAccountApplicationData) =>
+      fieldOfficerService.createStaticAccountApplication(data),
+    onSuccess: (data) => {
+      toast.success(
+        `Application ${data.application.applicationNumber} created — awaiting payment confirmation`,
+      );
+      queryClient.invalidateQueries({
+        queryKey: fieldOfficerKeys.staticApplications(),
+      });
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to create application");
+    },
+  });
+
+  const uploadProofMutation = useMutation({
+    mutationFn: ({
+      paymentId,
+      file,
+    }: {
+      paymentId: string;
+      file: File;
+    }) => fieldOfficerService.uploadPaymentProof(paymentId, file),
+    onSuccess: () => {
+      toast.success(
+        "Proof of payment uploaded — awaiting treasurer confirmation",
+      );
+      queryClient.invalidateQueries({
+        queryKey: fieldOfficerKeys.staticApplications(),
+      });
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to upload proof of payment");
+    },
+  });
+
+  return {
+    createStaticAccountApplication: createApplicationMutation.mutate,
+    createStaticAccountApplicationAsync:
+      createApplicationMutation.mutateAsync,
+    isCreatingStaticAccountApplication:
+      createApplicationMutation.isPending,
+    uploadPaymentProof: uploadProofMutation.mutate,
+    uploadPaymentProofAsync: uploadProofMutation.mutateAsync,
+    isUploadingProof: uploadProofMutation.isPending,
+  };
+}
 
 // Business Registration Hooks
 export function useFieldOfficerBusinesses(enabled:boolean) {

@@ -151,6 +151,7 @@ const NAV: Record<Role, { label: string; items: Item[] }[]> = {
       label: "Finance & Revenue",
       items: [
         { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Payment Confirmations", url: "/dashboard/payment-confirmations", icon: Wallet },
         // { title: "Revenue Analytics", url: "/dashboard/reports", icon: BarChart3 },
         { title: "Service Pricing", url: "/dashboard/pricing", icon: Tag },
         // { title: "Trade Permits", url: "/dashboard/permits", icon: Stamp },

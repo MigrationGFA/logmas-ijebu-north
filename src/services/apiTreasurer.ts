@@ -411,6 +411,59 @@ export interface PaginatedResponse<T> {
   };
 }
 
+// ============================================================
+// Field-officer static-account payment confirmation
+// ============================================================
+
+export interface AwaitingConfirmationPayment {
+  id: string;
+  amount: number;
+  status: string;
+  matchStatus: string | null;
+  reference: string | null;
+  proofUrl: string | null;
+  proofUploadedAt: string | null;
+  proofUploadedBy: { id: string; firstName: string; lastName: string } | null;
+  createdAt: string;
+}
+
+export interface AwaitingConfirmationApplication {
+  id: string;
+  applicationNumber: string;
+  status: string;
+  fullName: string;
+  email: string;
+  phone: string | null;
+  createdAt: string;
+  service: { id: string; name: string; code: string };
+  applicant: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string | null;
+  } | null;
+  createdBy: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+  } | null;
+  invoice: {
+    id: string;
+    invoiceNumber: string;
+    amount: number;
+    payments: AwaitingConfirmationPayment[];
+  } | null;
+}
+
+export interface ConfirmStaticAccountResult {
+  confirmedPayment: { id: string; status: string; confirmedAt: string | null };
+  updatedInvoice: { id: string; paymentStatus: string; paidAt: string | null };
+  receipt: { id: string; receiptNumber: string };
+  updatedApplication: { id: string; status: string };
+}
+
 // Service functions
 export const treasurerService = {
   // ============================================================
@@ -469,6 +522,39 @@ export const treasurerService = {
   }) =>
     api.get<FieldOfficersResponse>("/treasurer/field-officers", { params }),
 
+  // ============================================================
+  // Field-officer static-account payment confirmation
+  // ============================================================
+
+  /**
+   * GET /treasurer/applications/awaiting-confirmation
+   * Worklist of applications parked at `awaiting_payment_confirmation`.
+   */
+  listAwaitingConfirmation: (params?: { page?: number; limit?: number }) =>
+    api.get<PaginatedResponse<AwaitingConfirmationApplication>>(
+      "/treasurer/applications/awaiting-confirmation",
+      { params },
+    ),
+
+  /**
+   * PATCH /treasurer/payments/:paymentId/confirm
+   * Confirm the payment, settle the invoice, issue a receipt and release the
+   * application back to `submitted`.
+   */
+  confirmStaticAccountPayment: (paymentId: string) =>
+    api.patch<ConfirmStaticAccountResult>(
+      `/treasurer/payments/${paymentId}/confirm`,
+    ),
+
+  /**
+   * PATCH /treasurer/payments/:paymentId/decline
+   * Reject the submitted proof; the application is declined with the reason.
+   */
+  declineStaticAccountPayment: (paymentId: string, reason: string) =>
+    api.patch<{ updatedPayment: unknown; updatedApplication: unknown }>(
+      `/treasurer/payments/${paymentId}/decline`,
+      { reason },
+    ),
 
   // ============================================================
   // EXISTING: Revenue Analytics (kept as-is)
