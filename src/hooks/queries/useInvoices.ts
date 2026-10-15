@@ -7,7 +7,7 @@ import {
   type InvoiceStatus,
 } from "@/services/apiInvoice";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import {
   clearPendingPayment,
@@ -244,7 +244,8 @@ export function useInvoicePayment(
  * Authenticated citizen flow for the 15-minute auto-confirming dynamic virtual
  * account, used on the invoice detail page (parity with the public apply
  * widget's "Bank transfer" tab). The webhook is the primary settlement signal;
- * a gentle 5s poll keeps the page live while the citizen watches the countdown.
+ * the "Check status" button is the manual fallback (no auto-poll, to stay
+ * inside the verify-endpoint rate limit).
  */
 export function useInvoiceDynamicPayment(
   invoiceId: string,
@@ -257,14 +258,7 @@ export function useInvoiceDynamicPayment(
     null,
   );
   const [isCheckingDynamic, setIsCheckingDynamic] = useState(false);
-  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const stopDynamicPoll = () => {
-    if (pollRef.current) {
-      clearInterval(pollRef.current);
-      pollRef.current = null;
-    }
-  };
 
   const invalidate = () => {
     queryClient.invalidateQueries({
@@ -279,13 +273,11 @@ export function useInvoiceDynamicPayment(
     try {
       const result = await invoicesService.verifyDynamicPayment(reference);
       if (result.status === "confirmed") {
-        stopDynamicPoll();
         toast.success("Payment confirmed — refreshing your invoice...");
         invalidate();
         return true;
       }
       if (result.status === "failed" || result.status === "expired") {
-        stopDynamicPoll();
         setDynamicAccountError(
           "This transfer account has expired. Please generate a new one.",
         );
@@ -310,17 +302,12 @@ export function useInvoiceDynamicPayment(
       return;
     }
     setDynamicAccountError(null);
-    stopDynamicPoll();
     try {
       const va = await invoicesService.createDynamicInvoicePayment(
         invoiceNumber,
       );
       setDynamicAccount(va);
       toast.success("Transfer account ready — it expires in 15 minutes.");
-      stopDynamicPoll();
-      pollRef.current = setInterval(() => {
-        void pollDynamicStatus(va.reference);
-      }, 5000);
     } catch (err: any) {
       console.error("Dynamic account creation failed:", err);
       const msg =
@@ -332,14 +319,11 @@ export function useInvoiceDynamicPayment(
   };
 
   const resetDynamic = () => {
-    stopDynamicPoll();
     setDynamicAccount(null);
     setDynamicAccountError(null);
   };
 
-  useEffect(() => {
-    return () => stopDynamicPoll();
-  }, []);
+
 
   return {
     dynamicAccount,

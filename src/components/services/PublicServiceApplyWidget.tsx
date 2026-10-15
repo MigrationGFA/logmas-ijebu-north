@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo, useRef, Suspense } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { useServices } from "@/hooks/queries/useServices";
 import {
@@ -93,7 +93,6 @@ function PublicServiceApplyWidgetInner({
   const [dynamicAccountError, setDynamicAccountError] = useState("");
   const [isCreatingDynamic, setIsCreatingDynamic] = useState(false);
   const [isCheckingDynamic, setIsCheckingDynamic] = useState(false);
-  const dynamicPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Sync state when URL serviceId or initialServiceId changes
   useEffect(() => {
@@ -362,12 +361,6 @@ function PublicServiceApplyWidgetInner({
   };
 
   // ── Dynamic transfer-account handlers ────────────────────────────────────
-  const stopDynamicPoll = () => {
-    if (dynamicPollRef.current) {
-      clearInterval(dynamicPollRef.current);
-      dynamicPollRef.current = null;
-    }
-  };
 
   // Poll the gateway for settlement of the minted dynamic account. On confirm
   // we redirect to the shared result page — settlement (invoice/receipt/portal
@@ -376,7 +369,6 @@ function PublicServiceApplyWidgetInner({
     try {
       const result = await invoicesService.verifyDynamicPayment(reference);
       if (result.status === "confirmed") {
-        stopDynamicPoll();
         toast.success("Payment confirmed — preparing your receipt...");
         window.location.href = `/payment/result?reference=${encodeURIComponent(
           reference,
@@ -384,7 +376,6 @@ function PublicServiceApplyWidgetInner({
         return true;
       }
       if (result.status === "failed" || result.status === "expired") {
-        stopDynamicPoll();
         setDynamicAccountError(
           "This transfer account has expired. Please generate a new one.",
         );
@@ -406,7 +397,6 @@ function PublicServiceApplyWidgetInner({
   const handleStartDynamicTransfer = async () => {
     setFormError("");
     setDynamicAccountError("");
-    stopDynamicPoll();
 
     // If we already minted an account and its 15-min timer lapsed, re-check it
     // BEFORE creating a new one. Money sent into an expired account is NOT lost
@@ -443,11 +433,6 @@ function PublicServiceApplyWidgetInner({
       stashPendingPayment(va.reference, "gpay");
       sessionStorage.setItem("publicPaymentServiceId", serviceId);
       toast.success("Transfer account ready — it expires in 15 minutes.");
-      // Gentle auto-poll (webhook is primary; this keeps the page live).
-      stopDynamicPoll();
-      dynamicPollRef.current = setInterval(() => {
-        void pollDynamicStatus(va.reference);
-      }, 5000);
     } catch (err: any) {
       console.error("Dynamic account creation failed:", err);
       const msg =
@@ -461,15 +446,8 @@ function PublicServiceApplyWidgetInner({
     }
   };
 
-  // Stop polling when the dialog closes or the component unmounts.
-  useEffect(() => {
-    if (!isReviewOpen) stopDynamicPoll();
-    return () => stopDynamicPoll();
-  }, [isReviewOpen]);
-
   // A minted account is tied to one amount; reset it if the service changes.
   useEffect(() => {
-    stopDynamicPoll();
     setDynamicAccount(null);
     setDynamicAccountError("");
   }, [selectedServiceId]);
