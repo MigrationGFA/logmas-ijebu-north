@@ -59,8 +59,6 @@ export interface InvoiceDetails {
   invoiceNumber: string;
   status: InvoiceStatus;
 
-
-
   issuedAt: string;
   dueDate: string;
   paidAt: string | null;
@@ -73,9 +71,36 @@ export interface InvoiceDetails {
   subtotal: number;
   penaltyAmount: number;
 
+  // Additional fields used by invoice detail page
+  amount: number;
+  paymentStatus: string;
+  createdAt: string;
+
   // Customer
   customerName: string;
   customerPhone: string | null;
+
+  // Amounts
+  totalAmount: number;
+  amountPaid: number;
+  balanceDue: number;
+  subtotal: number;
+  penaltyAmount: number;
+
+  // Customer
+  customerName: string;
+  customerPhone: string | null;
+
+  // Application reference
+  application: {
+    id: string;
+    applicationNumber: string;
+    applicantId: string;
+    formData?: any;
+    applicant?: any;
+    service?: any;
+    ward?: any;
+  } | null;
 
   // Levy details
   levyType: string;
@@ -92,6 +117,9 @@ export interface InvoiceDetails {
 
   // Receipt (null until paid)
   receipt: Receipt | null;
+
+  // Receipts list
+  receipts: { id: string; receiptNumber: string }[];
 
   // Permit (null if not a permit invoice)
   permit: Permit | null;

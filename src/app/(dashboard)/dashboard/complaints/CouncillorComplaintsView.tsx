@@ -140,7 +140,7 @@ function CouncillorComplaintsView({ readOnly }: { readOnly: boolean }) {
                   <TableCell className="text-right">
                     <Button size="sm" variant="ghost" onClick={() => setSelectedId(complaint.id)}>
                       <MessageSquare className="h-3.5 w-3.5 mr-1" />
-                      {complaint.responses?.length > 0 ? "View" : "Respond"}
+                      {(complaint.responses?.length ?? 0) > 0 ? "View" : "Respond"}
                     </Button>
                   </TableCell>
                 </TableRow>

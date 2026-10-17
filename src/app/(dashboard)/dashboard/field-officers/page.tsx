@@ -203,7 +203,7 @@ export default function FieldOfficersPage() {
                       </div>
                     </div>
                   </TableCell>
-                  <TableCell>{officer.ward}</TableCell>
+                  <TableCell>{officer.ward?.name || "-"}</TableCell>
                   <TableCell>
                     {/* <div className="flex flex-wrap gap-1">
                       {officer.levies.slice(0, 2).map((levy: string) => (
@@ -218,7 +218,7 @@ export default function FieldOfficersPage() {
                       )}
                     </div> */}
                   </TableCell>
-                  <TableCell className="font-mono text-sm">{officer.invoicesIssued}</TableCell>
+                  <TableCell className="font-mono text-sm">{officer.totalCollected}</TableCell>
                   <TableCell className="font-mono text-sm">
                     {/* ₦{officer.totalCollected.toLocaleString()} */}
                   </TableCell>
@@ -236,7 +236,7 @@ export default function FieldOfficersPage() {
                       {officer.status}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-xs text-muted-foreground">{officer.createdBy}</TableCell>
+                  <TableCell className="text-xs text-muted-foreground">{officer.createdBy?.name || "-"}</TableCell>
                   {/* <TableCell className="text-right">
                     {canManage ? (
                       <OfficerActions 

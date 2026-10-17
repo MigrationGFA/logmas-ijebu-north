@@ -256,7 +256,7 @@ const issuedDate = cert.updatedAt
                 style={{ fontFamily: "'EB Garamond', serif" }}
               >
                 <p>
-                  is a registered business operating in <span className="font-semibold">{cert.business.ward?.name || LGA_CONFIG.identity.name}</span>{" "}
+                  is a registered business operating in <span className="font-semibold">{cert.business.wardId || LGA_CONFIG.identity.name}</span>{" "}
                   Ward, within the <span className="font-semibold">Local Government Area</span> of{" "}
                   <span className="font-semibold">Ogun State</span>, and is duly licensed to engage in{" "}
                   <span className="font-semibold">{categoryDisplay}</span> activities in accordance with the Local
@@ -273,7 +273,7 @@ const issuedDate = cert.updatedAt
 
               <p className="mt-4 text-[12px] text-[#6B6558]">
                 Issued this {issuedDate} · Certificate No.{" "}
-                <span className="font-mono font-semibold text-[#221D17]">{cert.certificateNumber || cert.permitNumber}</span>
+                <span className="font-mono font-semibold text-[#221D17]">{cert.permitNumber}</span>
               </p>
             </div>
 

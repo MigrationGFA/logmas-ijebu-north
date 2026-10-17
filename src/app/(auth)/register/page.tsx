@@ -58,7 +58,7 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const { registerAsync: registerUser } = useAuth();
   const navigate = useRouter();
-  const [isAnimating, setIsAnimating] = useState(null);
+  const [isAnimating, setIsAnimating] = useState<boolean | null>(null);
   const [step, setStep] = useState(1);
   const isAnimatingRef = useRef(false);
 

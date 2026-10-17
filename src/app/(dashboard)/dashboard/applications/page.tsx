@@ -578,7 +578,7 @@ export default function ApplicationsPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        window.open(getPublicCertificateUrl(app?.certificate.certificateNumber), "_blank");
+                        window.open(getPublicCertificateUrl(app?.certificate?.certificateNumber!), "_blank");
                       }}
                       className="text-xs h-8 gap-1.5 border-emerald-400 text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 font-semibold"
                     >
