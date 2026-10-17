@@ -379,10 +379,22 @@ function PublicServiceApplyWidgetInner({
         setDynamicAccountError(
           "This transfer account has expired. Please generate a new one.",
         );
+        toast.error(
+          "No confirmed payment on this account yet. If you already transferred, the bank may still be processing — try again shortly or generate a new account.",
+        );
         return false;
       }
+      // Still pending — say so explicitly. A silent return makes the button
+      // look like it did nothing.
+      toast.info(
+        "Your transfer has not settled yet. Bank transfers can take a few minutes — tap \"I have paid\" again after a while.",
+      );
+      return false;
     } catch (err: any) {
       console.error("Dynamic payment poll failed:", err);
+      toast.error(
+        "Could not verify the payment just now. Please check your connection and try again.",
+      );
     }
     return false;
   };

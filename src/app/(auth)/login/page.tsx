@@ -54,7 +54,7 @@ function LoginPage() {
   useEffect(() => {
     if (reason === "suspended") {
       toast.error(
-        "Your account has been suspended. Please contact Odeda LGA Secretariat.",
+        `Your account has been suspended. Please contact ${LGA_CONFIG.identity.name} LGA Secretariat.`,
       );
     } else if (reason === "unverified") {
       const message = emailParam
@@ -178,7 +178,7 @@ function LoginPage() {
           </div>
         </div>
         <div className="relative text-xs opacity-70">
-          © {new Date().getFullYear()} Odeda LGA
+          © {new Date().getFullYear()} {LGA_CONFIG.identity.name} LGA
         </div>
       </div>
 

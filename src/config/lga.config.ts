@@ -182,6 +182,57 @@ export interface LgaWardConfig {
   description?: string;
 }
 
+export interface LgaContentConfig {
+  /** Homepage "at a glance" statistics */
+  stats: {
+    landArea: string;
+    landAreaTrend: string;
+    primarySector: string;
+    primarySectorTrend: string;
+  };
+  /** Citizen testimonials on the marketing pages */
+  testimonials: { name: string; role: string; quote: string }[];
+  /** News / announcement teasers */
+  news: { date: string; tag: string; title: string }[];
+  /** Decorative ward map dataset (positions are relative 0-100 coordinates) */
+  wardsInfo: {
+    name: string;
+    x: number;
+    y: number;
+    population: string;
+    feature: string;
+    accent: string;
+  }[];
+  /** Careers / vacancies listings */
+  careers: {
+    id: string;
+    title: string;
+    dept: string;
+    location: string;
+    type: string;
+    deadline: string;
+  }[];
+  /** Photo gallery captions */
+  gallery: { id: string; title: string; category: string; image: string }[];
+  /** Investment promotion cards */
+  investOpps: {
+    title: string;
+    sector: string;
+    location: string;
+    desc: string;
+    icon: string;
+    roi: string;
+  }[];
+  /** Tourism / heritage cards */
+  tourism: {
+    title: string;
+    location: string;
+    category: string;
+    desc: string;
+    tag: string;
+  }[];
+}
+
 export interface LgaPlatformConfig {
   name: string;
   fullName: string;
@@ -197,6 +248,7 @@ export interface LgaConfiguration {
   certificates: LgaCertificateConfig;
   branding: LgaBrandingConfig;
   wards: LgaWardConfig[];
+  content: LgaContentConfig;
 }
 
 /**
@@ -359,6 +411,202 @@ export const LGA_CONFIG: LgaConfiguration = {
     { id: "ward-9", name: "Ward 9 (Boluwaji)", code: "W09", description: "Rural Development Zone" },
     { id: "ward-10", name: "Ward 10 (Obete)", code: "W10", description: "Eastern Farming Communities" },
   ],
+
+  content: {
+    stats: {
+      landArea: "1,560 km2",
+      landAreaTrend: "Agricultural Hub",
+      primarySector: "Quarry & Farming",
+      primarySectorTrend: "#1 Granite & Cassava",
+    },
+
+    testimonials: [
+      {
+        name: "Farmer Samuel Adebiyi",
+        role: "Cassava Producer, Osiele Ward",
+        quote:
+          "Registering my agricultural farm and getting my certificate was fast and smooth on LOGMAS.",
+      },
+      {
+        name: "Mrs. Toyin Ogunyemi",
+        role: "Business Owner, Obantoko",
+        quote: "I paid my trade permit and liquor licence online and received my QR receipt instantly.",
+      },
+      {
+        name: "Engr. Timothy Olalere",
+        role: "Quarry Operator",
+        quote: "LOGMAS makes haulage and quarry permit payments transparent for our fleet drivers.",
+      },
+    ],
+
+    news: [
+      {
+        date: "12 May 2026",
+        tag: "Announcement",
+        title: "Odeda LOGMAS Service Expansion Portal Goes Live Across All 10 Wards",
+      },
+    ],
+
+    careers: [
+      {
+        id: "1",
+        title: "Revenue Collection Officer",
+        dept: "Finance & Treasury",
+        location: "Odeda Secretariat",
+        type: "Full-Time",
+        deadline: "30 Sep 2026",
+      },
+      {
+        id: "2",
+        title: "Environmental Health Inspector",
+        dept: "Health & Sanitation",
+        location: "Obantoko Ward",
+        type: "Full-Time",
+        deadline: "04 Oct 2026",
+      },
+      {
+        id: "3",
+        title: "Agricultural Extension Officer",
+        dept: "Agriculture",
+        location: "Osiele / Alagbagba",
+        type: "Full-Time",
+        deadline: "12 Oct 2026",
+      },
+    ],
+
+    wardsInfo: [
+      {
+        name: "Odeda",
+        x: 50,
+        y: 42,
+        population: "38,400",
+        feature: "LGA headquarters & administrative council secretariat",
+        accent: "primary",
+      },
+      {
+        name: "Obantoko",
+        x: 36,
+        y: 30,
+        population: "45,900",
+        feature: "Major urban commercial center & residential hub",
+        accent: "success",
+      },
+      {
+        name: "Ilugun",
+        x: 64,
+        y: 32,
+        population: "24,200",
+        feature: "Agricultural & timber belt community",
+        accent: "gold",
+      },
+      {
+        name: "Balogun Itesi",
+        x: 72,
+        y: 52,
+        population: "19,800",
+        feature: "Rural farming settlements & cassava production",
+        accent: "info",
+      },
+      {
+        name: "Alagbagba",
+        x: 28,
+        y: 56,
+        population: "18,300",
+        feature: "Granite quarry sites & haulage route",
+        accent: "success",
+      },
+      {
+        name: "Osiele",
+        x: 44,
+        y: 68,
+        population: "36,700",
+        feature: "Educational corridor & Federal College of Education area",
+        accent: "warning",
+      },
+      {
+        name: "Alabata",
+        x: 80,
+        y: 74,
+        population: "21,600",
+        feature: "Poultry, livestock & cassava processing zone",
+        accent: "warning",
+      },
+      {
+        name: "Olodo",
+        x: 20,
+        y: 18,
+        population: "26,800",
+        feature: "Farming communities & feeder road connectivity",
+        accent: "primary",
+      },
+      {
+        name: "Obete",
+        x: 60,
+        y: 16,
+        population: "22,400",
+        feature: "Rural settlement cluster & agro-processing zone",
+        accent: "gold",
+      },
+      {
+        name: "Opeji",
+        x: 82,
+        y: 36,
+        population: "17,900",
+        feature: "Forest-edge settlement & export crop production",
+        accent: "info",
+      },
+    ],
+
+    gallery: [
+      { id: "1", title: "Odeda Local Government Secretariat Complex", category: "Infrastructure", image: "/assets/banner5.png" },
+      { id: "2", title: "Osiele Modern Market Opening", category: "Commerce", image: "/assets/banner2.png" },
+      { id: "3", title: "Quarry Inspection & Mining Facilities", category: "Industry", image: "/assets/banner1.png" },
+    ],
+
+    investOpps: [
+      {
+        title: "Granite & Quarry Mining Expansion",
+        sector: "Solid Minerals",
+        location: "Alagbagba & Ilugun Wards",
+        desc: "High yield granite reserves with direct proximity to Abeokuta-Lagos expressways.",
+        icon: "Pickaxe",
+        roi: "23%",
+      },
+      {
+        title: "Commercial Cassava Processing Plants",
+        sector: "Agro-Allied Industry",
+        location: "Odeda & Olugbo Wards",
+        desc: "Abundant cassava farm supply for ethanol, starch, and flour production.",
+        icon: "Sprout",
+        roi: "19%",
+      },
+      {
+        title: "Student Housing & Estate Development",
+        sector: "Real Estate",
+        location: "Camp / FUNAAB Corridor",
+        desc: "High demand for modern student apartments and commercial shopping complexes.",
+        icon: "Building2",
+        roi: "17%",
+      },
+    ],
+
+    tourism: [
+      {
+        title: "Arakanga Forest Reserve & Eco-Park",
+        location: "Odeda Local Government Area",
+        category: "Eco-Tourism",
+        desc: "Lush tropical vegetation, wildlife conservation, and serene hiking trails.",
+        tag: "Eco-Tourism",
+      },
+      {
+        title: "Olugbo Traditional Chieftaincy Heritage",
+        location: "Olugbo Ward",
+        category: "Cultural Heritage",
+        desc: "Rich ancestral Yoruba history and traditional festivals.",
+        tag: "Culture",
+      },
+    ],
+  },
 };
 
 /**

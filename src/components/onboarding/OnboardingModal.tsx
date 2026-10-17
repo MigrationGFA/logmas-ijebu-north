@@ -236,7 +236,7 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
           <div className="flex items-center gap-2 mb-1 text-primary">
             <ShieldCheck className="h-5 w-5" />
             <span className="text-xs uppercase tracking-wider font-semibold">
-              Odeda LGA Citizen Registry
+              {LGA_CONFIG.identity.name} LGA Citizen Registry
             </span>
           </div>
           <DialogTitle className="text-xl sm:text-2xl font-bold">
@@ -402,7 +402,7 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
                 name="town"
                 control={control}
                 render={({ field }) => (
-                  <Input {...field} id="town" placeholder="e.g. Osiele, Odeda, Ilugun" className="mt-1.5" />
+                  <Input {...field} id="town" placeholder="e.g. Town, Village, District" className="mt-1.5" />
                 )}
               />
               {errors.town && (
@@ -565,7 +565,7 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
                     <Input
                       {...field}
                       id="businessName"
-                      placeholder="e.g. Odeda LGA Agro Allied Enterprises"
+                      placeholder="e.g. Sunrise Agro Allied Enterprises"
                       className="mt-1.5"
                     />
                   )}

@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 export default function PayPage({params}:{params:Promise<{ id: string }>}) {
   const { id } = React.use(params);
   const router = useRouter();
-  const { initializeOnlinePayment, isInitializingPayment } = useInvoicePayment(id);
+  const { initializeOnlinePayment, isInitializingPayment } = useInvoicePayment(id, id);
 
   useEffect(() => {
     // Trigger the payment flow as soon as the page loads

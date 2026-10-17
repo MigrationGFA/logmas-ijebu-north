@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import {
   AlertCircle,
-  Banknote,
   CheckCircle2,
   Clock,
   Copy,
@@ -36,6 +35,7 @@ import {
   type PaymentProvider,
 } from "@/config/paymentGateway";
 import type { DynamicVirtualAccount } from "@/services/apiInvoice";
+import { QRCodeSVG } from "@/components/dashboard/qr-code";
 
 /** Live mm:ss countdown to an ISO expiry. Turns red under 60s. */
 function ExpiryCountdown({ expiresAt }: { expiresAt: string }) {
@@ -86,15 +86,6 @@ export interface VirtualAccountDetails {
   invoiceNumber?: string | null;
 }
 
-/**
- * Dedicated account support stays gated until the gateway can provision a
- * unique account per payment AND reconcile it back to the application.
- * Showing a shared treasury number before that exists would mean a citizen
- * pays a statutory fee and nothing happens.
- */
-const VIRTUAL_ACCOUNTS_ENABLED =
-  process.env.NEXT_PUBLIC_GPAY_VIRTUAL_ACCOUNTS === "true";
-
 export interface PaymentReviewDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -137,7 +128,6 @@ export function PaymentReviewDialog({
   fee,
   provider,
   isProcessing,
-  virtualAccount,
   dynamicAccount,
   isCreatingDynamicAccount,
   dynamicAccountError,
@@ -146,18 +136,15 @@ export function PaymentReviewDialog({
   isCheckingDynamicStatus,
   onCheckout,
   onEditDetails,
-  onCheckTransferStatus,
 }: PaymentReviewDialogProps) {
   const [confirmEmail, setConfirmEmail] = useState("");
   const [confirmError, setConfirmError] = useState("");
-  const [copied, setCopied] = useState(false);
 
   // Start from a clean slate every time the dialog is opened.
   useEffect(() => {
     if (open) {
       setConfirmEmail("");
       setConfirmError("");
-      setCopied(false);
     }
   }, [open]);
 
@@ -182,31 +169,35 @@ export function PaymentReviewDialog({
     onCheckout();
   };
 
+  // Instant transfer mints a real, amount-bound account and the receipt is
+  // emailed to the applicant — so it gets the same email-confirmation gate as
+  // checkout. A payer who skipped the field gets a pointer back to it.
+  const handleStartDynamic = () => {
+    if (!emailsMatch) {
+      setConfirmError(
+        "Confirm your email address above before generating a transfer account. Your receipt and login details are matched to this address.",
+      );
+      return;
+    }
+    onStartDynamicTransfer?.();
+  };
+
+  // Ticks once a second while a minted account is displayed so a lapsed 15-min
+  // account can offer "Generate new account" instead of a dead countdown.
+  const [now, setNow] = useState(() => Date.now());
+  useEffect(() => {
+    if (!open || !dynamicAccount) return;
+    setNow(Date.now());
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [open, dynamicAccount]);
+  const dynamicExpired =
+    !!dynamicAccount &&
+    new Date(dynamicAccount.expiresAt).getTime() <= now;
+
   const handleClose = () => {
     if (isProcessing) return;
     onOpenChange(false);
-  };
-
-  const copyAccountNumber = async () => {
-    if (!virtualAccount) return;
-    try {
-      await navigator.clipboard.writeText(virtualAccount.accountNumber);
-      setCopied(true);
-      toast.success("Account number copied");
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      toast.error("Could not copy. Please write the number down manually.");
-    }
-  };
-
-  const copyReference = async () => {
-    if (!virtualAccount) return;
-    try {
-      await navigator.clipboard.writeText(virtualAccount.reference);
-      toast.success("Transfer reference copied");
-    } catch {
-      toast.error("Could not copy. Please write the reference down manually.");
-    }
   };
 
   const copyDynamic = async (text: string, message: string) => {
@@ -235,7 +226,11 @@ export function PaymentReviewDialog({
       open={open}
       onOpenChange={(next) => (next ? onOpenChange(true) : handleClose())}
     >
-      <DialogContent className="max-w-xl max-h-[92vh] overflow-y-auto">
+      <DialogContent
+        className="max-w-xl max-h-[92vh] overflow-y-auto"
+        onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
+      >
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileCheck2 className="h-5 w-5 text-primary" />
@@ -334,9 +329,6 @@ export function PaymentReviewDialog({
               <TabsTrigger value="auto" className="flex-1">
                 <Zap className="mr-1.5 h-4 w-4" /> Bank transfer
               </TabsTrigger>
-              <TabsTrigger value="transfer" className="flex-1">
-                <Banknote className="mr-1.5 h-4 w-4" /> Other bank
-              </TabsTrigger>
             </TabsList>
 
             <TabsContent
@@ -358,6 +350,25 @@ export function PaymentReviewDialog({
                 <Lock className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
                 256-bit encrypted checkout.
               </div>
+              <Button
+                type="button"
+                onClick={handleCheckout}
+                disabled={isProcessing}
+                className="w-full bg-gradient-hero text-primary-foreground font-semibold shadow-elegant"
+              >
+                {isProcessing ? (
+                  <>
+                    <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                    Contacting {PAYMENT_PROVIDER_LABELS[provider]}...
+                  </>
+                ) : (
+                  <>
+                    <CreditCard className="mr-2 h-4 w-4" />
+                    Continue to secure checkout
+                    <Lock className="ml-2 h-4 w-4" />
+                  </>
+                )}
+              </Button>
             </TabsContent>
 
             <TabsContent
@@ -382,7 +393,7 @@ export function PaymentReviewDialog({
                     type="button"
                     variant="outline"
                     className="w-full"
-                    onClick={onStartDynamicTransfer}
+                    onClick={handleStartDynamic}
                     disabled={isProcessing}
                   >
                     <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Try again
@@ -390,6 +401,41 @@ export function PaymentReviewDialog({
                 </>
               ) : dynamicAccount ? (
                 <>
+                {dynamicExpired ? (
+                  <div className="rounded-lg border border-amber-500/50 bg-amber-50 p-3 space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                      <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
+                      This transfer account has expired
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      The 15-minute window has closed. Generate a new account to
+                      continue. If you already sent money to the expired
+                      account, it is still reconciled automatically — we check
+                      it for settlement before minting the new one.
+                    </p>
+                    {onStartDynamicTransfer ? (
+                      <Button
+                        type="button"
+                        className="w-full bg-gradient-hero text-primary-foreground font-semibold shadow-elegant"
+                        onClick={handleStartDynamic}
+                        disabled={isProcessing || isCreatingDynamicAccount}
+                      >
+                        {isCreatingDynamicAccount ? (
+                          <>
+                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
+                            Checking your previous transfer...
+                          </>
+                        ) : (
+                          <>
+                            <RefreshCw className="mr-1.5 h-4 w-4" /> Generate
+                            new account
+                          </>
+                        )}
+                      </Button>
+                    ) : null}
+                  </div>
+                ) : (
+                  <>
                 <div className="flex items-center justify-between gap-2">
                   <div className="text-xs uppercase tracking-wider text-muted-foreground">
                     Transfer to this account
@@ -454,11 +500,21 @@ export function PaymentReviewDialog({
 
                 {dynamicAccount.qrCode ? (
                   <div className="rounded-lg border border-border/60 p-3 text-center">
-                    <img
-                      src={dynamicAccount.qrCode}
-                      alt="Scan to pay (NQR)"
-                      className="mx-auto h-28 w-28 object-contain"
-                    />
+                    {/^(https?:|data:image\/)/i.test(dynamicAccount.qrCode) ? (
+                      <img
+                        src={dynamicAccount.qrCode}
+                        alt="Scan to pay (NQR)"
+                        className="mx-auto h-28 w-28 object-contain"
+                      />
+                    ) : (
+                      // GPay returned the raw EMVCo NQR string rather than an
+                      // image URL — render it with the shared QR component.
+                      <QRCodeSVG
+                        value={dynamicAccount.qrCode}
+                        size={112}
+                        className="mx-auto"
+                      />
+                    )}
                     <p className="mt-1 text-[11px] text-muted-foreground">
                       Scan this NQR code with your bank app to pay.
                     </p>
@@ -522,6 +578,8 @@ export function PaymentReviewDialog({
                   </Button>
                 ) : null}
                 </>
+                )}
+                </>
               ) : (
                 <>
                   <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
@@ -541,7 +599,7 @@ export function PaymentReviewDialog({
                     <Button
                       type="button"
                       className="w-full bg-gradient-hero text-primary-foreground font-semibold shadow-elegant"
-                      onClick={onStartDynamicTransfer}
+                      onClick={handleStartDynamic}
                       disabled={isProcessing || isCreatingDynamicAccount}
                     >
                       {isCreatingDynamicAccount ? (
@@ -560,109 +618,6 @@ export function PaymentReviewDialog({
                 </>
               )}
             </TabsContent>
-
-            <TabsContent
-              value="transfer"
-              className="p-4 rounded-lg border border-border/60 bg-background space-y-3"
-            >
-              {virtualAccount ? (
-                <>
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Transfer to the LGA treasury account below
-                  </div>
-                  <div className="flex items-center justify-between gap-2">
-                    <div>
-                      <div className="text-2xl font-mono font-bold">
-                        {virtualAccount.accountNumber}
-                      </div>
-                      <div className="text-xs text-muted-foreground mt-1">
-                        {virtualAccount.bankName} &bull;{" "}
-                        {virtualAccount.accountName}
-                      </div>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={copyAccountNumber}
-                    >
-                      {copied ? (
-                        <CheckCircle2 className="mr-1.5 h-3.5 w-3.5 text-emerald-600" />
-                      ) : (
-                        <Copy className="mr-1.5 h-3.5 w-3.5" />
-                      )}
-                      Copy
-                    </Button>
-                  </div>
-
-                  <dl className="divide-y divide-border/40 rounded-lg border border-border/60">
-                    <div className="flex items-center justify-between px-3 py-2 text-xs">
-                      <dt className="text-muted-foreground">Amount to pay</dt>
-                      <dd className="font-semibold text-foreground">
-                        &#8358;
-                        {(
-                          virtualAccount.expectedAmount ?? virtualAccount.amount
-                        ).toLocaleString()}
-                      </dd>
-                    </div>
-                    <div className="flex items-center justify-between gap-2 px-3 py-2 text-xs">
-                      <dt className="text-muted-foreground">
-                        Transfer reference
-                      </dt>
-                      <dd className="flex items-center gap-2">
-                        <span className="font-mono font-semibold text-foreground">
-                          {virtualAccount.reference}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={copyReference}
-                          className="inline-flex items-center gap-1 rounded-md border border-border/60 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                        >
-                          <Copy className="h-3 w-3" /> Copy
-                        </button>
-                      </dd>
-                    </div>
-                    {virtualAccount.invoiceNumber ? (
-                      <div className="flex items-center justify-between px-3 py-2 text-xs">
-                        <dt className="text-muted-foreground">
-                          Invoice number
-                        </dt>
-                        <dd className="font-mono font-semibold text-foreground">
-                          {virtualAccount.invoiceNumber}
-                        </dd>
-                      </div>
-                    ) : null}
-                  </dl>
-                  <p className="text-xs text-muted-foreground">
-                    Quote this reference in your transfer narration. After you
-                    transfer, an LGA treasurer confirms the payment and your
-                    receipt follows — bank transfers are not auto-confirmed.
-                  </p>
-                  {onCheckTransferStatus ? (
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="w-full"
-                      onClick={onCheckTransferStatus}
-                    >
-                      I have made payment — check status
-                    </Button>
-                  ) : null}
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
-                    Bank transfer is not available for this payment yet
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {VIRTUAL_ACCOUNTS_ENABLED
-                      ? "We could not provision a dedicated account for this payment. Please use the online option, or visit the Odeda LGA Treasury office with your receipt."
-                      : "A dedicated account that we can automatically match to your application is still being enabled with our payment provider. Please pay with the card/USSD option instead, or visit the Odeda LGA Treasury office with your receipt."}
-                  </p>
-                </>
-              )}
-            </TabsContent>
           </Tabs>
         </div>
 
@@ -674,25 +629,6 @@ export function PaymentReviewDialog({
             disabled={isProcessing}
           >
             <Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit details
-          </Button>
-          <Button
-            type="button"
-            onClick={handleCheckout}
-            disabled={isProcessing}
-            className="bg-gradient-hero text-primary-foreground font-semibold shadow-elegant"
-          >
-            {isProcessing ? (
-              <>
-                <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                Contacting {PAYMENT_PROVIDER_LABELS[provider]}...
-              </>
-            ) : (
-              <>
-                <CreditCard className="mr-2 h-4 w-4" />
-                Continue to secure checkout
-                <Lock className="ml-2 h-4 w-4" />
-              </>
-            )}
           </Button>
         </DialogFooter>
       </DialogContent>

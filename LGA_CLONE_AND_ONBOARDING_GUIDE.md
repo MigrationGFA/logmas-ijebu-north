@@ -1,224 +1,220 @@
-# NEW LGA CLONE & ONBOARDING GUIDE
+# NEW LGA CLONE & ONBOARDING GUIDE (v2)
 
-> **Context for AI Agents & Developers in a New Chat Session:**
-> This guide outlines how to clone and configure this LOGMAS repository for **any new Local Government Area (LGA) in Nigeria** (e.g., Kosofe LGA, Ikeja LGA, Alimosho LGA, Abeokuta South LGA, Port Harcourt City, etc.) in under 15 minutes.
-> 
-> Thanks to the centralized configuration architecture, **over 90% of LGA-specific details are controlled by a single file: `src/config/lga.config.ts`**.
-
----
-
-## 1. The Core Architecture: Single Source of Truth
-
-The entire platform pulls council branding, legal edicts, leadership signatures, ward divisions, fee prefixes, and verification URLs from:
-
-```
-📁 src/config/lga.config.ts  <-- Primary Source of Truth
-```
-
-When cloning for a new LGA:
-1. Update `src/config/lga.config.ts`.
-2. Swap the visual assets in `public/`.
-3. Update `metadata.json` and `src/app/layout.tsx`.
-4. Review service fees in `src/config/services.config.ts` if tariffs differ.
+> **Goal:** clone this repo (and `logmas-back-odeda`) for **any new Local
+> Government Area** and have it fully branded in ~15 minutes — config and data
+> files only, no logic changes.
+>
+> After onboarding, run `node scripts/check-lga-swap.mjs` in this repo AND in
+> the backend repo — both must pass. The lint proves no trace of the previous
+> LGA remains anywhere in code, data, or asset file names.
 
 ---
 
-## 2. Step-by-Step Onboarding Checklist
+## Part 0 — Deployment topology (read this first)
 
-### Step 1: Update `src/config/lga.config.ts`
-Replace the `LGA_CONFIG` object with the new council's official parameters:
-- `identity.id`: Slug identifier (e.g., `"kosofe"`)
-- `identity.name`: Short name (e.g., `"Kosofe"`)
-- `identity.fullName`: Full formal council name (e.g., `"Kosofe Local Government"`)
-- `identity.councilName`: (e.g., `"Kosofe Local Government Council"`)
-- `identity.shortCode` & `acronym`: (e.g., `"KOS"`, `"KSLG"`)
-- `identity.state`: (e.g., `"Lagos State"`)
-- `identity.motto`: Official council motto
-- `identity.headquarters`: Town/Area of the Secretariat complex (e.g., `"Ogudu, Ojota"`)
-- `leadership.chairman`: Name, honorific, formal title, email
-- `contact`: Address, helpdesk phones, revenue phone, official website
-- `verification.domain`: The production domain for QR verification (e.g., `"verify.kosofe.gov.ng"` or `"kosofe.logmas.com.ng"`)
-- `wards`: Array of all electoral/administrative wards in the LGA
-- `certificates.numbering`: Prefix codes (e.g., `"KOS-CRT"`, `"KOS-PMT"`, `"KOS-INV"`)
-- `payment`: Council bank account and consolidated revenue details
+**Share the code, never the instance.**
 
-### Step 2: Swap Visual Branding Assets in `public/`
-Replace the following image assets:
+```
+Logmas template repos (this repo + logmas-back-odeda)
+ ├── Odeda  → frontend build (LGA_ID=odeda)  + backend + own Postgres + own GPay merchant
+ ├── Kosofe → frontend build (LGA_ID=kosofe) + backend + own Postgres + own GPay merchant
+ └── New LGA → clone both repos → follow this guide → deploy
+```
 
-| Asset Purpose | Default File Location | Notes / Best Practice |
+Rules:
+
+1. **One LGA = one frontend build, one backend instance, one database.**
+   Never point two LGAs at one database or one backend. The backend is
+   single-tenant by design (no `lgaId` columns; one merchant/webhook per
+   instance).
+2. **The frontend repo is shared code** — per-LGA differences live ONLY in
+   `src/config/lga.config.ts`, `metadata.json`, `.env`, and `public/` assets.
+   Next.js inlines `NEXT_PUBLIC_*` env vars at build time, so each LGA gets
+   its own build.
+3. **Each LGA gets its own domain** (e.g. `www.kosofe.gov.ng`,
+   `api.kosofe.logmas.com.ng`) — verification QR links, payment return URL,
+   and the GPay webhook are all domain-specific.
+4. **Keep LGA-specific content strictly in data/config files** so
+   `git diff` between two clones shows data only. That is what makes future
+   merges from the template trivial.
+
+### Syncing core fixes into a clone later
+
+```bash
+git remote add template <url-of-canonical-repo>
+git fetch template
+git merge template/main        # data-only diffs merge cleanly
+```
+
+If a merge conflicts, the conflict is in a data file — resolve by keeping the
+clone's LGA values.
+
+---
+
+## Part 1 — Frontend onboarding checklist (`logmas-odeda`)
+
+### Step 1: `src/config/lga.config.ts` — the single source of truth
+
+Replace the `identity`, `leadership`, `contact`, `verification`,
+`certificates`, `branding`, `wards`, and `content` sections with the new
+council's data. Key fields:
+
+- `identity`: `id` (slug, e.g. `"kosofe"`), `name`, `fullName`, `formalTitle`,
+  `councilName`, `shortCode`, `acronym`, `state`, `motto`, `establishedYear`,
+  `headquarters`
+- `leadership`: chairman (name, portrait/signature paths, office email), vice
+  chairman, secretary, treasurer, HOLGA, councillor
+- `contact`: phones, emails, secretariat address, portal URL, helpdesk title,
+  socials
+- `verification`: domain + verify URL for QR scans (public certificate lookup host)
+- `certificates.numbering`: all prefixes (e.g. `"KOS-CRT"`, `"KOS-INV"`)
+- `certificates.legalWording`: statutory notices and preambles — written out
+  in full, so replace the previous council's name with the new one
+- `branding`: logo/emblem paths, `appTitle`, `appDescription`
+- `wards`: the official electoral wards (keep in sync with the wards you
+  create in the backend dashboard)
+- `content`: **all marketing content** — homepage stats, testimonials, news,
+  ward-map dataset (`wardsInfo`), careers, gallery, investment cards, tourism
+  cards. Plain data — rewrite for the new LGA.
+
+> `src/config/lgaContent.config.ts` is now only a re-export of
+> `LGA_CONFIG.content` — you should not need to edit it.
+
+### Step 2: Swap visual branding assets in `public/`
+
+| Asset Purpose | Default File Location | Notes |
 |---|---|---|
-| **Council Official Seal/Logo** | `public/images/lga-logo.png` | Transparent PNG, 512×512px. High resolution state/council crest. |
-| **Executive Chairman Portrait** | `public/assets/chairman.jpg` | High-quality formal portrait photograph of the sitting Chairman. |
-| **Executive Chairman Signature** | `public/certificates/signatures/chairman-signature.png` | Transparent PNG with cursive ink strokes (aspect ratio ~2.7:1). Blends with `mix-blend-mode: multiply`. |
-| **Certificate Template Artwork** | `public/certificates/templates/template.png` | 1536×1024 master landscape template with border, ribbons, and seal framing. |
-| **Treasury Receipt Background** | `public/assets/receipt_template.png` | Standard background for official automated revenue receipts. |
+| Council Seal/Logo | `public/logo.png` (+ `public/images/*crest*.png`) | Transparent PNG, 512×512 |
+| Chairman Portrait | `public/assets/chairman.jpg` | Formal portrait |
+| Chairman Signature | `public/certificates/signatures/chairman-signature.png` | Transparent PNG, ~2.7:1 |
+| Certificate Template | `public/certificates/templates/template.png` | 1536×1024 landscape |
+| Receipt Background | `public/assets/receipt_template.png` | Revenue receipt background |
 
-### Step 3: Update Application Metadata & HTML Titles
-Keep the application entry points in sync:
+Rename LGA-specific filenames (e.g. `odeda-crest.png` → `kosofe-crest.png`)
+and update the paths in `lga.config.ts` (`branding.councilEmblemPath`). The
+swap-lint flags foreign LGA names in any file under `public/`.
 
-1. **`metadata.json`**:
+### Step 3: `metadata.json`
+
 ```json
 {
-  "name": "Kosofe Local Government Portal - LOGMAS",
-  "description": "Official digital administration, e-permits, revenue collection, and statutory certificate verification portal for Kosofe Local Government Area, Lagos State.",
-  "requestFramePermissions": ["camera", "geolocation"],
+  "name": "LOGMAS Kosofe",
+  "description": "Local Government Management and Administration System for Kosofe Local Government Area",
+  "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
 ```
 
-2. **`src/app/layout.tsx`**:
-Ensure Next.js `metadata.title` and `metadata.description` match the new LGA name.
+The swap-lint fails if `metadata.json` doesn't mention the active LGA name.
 
-### Step 4: Adjust Service Fees & Dynamic Form Fields (If Needed)
-- **`src/config/services.config.ts`**: Update the tariffs or base prices for services (e.g. Street Naming, Club Registration, Food Handlers, Liquor Licences) according to the new LGA's bye-laws and revenue gazette.
-- **`src/config/certificateServiceFieldMap.ts`**: If the new council requests specific custom fields to appear on certificates, add them to the service's `canonicalOrder` array.
+### Step 4: `.env`
 
-### Step 5: Environment & Backend API Connection
-File: `.env` / `src/config/env.ts`
-- Point `NEXT_PUBLIC_API_BASE_URL` to the backend cluster provisioned for this LGA (e.g. `https://api.kosofe.logmas.com.ng/api/v1`).
-- Set payment gateway keys (`PAYSTACK_PUBLIC_KEY` or `MONNIFY_API_KEY` / `REMITA_MERCHANT_ID`).
+Copy `.env.example` → `.env`:
 
----
+- `NEXT_PUBLIC_BASE_URL` — the LGA's public site URL (no trailing slash)
+- `NEXT_PUBLIC_API_BASE_URL` — this LGA's backend (`https://api.<lga>/api/v1`)
+- `NEXT_PUBLIC_PAYMENT_PROVIDER` — `gpay`
+- `NEXT_PUBLIC_GOOGLE_CLIENT_ID` — optional
 
-## 3. Concrete Example: Ready-to-Paste Configuration for Kosofe LGA (Lagos State)
+### Step 5: Service fees (frontend defaults)
 
-When asked to onboard **Kosofe LGA**, copy and paste this complete `LGA_CONFIG` into `src/config/lga.config.ts`:
-
-```typescript
-export const LGA_CONFIG: LgaConfiguration = {
-  platform: {
-    name: "LOGMAS",
-    fullName: "Local Government Management and Administration System",
-    version: "2.0.0",
-  },
-  identity: {
-    id: "kosofe",
-    name: "Kosofe",
-    fullName: "Kosofe Local Government",
-    formalTitle: "Kosofe Local Government Area",
-    councilName: "Kosofe Local Government Council",
-    shortCode: "KOS",
-    acronym: "KSLG",
-    state: "Lagos State",
-    stateShort: "Lagos",
-    country: "Nigeria",
-    geopoliticalZone: "South West",
-    motto: "Center of Excellence - Service and Integrity",
-    establishedYear: 1996,
-    establishingLaw: "Local Government Administration Law of Lagos State and applicable gazettes.",
-    headquarters: "Ogudu Road, Ojota, Lagos State",
-  },
-
-  leadership: {
-    chairman: {
-      name: "Hon. Barr. Moyosore Ogunlewe",
-      honorific: "Hon. Barr.",
-      title: "Executive Chairman",
-      fullTitle: "Executive Chairman\nKosofe Local Government Council",
-      signatureImagePath: "/certificates/signatures/chairman-signature.png",
-      portraitImagePath: "/assets/chairman.jpg",
-      officeEmail: "chairman@kosofe.lg.gov.ng",
-      tenureNote: "Executive Chairman, Kosofe Local Government Council · Lagos State",
-    },
-    viceChairman: {
-      name: "Hon. Oluwole Sosanya",
-      title: "Vice Chairman",
-    },
-    secretary: {
-      name: "Council Secretary",
-      title: "Secretary to the Local Government (SLG)",
-    },
-    headOfAdmin: {
-      name: "Council HOLGA",
-      title: "Head of Local Government Administration",
-    },
-    treasurer: {
-      name: "Council Treasurer",
-      title: "Council Treasurer",
-    },
-  },
-
-  contact: {
-    address: "Kosofe Local Government Secretariat, Ogudu Road, Ojota, Lagos State",
-    phone: "+234 802 000 5000",
-    email: "info@kosofe.lg.gov.ng",
-    website: "https://kosofe.lg.gov.ng",
-    revenueDeskPhone: "+234 802 000 5001",
-    supportEmail: "support@logmas.com.ng",
-  },
-
-  verification: {
-    domain: "verify.kosofe.lg.gov.ng",
-    verifyUrlTemplate: "https://verify.kosofe.lg.gov.ng/certificate/{token}",
-    publicRegistryPath: "/verify",
-  },
-
-  wards: [
-    { id: "ward_a", name: "Ward A - Oworonshoki", code: "W-OWO" },
-    { id: "ward_b", name: "Ward B - Ifako / Soluyi", code: "W-IFA" },
-    { id: "ward_c", name: "Ward C - Anthony / Mende", code: "W-ANT" },
-    { id: "ward_d", name: "Ward D - Ojota / Ogudu", code: "W-OJO" },
-    { id: "ward_e", name: "Ward E - Ketu / Alapere", code: "W-KET" },
-    { id: "ward_f", name: "Ward f - Ikosi / Shangisha", code: "W-IKO" },
-    { id: "ward_g", name: "Ward G - Agboyi I", code: "W-AG1" },
-    { id: "ward_h", name: "Ward H - Agboyi II", code: "W-AG2" },
-  ],
-
-  certificates: {
-    templates: {
-      landscape: {
-        id: "kosofe_landscape_master",
-        name: "Kosofe LGA Statutory Master Certificate",
-        defaultTitle: "OFFICIAL STATUTORY CERTIFICATE",
-        backgroundImage: "/certificates/templates/template.png",
-      },
-      portrait: {
-        id: "kosofe_portrait_master",
-        name: "Kosofe Portrait Certificate",
-        defaultTitle: "STATUTORY CERTIFICATE",
-        backgroundImage: "/certificates/templates/template.png",
-      },
-      receipt: {
-        id: "kosofe_receipt_master",
-        name: "Kosofe Local Government Official Revenue Receipt",
-        defaultTitle: "OFFICIAL LOCAL GOVERNMENT TREASURY RECEIPT",
-        backgroundImage: "/assets/receipt_template.png",
-      },
-    },
-    numbering: {
-      certificatePrefix: "KOS-CRT",
-      permitPrefix: "KOS-PMT",
-      receiptPrefix: "KOS-RCP",
-      invoicePrefix: "KOS-INV",
-      applicationPrefix: "KOS-APP",
-      verificationPrefix: "KOS-VRF",
-    },
-    legalWording: {
-      statutoryLawNotice: "Issued under the authority of the Kosofe Local Government Council Laws of Lagos State.",
-      originPreamble: "This is to officially certify that the applicant named herein has satisfied all statutory verification procedures of Kosofe Local Government Area, Lagos State.",
-      certificateSubHeader: "OFFICIAL STATUTORY CERTIFICATE OF REGISTRATION",
-      reissueDisclaimer: "Any unauthorized alteration, erasure, or falsification invalidates this official statutory document.",
-      officialSealNotice: "Authenticated with the official digital security QR code and the executive signature of the Executive Chairman.",
-      footerDisclaimer: "This certificate is an official statutory property of Kosofe Local Government Council, Lagos State.",
-    },
-  },
-
-  payment: {
-    bankName: "First Bank of Nigeria Plc",
-    accountName: "Kosofe Local Government Consolidated Revenue Account",
-    accountNumber: "2034981120",
-    currency: "NGN",
-    currencySymbol: "₦",
-  },
-};
-```
+`src/config/services.config.ts` holds the default tariff table
+(`defaultFee`, `revenueHead`, requirements). Adjust amounts if the new LGA's
+bye-law differs. Live fees are managed in the backend treasury dashboard and
+override these defaults at runtime.
 
 ---
 
-## 4. Verification Checklist for New LGA Deployment
+## Part 2 — Backend onboarding checklist (`logmas-back-odeda`)
 
-When the new chat completes the configuration:
-1. Run `npm run build` to confirm zero compilation or TypeScript errors.
-2. Confirm that running the app shows the new LGA name, crest, and wards across the dashboard, forms, receipts, and certificates.
-3. Verify that `/certificate/[token]` displays the certificate with the new council's title and header.
-4. Verify that `/verify` points to the new council's verification domain.
+Each LGA runs its **own** backend instance + Postgres database. Detailed
+version: `LGA_ONBOARDING_BACKEND.md` in that repo. Summary:
+
+1. **`.env`** — copy `.env.example`; set:
+   - the **LGA block**: `LGA_ID`, `LGA_NAME`, `LGA_SHORT_CODE`,
+     `LGA_ACCOUNT_PREFIX` (e.g. `kosofe` / `Kosofe` / `KOS` / `KOSOFE`)
+   - a **fresh `DATABASE_URL`** (new database per LGA) + JWT secrets
+   - `FRONTEND_URL` / `BACKEND_URL` / `API_BASE_URL` for the new domains
+   - the LGA's own `GPAY_*` merchant credentials, its webhook URL
+     (`https://api.<lga-domain>/api/v1/payments/gpay/webhook`) and
+     `GPAY_RETURN_URL` (site root, no trailing `/payment/result`)
+2. **Services catalog** — drop `prisma/data/<LGA_ID>.services.json`
+   (format in Part 3). Descriptions may use `{lgaName}` / `{lgaFullName}`
+   tokens which the seed interpolates.
+3. **Migrate + seed** — `npm run prisma:migrate`, then `npx prisma db seed`.
+4. Optionally register the LGA as a preset in `src/config/lga.config.ts`
+   (backend) so values live in version control instead of only `.env`.
+5. **Wards + users** — wards and admin accounts are runtime data: create them
+   from the LGA admin dashboard after first login (`AddWardDialog`), matching
+   the ward list you put in the frontend config.
+
+Payment labels (payer defaults, gateway descriptions, `PREFIX/REF` account
+labels) and all notification/SMS/email branding now read from `LGA_CONFIG`
+(`src/config/lga.config.ts`) + the `LGA_NAME` env var — no code edits.
+
+---
+
+## Part 3 — Services data file format
+
+`prisma/data/<LGA_ID>.services.json` is the drop-in catalog (see
+`prisma/data/odeda.services.json` for the live example). It is a JSON array:
+
+| Field | Type | Notes |
+|---|---|---|
+| `code` | string | Stable service code (snake_case). Drives renewals & links. |
+| `certificateType` | string | Prisma enum value, e.g. `CERTIFICATE_OF_ORIGIN`, `LIQUOR_LICENCE` |
+| `name` | string | Display name |
+| `description` | string | May use `{lgaName}` / `{lgaFullName}` tokens |
+| `category` | string | `CERTIFICATE`, `RATES_AND_LEVIES`, `LICENCES_AND_PERMITS`, `URBAN_DEVELOPMENT` |
+| `revenueHead` | string | Treasury revenue head, e.g. `"1001 - Statutory Certificate Fees"` |
+| `requirements` | string[] | Document requirement keys |
+| `estimatedDays` | number | Processing days |
+| `fee` | number | Default fee in NGN (treasury can adjust live) |
+
+The frontend tariff defaults live separately in
+`src/config/services.config.ts` (Step 5) — keep the two in sync when the new
+LGA's schedule differs from the template.
+
+---
+
+## Part 4 — Verification checklist
+
+Run these after the swap, in order:
+
+1. **Swap-lint (both repos):**
+   ```bash
+   node scripts/check-lga-swap.mjs     # frontend — parses active LGA from lga.config.ts
+   LGA_ID=<new-id> LGA_NAME=<New Name> node scripts/check-lga-swap.mjs   # backend
+   ```
+   Both must print `✅ swap-lint passed`. Any hit = a leftover from the
+   previous LGA (code, data, or asset file name).
+2. **Type checks:** `npx tsc --noEmit` in both repos — no *new* errors vs the
+   pre-existing baseline (both repos carry historical errors in untouched
+   files).
+3. **Frontend build:** `npm run build` succeeds.
+4. **Backend migrate + seed:** fresh DB → `npm run prisma:migrate` →
+   `npx prisma db seed` → expect `✅ <LGA> (<id>) services and service fees
+   seeded successfully`.
+5. **Smoke test the running app:**
+   - Landing page shows the new name, crest, wards, stats, testimonials
+   - Login page footer + suspended-account message show the new council name
+   - Apply & pay an invoice end-to-end (GPay checkout labels show
+     `<PREFIX>/...`, webhook confirms, receipt shows the new council)
+   - `/verify` + certificate QR resolve on the new verification domain
+   - A notification email/SMS (e.g. password reset) carries the new LGA name
+
+---
+
+## Appendix — file map
+
+| Concern | Frontend file | Backend file |
+|---|---|---|
+| Identity, wards, certificates, marketing content | `src/config/lga.config.ts` | — |
+| Identity labels (payments, notifications, seed) | — | `src/config/lga.config.ts` + `LGA_*` env |
+| Services catalog & fees | `src/config/services.config.ts` | `prisma/data/<id>.services.json` (seeded to DB) |
+| HTML metadata | `metadata.json` | — |
+| Env / domains / merchant | `.env` (NEXT_PUBLIC_*) | `.env` (LGA_*, GPAY_*, DATABASE_URL…) |
+| Assets | `public/**` | — |
+| Swap verification | `scripts/check-lga-swap.mjs` | `scripts/check-lga-swap.mjs` |
+
+

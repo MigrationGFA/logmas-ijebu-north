@@ -258,6 +258,7 @@ export function useInvoiceDynamicPayment(
     null,
   );
   const [isCheckingDynamic, setIsCheckingDynamic] = useState(false);
+  const [isCreatingDynamic, setIsCreatingDynamic] = useState(false);
 
 
   const invalidate = () => {
@@ -281,10 +282,22 @@ export function useInvoiceDynamicPayment(
         setDynamicAccountError(
           "This transfer account has expired. Please generate a new one.",
         );
+        toast.error(
+          "No confirmed payment on this account yet. If you already transferred, the bank may still be processing — try again shortly or generate a new account.",
+        );
         return false;
       }
+      // Still pending — say so explicitly. A silent return makes the button
+      // look like it did nothing.
+      toast.info(
+        "Your transfer has not settled yet. Bank transfers can take a few minutes — tap \"I have paid\" again after a while.",
+      );
+      return false;
     } catch (err: any) {
       console.error("Dynamic payment poll failed:", err);
+      toast.error(
+        "Could not verify the payment just now. Please check your connection and try again.",
+      );
     }
     return false;
   };
@@ -301,7 +314,21 @@ export function useInvoiceDynamicPayment(
       toast.error("Invoice not loaded yet.");
       return;
     }
+    // If we already minted an account and its 15-min timer lapsed, re-check it
+    // BEFORE creating a new one. Money sent into an expired account is NOT lost
+    // — the gateway/webhook still settles it against this same reference — so we
+    // must confirm it rather than silently abandoning the payer into a new VA.
+    if (dynamicAccount) {
+      setIsCheckingDynamic(true);
+      const alreadyPaid = await pollDynamicStatus(dynamicAccount.reference);
+      setIsCheckingDynamic(false);
+      if (alreadyPaid) return; // confirmed -> invoice refreshed
+      toast.info(
+        "No payment found on the previous account yet. Generating a fresh one — a transfer already made is still reconciled automatically.",
+      );
+    }
     setDynamicAccountError(null);
+    setIsCreatingDynamic(true);
     try {
       const va = await invoicesService.createDynamicInvoicePayment(
         invoiceNumber,
@@ -315,6 +342,8 @@ export function useInvoiceDynamicPayment(
         "Could not create a transfer account. Please try another method.";
       setDynamicAccountError(msg);
       toast.error(msg);
+    } finally {
+      setIsCreatingDynamic(false);
     }
   };
 
@@ -329,6 +358,7 @@ export function useInvoiceDynamicPayment(
     dynamicAccount,
     dynamicAccountError,
     isCheckingDynamic,
+    isCreatingDynamic,
     createDynamicInvoice: handleStartDynamicTransfer,
     verifyDynamicPayment: handleCheckDynamicStatus,
     resetDynamic,

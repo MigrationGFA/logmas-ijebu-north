@@ -1,10 +1,14 @@
 import { LGA_CONFIG } from "@/config/lga.config";
 import chairmanPhoto from "@/assets/chairman.jpg";
 
+// NOTE: LGA-flavoured marketing content (stats, testimonials, ward map, careers,
+// gallery, investment, tourism) is defined once in `LGA_CONFIG.content`
+// (src/config/lga.config.ts). Edit it there — this module only re-exports it.
+
 export const STATS = [
-  { label: "Land Area", value: "1,560 km2", trend: "Agricultural Hub" },
+  { label: "Land Area", value: LGA_CONFIG.content.stats.landArea, trend: LGA_CONFIG.content.stats.landAreaTrend },
   { label: "Established", value: String(LGA_CONFIG.identity.establishedYear), trend: LGA_CONFIG.identity.state },
-  { label: "Primary Economic Sector", value: "Quarry & Farming", trend: "#1 Granite & Cassava" },
+  { label: "Primary Economic Sector", value: LGA_CONFIG.content.stats.primarySector, trend: LGA_CONFIG.content.stats.primarySectorTrend },
 ];
 
 export const SERVICES = [
@@ -46,33 +50,9 @@ export const SERVICES = [
   },
 ];
 
-export const TESTIMONIALS = [
-  {
-    name: "Farmer Samuel Adebiyi",
-    role: "Cassava Producer, Osiele Ward",
-    quote:
-      "Registering my agricultural farm and getting my certificate was fast and smooth on LOGMAS.",
-  },
-  {
-    name: "Mrs. Toyin Ogunyemi",
-    role: "Business Owner, Obantoko",
-    quote: "I paid my trade permit and liquor licence online and received my QR receipt instantly.",
-  },
-  {
-    name: "Engr. Timothy Olalere",
-    role: `Quarry Operator, ${LGA_CONFIG.wards[0]?.name || "Ward 1"}`,
-    quote:
-      "LOGMAS makes haulage and quarry permit payments transparent for our fleet drivers.",
-  },
-];
+export const TESTIMONIALS = LGA_CONFIG.content.testimonials;
 
-export const NEWS = [
-  {
-    date: "12 May 2026",
-    tag: "Announcement",
-    title: `${LGA_CONFIG.identity.name} LOGMAS Service Expansion Portal Goes Live Across All ${LGA_CONFIG.wards.length} Wards`,
-  },
-];
+export const NEWS = LGA_CONFIG.content.news;
 
 export interface ApplicationRecord {
   id: string;
@@ -194,122 +174,9 @@ export const LEADERSHIP = [
   },
 ];
 
-export const WARDS_INFO: {
-  name: string;
-  x: number;
-  y: number;
-  population: string;
-  feature: string;
-  accent: string;
-}[] = [
-  {
-    name: "Odeda",
-    x: 50,
-    y: 42,
-    population: "38,400",
-    feature: "LGA headquarters & administrative council secretariat",
-    accent: "primary",
-  },
-  {
-    name: "Obantoko",
-    x: 36,
-    y: 30,
-    population: "45,900",
-    feature: "Major urban commercial center & residential hub",
-    accent: "success",
-  },
-  {
-    name: "Ilugun",
-    x: 64,
-    y: 32,
-    population: "24,200",
-    feature: "Agricultural & timber belt community",
-    accent: "gold",
-  },
-  {
-    name: "Balogun Itesi",
-    x: 72,
-    y: 52,
-    population: "19,800",
-    feature: "Rural farming settlements & cassava production",
-    accent: "info",
-  },
-  {
-    name: "Alagbagba",
-    x: 28,
-    y: 56,
-    population: "18,300",
-    feature: "Granite quarry sites & haulage route",
-    accent: "success",
-  },
-  {
-    name: "Osiele",
-    x: 44,
-    y: 68,
-    population: "36,700",
-    feature: "Educational corridor & Federal College of Education area",
-    accent: "warning",
-  },
-  {
-    name: "Alabata",
-    x: 80,
-    y: 74,
-    population: "21,600",
-    feature: "Poultry, livestock & cassava processing zone",
-    accent: "warning",
-  },
-  {
-    name: "Olodo",
-    x: 20,
-    y: 18,
-    population: "26,800",
-    feature: "Farming communities & feeder road connectivity",
-    accent: "primary",
-  },
-  {
-    name: "Obete",
-    x: 60,
-    y: 16,
-    population: "22,400",
-    feature: "Rural settlement cluster & agro-processing zone",
-    accent: "gold",
-  },
-  {
-    name: "Opeji",
-    x: 82,
-    y: 36,
-    population: "17,900",
-    feature: "Forest-edge settlement & export crop production",
-    accent: "info",
-  },
-];
+export const WARDS_INFO = LGA_CONFIG.content.wardsInfo;
 
-export const CAREERS = [
-  {
-    id: "1",
-    title: "Revenue Collection Officer",
-    dept: "Finance & Treasury",
-    location: `${LGA_CONFIG.identity.name} Secretariat`,
-    type: "Full-Time",
-    deadline: "30 Sep 2026",
-  },
-  {
-    id: "2",
-    title: "Environmental Health Inspector",
-    dept: "Health & Sanitation",
-    location: "Obantoko Ward",
-    type: "Full-Time",
-    deadline: "04 Oct 2026",
-  },
-  {
-    id: "3",
-    title: "Agricultural Extension Officer",
-    dept: "Agriculture",
-    location: "Osiele / Alagbagba",
-    type: "Full-Time",
-    deadline: "12 Oct 2026",
-  },
-];
+export const CAREERS = LGA_CONFIG.content.careers;
 
 export const DEPARTMENTS = [
   { name: "Finance & Budget", head: "HOD Finance", icon: "Calculator", desc: "Oversees revenue, budget allocation, and tax administration." },
@@ -333,52 +200,8 @@ export const FAQS = [
   { question: "Can I verify an issued certificate?", answer: `Yes, all ${LGA_CONFIG.identity.formalTitle} certificates and licences contain a unique QR code and verification token that can be verified online instantly.` },
 ];
 
-export const GALLERY = [
-  { id: "1", title: `${LGA_CONFIG.identity.fullName} Secretariat Complex`, category: "Infrastructure", image: "/assets/banner5.png" },
-  { id: "2", title: "Osiele Modern Market Opening", category: "Commerce", image: "/assets/banner2.png" },
-  { id: "3", title: "Quarry Inspection & Mining Facilities", category: "Industry", image: "/assets/banner1.png" },
-];
+export const GALLERY = LGA_CONFIG.content.gallery;
 
-export const INVEST_OPPS = [
-  {
-    title: "Granite & Quarry Mining Expansion",
-    sector: "Solid Minerals",
-    location: "Alagbagba & Ilugun Wards",
-    desc: "High yield granite reserves with direct proximity to Abeokuta-Lagos expressways.",
-    icon: "Pickaxe",
-    roi: "23%",
-  },
-  {
-    title: "Commercial Cassava Processing Plants",
-    sector: "Agro-Allied Industry",
-    location: `${LGA_CONFIG.identity.name} & Olugbo Wards`,
-    desc: "Abundant cassava farm supply for ethanol, starch, and flour production.",
-    icon: "Sprout",
-    roi: "19%",
-  },
-  {
-    title: "Student Housing & Estate Development",
-    sector: "Real Estate",
-    location: "Camp / FUNAAB Corridor",
-    desc: "High demand for modern student apartments and commercial shopping complexes.",
-    icon: "Building2",
-    roi: "17%",
-  },
-];
+export const INVEST_OPPS = LGA_CONFIG.content.investOpps;
 
-export const TOURISM = [
-  {
-    title: "Arakanga Forest Reserve & Eco-Park",
-    location: LGA_CONFIG.identity.formalTitle,
-    category: "Eco-Tourism",
-    desc: "Lush tropical vegetation, wildlife conservation, and serene hiking trails.",
-    tag: "Eco-Tourism",
-  },
-  {
-    title: "Olugbo Traditional Chieftaincy Heritage",
-    location: "Olugbo Ward",
-    category: "Cultural Heritage",
-    desc: "Rich ancestral Yoruba history and traditional festivals.",
-    tag: "Culture",
-  },
-];
+export const TOURISM = LGA_CONFIG.content.tourism;
