@@ -74,6 +74,7 @@ export interface Application {
     phone?: string;
     role?: string;
     address: string;
+    ward?: string | null;
     nin:string;
     cacNumber:string
   } | null;

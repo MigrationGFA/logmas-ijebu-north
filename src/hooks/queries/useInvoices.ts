@@ -3,7 +3,7 @@ import {
   GetInvoicesParams,
   invoicesService,
   PaymentData,
-  type DynamicVirtualAccount,
+//   type DynamicVirtualAccount,
   type InvoiceStatus,
 } from "@/services/apiInvoice";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,6 +25,7 @@ export const invoicesKeys = {
   filteredHub: (params?: GetInvoicesParams) =>
     [...invoicesKeys.hub(), params] as const,
   detail: (id: string) => [...invoicesKeys.all, "detail", id] as const,
+  va: (invoiceNumber: string) => [...invoicesKeys.all, "va", invoiceNumber] as const,
 };
 
 // Hook for invoices list/hub
@@ -89,6 +90,72 @@ export function useInvoiceDetails(invoiceId: string) {
     refetch,
     isPayable,
     paymentProgress,
+  };
+}
+
+/**
+ * Reserved (static) bank-transfer account for an existing invoice.
+ * GET /invoices/:invoiceNumber/virtual-account (authenticated) - the supported
+ * bank-transfer path now that the dynamic minting routes are disabled
+ * server-side. Settlement happens via gateway webhook / treasurer confirmation;
+ * this hook only supplies the account details and a manual refresh.
+ */
+export function useInvoiceVirtualAccount(
+  invoiceNumber?: string,
+  enabled = true,
+) {
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: invoicesKeys.va(invoiceNumber || ""),
+    queryFn: () => invoicesService.getInvoiceVirtualAccount(invoiceNumber!),
+    enabled: !!invoiceNumber && enabled,
+    staleTime: 60 * 1000,
+    retry: 1,
+  });
+
+  return {
+    virtualAccount: data,
+    isLoading,
+    error,
+    refetch,
+  };
+}
+/**
+ * Citizen/staff proof-of-payment upload for this invoice bank transfer.
+ * POST /invoices/:invoiceNumber/payment-proof (multipart field "proof") —
+ * records the proof on the pending bank_transfer Payment and parks the
+ * application at awaiting_payment_confirmation for the treasurer worklist.
+ * The invoice keeps saying "Pay now" until the treasurer confirms.
+ */
+export function useUploadInvoicePaymentProof(
+  detailId: string,
+  invoiceNumber?: string,
+) {
+  const queryClient = useQueryClient();
+
+  const uploadProofMutation = useMutation({
+    mutationFn: (file: File) => {
+      if (!invoiceNumber) {
+        throw new Error("Invoice not loaded yet.");
+      }
+      return invoicesService.uploadPaymentProof(invoiceNumber, file);
+    },
+    onSuccess: () => {
+      toast.success("Proof of payment uploaded — the treasurer will review it");
+      queryClient.invalidateQueries({ queryKey: invoicesKeys.detail(detailId) });
+      queryClient.invalidateQueries({ queryKey: invoicesKeys.hub() });
+      if (invoiceNumber) {
+        queryClient.invalidateQueries({ queryKey: invoicesKeys.va(invoiceNumber) });
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Could not upload proof of payment");
+    },
+  });
+
+  return {
+    uploadProof: uploadProofMutation.mutate,
+    uploadProofAsync: uploadProofMutation.mutateAsync,
+    isUploadingProof: uploadProofMutation.isPending,
   };
 }
 
@@ -247,121 +314,122 @@ export function useInvoicePayment(
  * the "Check status" button is the manual fallback (no auto-poll, to stay
  * inside the verify-endpoint rate limit).
  */
-export function useInvoiceDynamicPayment(
-  invoiceId: string,
-  invoiceNumber?: string,
-) {
-  const queryClient = useQueryClient();
-  const [dynamicAccount, setDynamicAccount] =
-    useState<DynamicVirtualAccount | null>(null);
-  const [dynamicAccountError, setDynamicAccountError] = useState<string | null>(
-    null,
-  );
-  const [isCheckingDynamic, setIsCheckingDynamic] = useState(false);
-  const [isCreatingDynamic, setIsCreatingDynamic] = useState(false);
-
-
-  const invalidate = () => {
-    queryClient.invalidateQueries({
-      queryKey: invoicesKeys.detail(invoiceId),
-    });
-    queryClient.invalidateQueries({ queryKey: invoicesKeys.hub() });
-  };
-
-  const pollDynamicStatus = async (
-    reference: string,
-  ): Promise<boolean> => {
-    try {
-      const result = await invoicesService.verifyDynamicPayment(reference);
-      if (result.status === "confirmed") {
-        toast.success("Payment confirmed — refreshing your invoice...");
-        invalidate();
-        return true;
-      }
-      if (result.status === "failed" || result.status === "expired") {
-        setDynamicAccountError(
-          "This transfer account has expired. Please generate a new one.",
-        );
-        toast.error(
-          "No confirmed payment on this account yet. If you already transferred, the bank may still be processing — try again shortly or generate a new account.",
-        );
-        return false;
-      }
+// ON HOLD — dynamic 15-min VA hook; backend routes are commented out in gpay.routes.ts.
+// export function useInvoiceDynamicPayment(
+//   invoiceId: string,
+//   invoiceNumber?: string,
+// ) {
+//   const queryClient = useQueryClient();
+//   const [dynamicAccount, setDynamicAccount] =
+//     useState<DynamicVirtualAccount | null>(null);
+//   const [dynamicAccountError, setDynamicAccountError] = useState<string | null>(
+//     null,
+//   );
+//   const [isCheckingDynamic, setIsCheckingDynamic] = useState(false);
+//   const [isCreatingDynamic, setIsCreatingDynamic] = useState(false);
+// 
+// 
+//   const invalidate = () => {
+//     queryClient.invalidateQueries({
+//       queryKey: invoicesKeys.detail(invoiceId),
+//     });
+//     queryClient.invalidateQueries({ queryKey: invoicesKeys.hub() });
+//   };
+// 
+//   const pollDynamicStatus = async (
+//     reference: string,
+//   ): Promise<boolean> => {
+//     try {
+//       const result = await invoicesService.verifyDynamicPayment(reference);
+//       if (result.status === "confirmed") {
+//         toast.success("Payment confirmed — refreshing your invoice...");
+//         invalidate();
+//         return true;
+//       }
+//       if (result.status === "failed" || result.status === "expired") {
+//         setDynamicAccountError(
+//           "This transfer account has expired. Please generate a new one.",
+//         );
+//         toast.error(
+//           "No confirmed payment on this account yet. If you already transferred, the bank may still be processing — try again shortly or generate a new account.",
+//         );
+//         return false;
+//       }
       // Still pending — say so explicitly. A silent return makes the button
       // look like it did nothing.
-      toast.info(
-        "Your transfer has not settled yet. Bank transfers can take a few minutes — tap \"I have paid\" again after a while.",
-      );
-      return false;
-    } catch (err: any) {
-      console.error("Dynamic payment poll failed:", err);
-      toast.error(
-        "Could not verify the payment just now. Please check your connection and try again.",
-      );
-    }
-    return false;
-  };
-
-  const handleCheckDynamicStatus = async () => {
-    if (!dynamicAccount) return;
-    setIsCheckingDynamic(true);
-    await pollDynamicStatus(dynamicAccount.reference);
-    setIsCheckingDynamic(false);
-  };
-
-  const handleStartDynamicTransfer = async () => {
-    if (!invoiceNumber) {
-      toast.error("Invoice not loaded yet.");
-      return;
-    }
+//       toast.info(
+//         "Your transfer has not settled yet. Bank transfers can take a few minutes — tap \"I have paid\" again after a while.",
+//       );
+//       return false;
+//     } catch (err: any) {
+//       console.error("Dynamic payment poll failed:", err);
+//       toast.error(
+//         "Could not verify the payment just now. Please check your connection and try again.",
+//       );
+//     }
+//     return false;
+//   };
+// 
+//   const handleCheckDynamicStatus = async () => {
+//     if (!dynamicAccount) return;
+//     setIsCheckingDynamic(true);
+//     await pollDynamicStatus(dynamicAccount.reference);
+//     setIsCheckingDynamic(false);
+//   };
+// 
+//   const handleStartDynamicTransfer = async () => {
+//     if (!invoiceNumber) {
+//       toast.error("Invoice not loaded yet.");
+//       return;
+//     }
     // If we already minted an account and its 15-min timer lapsed, re-check it
     // BEFORE creating a new one. Money sent into an expired account is NOT lost
     // — the gateway/webhook still settles it against this same reference — so we
     // must confirm it rather than silently abandoning the payer into a new VA.
-    if (dynamicAccount) {
-      setIsCheckingDynamic(true);
-      const alreadyPaid = await pollDynamicStatus(dynamicAccount.reference);
-      setIsCheckingDynamic(false);
-      if (alreadyPaid) return; // confirmed -> invoice refreshed
-      toast.info(
-        "No payment found on the previous account yet. Generating a fresh one — a transfer already made is still reconciled automatically.",
-      );
-    }
-    setDynamicAccountError(null);
-    setIsCreatingDynamic(true);
-    try {
-      const va = await invoicesService.createDynamicInvoicePayment(
-        invoiceNumber,
-      );
-      setDynamicAccount(va);
-      toast.success("Transfer account ready — it expires in 15 minutes.");
-    } catch (err: any) {
-      console.error("Dynamic account creation failed:", err);
-      const msg =
-        err?.message ||
-        "Could not create a transfer account. Please try another method.";
-      setDynamicAccountError(msg);
-      toast.error(msg);
-    } finally {
-      setIsCreatingDynamic(false);
-    }
-  };
-
-  const resetDynamic = () => {
-    setDynamicAccount(null);
-    setDynamicAccountError(null);
-  };
-
-
-
-  return {
-    dynamicAccount,
-    dynamicAccountError,
-    isCheckingDynamic,
-    isCreatingDynamic,
-    createDynamicInvoice: handleStartDynamicTransfer,
-    verifyDynamicPayment: handleCheckDynamicStatus,
-    resetDynamic,
-  };
-}
+//     if (dynamicAccount) {
+//       setIsCheckingDynamic(true);
+//       const alreadyPaid = await pollDynamicStatus(dynamicAccount.reference);
+//       setIsCheckingDynamic(false);
+//       if (alreadyPaid) return; // confirmed -> invoice refreshed
+//       toast.info(
+//         "No payment found on the previous account yet. Generating a fresh one — a transfer already made is still reconciled automatically.",
+//       );
+//     }
+//     setDynamicAccountError(null);
+//     setIsCreatingDynamic(true);
+//     try {
+//       const va = await invoicesService.createDynamicInvoicePayment(
+//         invoiceNumber,
+//       );
+//       setDynamicAccount(va);
+//       toast.success("Transfer account ready — it expires in 15 minutes.");
+//     } catch (err: any) {
+//       console.error("Dynamic account creation failed:", err);
+//       const msg =
+//         err?.message ||
+//         "Could not create a transfer account. Please try another method.";
+//       setDynamicAccountError(msg);
+//       toast.error(msg);
+//     } finally {
+//       setIsCreatingDynamic(false);
+//     }
+//   };
+// 
+//   const resetDynamic = () => {
+//     setDynamicAccount(null);
+//     setDynamicAccountError(null);
+//   };
+// 
+// 
+// 
+//   return {
+//     dynamicAccount,
+//     dynamicAccountError,
+//     isCheckingDynamic,
+//     isCreatingDynamic,
+//     createDynamicInvoice: handleStartDynamicTransfer,
+//     verifyDynamicPayment: handleCheckDynamicStatus,
+//     resetDynamic,
+//   };
+// }
 

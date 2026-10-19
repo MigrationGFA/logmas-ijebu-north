@@ -47,6 +47,7 @@ export function useAwaitingConfirmation() {
   const useGetAwaitingConfirmation = (params?: {
     page?: number;
     limit?: number;
+    status?: string;
   }) => {
     return useQuery({
       queryKey: treasurerKeys.awaitingConfirmation(params),

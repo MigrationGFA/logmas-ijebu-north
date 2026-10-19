@@ -83,6 +83,7 @@ export default function ServicesPage() {
 
   const { services, isLoading, error, refetch } = useServices();
 
+
   if (error) {
     return (
       <div className="space-y-6">
@@ -110,8 +111,8 @@ export default function ServicesPage() {
       return matchesSearch && matchesCategory;
     })
     .sort((a: any, b: any) => {
-      const aIsCoo = a.id === "certificate_of_origin" || a.code === "certificate_of_origin";
-      const bIsCoo = b.id === "certificate_of_origin" || b.code === "certificate_of_origin";
+      const aIsCoo = a.id === "state_of_origin" || a.code === "state_of_origin";
+      const bIsCoo = b.id === "state_of_origin" || b.code === "state_of_origin";
       if (aIsCoo && !bIsCoo) return -1;
       if (!aIsCoo && bIsCoo) return 1;
       return 0;
@@ -263,7 +264,7 @@ export default function ServicesPage() {
                         <span className="flex items-center gap-1 text-[11px]">
                           <Clock className="h-3 w-3 text-primary" />{" "}
                           {service.estimatedDays} day
-                          {service.estimatedDays > 1 ? "s" : ""} processing
+                          {service?.estimatedDays > 1 ? "s" : ""} processing
                         </span>
                         {service.requiresInspection && (
                           <Badge
@@ -278,10 +279,10 @@ export default function ServicesPage() {
 
                     <div className="text-[11px] text-muted-foreground">
                       <span className="font-semibold text-foreground">
-                        Required Documents ({service.requirements.length}):
+                        Required Documents ({service?.requirements.length}):
                       </span>{" "}
-                      {service.requirements.slice(0, 2).join(", ")}
-                      {service.requirements.length > 2 && "..."}
+                      {service?.requirements.slice(0, 2).join(", ")}
+                      {service?.requirements.length > 2 && "..."}
                     </div>
                   </CardContent>
 

@@ -153,9 +153,9 @@ export default function CertificateOfOriginForm({
       phone: initialApplicant?.phone || "",
       email: initialApplicant?.email || "",
       address: initialApplicant?.address || "",
-      ward: initialApplicant?.ward || WARDS[0] || "the LGA",
-      nin: initialApplicant?.nin || "",
-      cacNumber: initialApplicant?.cacNumber || "",
+      ward: initialApplicant?.ward ?? WARDS[0] ?? "the LGA",
+      nin: initialApplicant?.nin ?? "",
+      cacNumber: initialApplicant?.cacNumber ?? "",
       dob: "",
       gender: "Male",
       maritalStatus: "Single",
@@ -503,27 +503,12 @@ export default function CertificateOfOriginForm({
                         <SelectValue placeholder="Select Ward" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="Ward 1 (the LGA)">
-                          Ward 1 (the LGA)
+                  {    WARDS.map((ward) => (
+                        <SelectItem key={ward} value={ward}>
+                          {ward}
                         </SelectItem>
-                        <SelectItem value="Ward 2 (Obantoko)">
-                          Ward 2 (Obantoko)
-                        </SelectItem>
-                        <SelectItem value="Ward 3 (Olodo)">
-                          Ward 3 (Olodo)
-                        </SelectItem>
-                        <SelectItem value="Ward 4 (Osiele)">
-                          Ward 4 (Osiele)
-                        </SelectItem>
-                        <SelectItem value="Ward 5 (Ilugun)">
-                          Ward 5 (Ilugun)
-                        </SelectItem>
-                        <SelectItem value="Ward 6 (Olorunda)">
-                          Ward 6 (Olorunda)
-                        </SelectItem>
-                        <SelectItem value="Ward 7 (Itesi / Camp)">
-                          Ward 7 (Itesi / Camp)
-                        </SelectItem>
+                      ))}
+                      
                       </SelectContent>
                     </Select>
                   )}

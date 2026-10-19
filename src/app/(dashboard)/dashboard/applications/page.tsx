@@ -106,7 +106,9 @@ export default function ApplicationsPage() {
   const approveMutation = useApproveApplication();
   const declineMutation = useDeclineApplication();
 
-  // Filter applications for citizen role if applicable
+  // Filter applications for citizen role if applicable, with client-side
+  // fallback for search/status/service/ward filters in case the API does not
+  // apply them.
   const displayApplications = React.useMemo(() => {
     let list = applications;
     if (isCitizen && currentUser) {
@@ -117,20 +119,54 @@ export default function ApplicationsPage() {
       list = list.filter((app) => {
         if (app.applicantId && app.applicantId === currentUser.id) return true;
         if (app.createdById && app.createdById === currentUser.id) return true;
-        // if (userPhone && app.phone === userPhone) return true;
-        // if (userEmail && app.email === userEmail) return true;
-        // if (userName && app.fullName?.toLowerCase().includes(userName)) return true;
         return false;
       });
     }
+
+    // Client-side search fallback
+    if (searchTerm.trim()) {
+      const term = searchTerm.trim().toLowerCase();
+      list = list.filter((app) =>
+        [app.applicationNumber, app.formData?.fullName, app.formData?.email, app.formData?.phone, app.applicant?.firstName, app.applicant?.lastName, app.applicant?.email, app.applicant?.phone, app.service?.name]
+          .filter(Boolean)
+          .some((v) => String(v).toLowerCase().includes(term)),
+      );
+    }
+
+    // Client-side status fallback
+    if (statusFilter && statusFilter !== "all") {
+      const sf = statusFilter.toLowerCase();
+      list = list.filter((app) => {
+        const s = String(app.status || "").toLowerCase();
+        if (sf === "awaiting_form") return s.includes("awaiting_form");
+        return s === sf;
+      });
+    }
+
+    // Client-side service fallback
+    if (serviceFilter && serviceFilter !== "all") {
+      list = list.filter((app) => {
+        const sid = app.serviceId;
+        return sid === serviceFilter;
+      });
+    }
+
+    // Client-side ward fallback
+    if (wardFilter && wardFilter !== "all") {
+      list = list.filter((app) => {
+        const wid = app.ward || app.formData?.ward || app.applicant?.ward;
+        return wid === wardFilter;
+      });
+    }
+
     return list;
-  }, [applications, isCitizen, currentUser]);
+  }, [applications, isCitizen, currentUser, searchTerm, statusFilter, serviceFilter, wardFilter]);
 
   // Status Metrics
   const stats = React.useMemo(() => {
     const total = displayApplications.length;
     const submitted = displayApplications.filter((a) => a.status?.toLowerCase() === "submitted").length;
-    const underReview = displayApplications.filter((a) => a.status?.toLowerCase().includes("awaiting_form")).length;
+    const underReview = displayApplications.filter((a) => a.status?.toLowerCase() === "under_review").length;
     const approved = displayApplications.filter((a) => a.status?.toLowerCase() === "approved" || a.status?.toLowerCase() === "completed").length;
     const declined = displayApplications.filter((a) => a.status?.toLowerCase() === "declined" || a.status?.toLowerCase() === "rejected").length;
     return { total, submitted, underReview, approved, declined };
@@ -199,6 +235,13 @@ export default function ApplicationsPage() {
       return (
         <Badge variant="outline" className="bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-300 text-[11px] gap-1 font-semibold">
           <Clock className="w-3 h-3" /> Submitted
+        </Badge>
+      );
+    }
+    if (s === "awaiting_payment_confirmation") {
+      return (
+        <Badge variant="outline" className="bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-300 text-[11px] gap-1 font-semibold">
+          <Clock className="w-3 h-3" /> Awaiting Payment Confirmation
         </Badge>
       );
     }
@@ -578,7 +621,7 @@ export default function ApplicationsPage() {
                       size="sm"
                       variant="outline"
                       onClick={() => {
-                        window.open(getPublicCertificateUrl(app?.certificate?.certificateNumber!), "_blank");
+                        window.open(getPublicCertificateUrl(app?.certificate?.certificateNumber as string), "_blank");
                       }}
                       className="text-xs h-8 gap-1.5 border-emerald-400 text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 font-semibold"
                     >
@@ -809,7 +852,11 @@ export default function ApplicationsPage() {
                   selectedApp.status?.toLowerCase() === "completed") && (
                   <Button
                     size="sm"
-                    onClick={() => setCertificateModalOpen(true)}
+                    // onClick={() => setCertificateModalOpen(true)}
+                       onClick={() => {
+                    const certId = selectedApp.certificate?.certificateNumber ?? selectedApp.certificateNumber ?? selectedApp.id;
+                    window.open(getPublicCertificateUrl(certId), "_blank");
+                  }}
                     className="gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white"
                   >
                     <FileBadge className="h-3.5 w-3.5" /> View Official Certificate

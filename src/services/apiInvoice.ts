@@ -14,6 +14,10 @@ export interface Payment {
   reference: string;
   confirmedAt: string;
   createdAt: string;
+  /** Citizen/staff proof of a manual transfer — set before treasurer confirms. */
+  proofUrl?: string | null;
+  proofUploadedAt?: string | null;
+  proofUploadedById?: string | null;
 }
 
 export interface Receipt {
@@ -75,17 +79,6 @@ export interface InvoiceDetails {
   amount: number;
   paymentStatus: string;
   createdAt: string;
-
-  // Customer
-  customerName: string;
-  customerPhone: string | null;
-
-  // Amounts
-  totalAmount: number;
-  amountPaid: number;
-  balanceDue: number;
-  subtotal: number;
-  penaltyAmount: number;
 
   // Customer
   customerName: string;
@@ -266,6 +259,12 @@ export interface VerifyPaymentResponse {
   alreadyProcessed?: boolean;
   alreadyConfirmed?: boolean;
 
+  /** False when settlement succeeded but the confirmation email did NOT send
+   * (backend then responds with EMAIL_SEND_FAILED and carries this payload in
+   * error.details). */
+  emailSent?: boolean;
+  emailFailReason?: string | null;
+
   // ── GPay only: returned when the intent was already settled before ──
   /** Raw gateway status, e.g. "APPROVED", "REVERSED". */
   rawStatus?: string;
@@ -274,45 +273,46 @@ export interface VerifyPaymentResponse {
 }
 
 // Service functions
-/**
- * A one-shot Providus dynamic virtual account minted for exactly this payment.
- * Expires after ~15 minutes (GPay) and settles automatically via webhook or the
- * public verify poll — no treasurer step. Every field comes from the backend;
- * the browser never holds a merchant key.
- */
-export interface DynamicVirtualAccount {
-  gateway: "gpay";
-  channel: "dynamic_va";
-  reference: string;
-  amount: number;
-  accountNumber: string;
-  accountName: string;
-  bankName: string;
-  qrCode: string | null;
-  ussd: Record<string, string> | null;
-  /** ISO-8601 expiry (15 minutes from creation). */
-  expiresAt: string;
-  /** Convenience countdown seed; recompute from expiresAt client-side. */
-  expiresInSeconds: number;
-  invoiceNumber?: string;
-  serviceId?: string;
-  flow?: "new_application" | "invoice_online" | string;
-  message?: string;
-}
-
-/** Poll result for GET /payments/gpay/dynamic-account/verify/:reference. */
-export interface DynamicPaymentVerifyResult {
-  status: "pending" | "expired" | "confirmed" | "failed" | string;
-  reference?: string;
-  rawStatus?: string;
-  expiresAt?: string | null;
-  alreadyConfirmed?: boolean;
-  flow?: string;
-  /** Present on confirmation — same completion payload as checkout verify. */
-  invoice?: any;
-  receipt?: any;
-  application?: any;
-}
+// ON HOLD — dynamic VA types (see gpay.routes.ts).
+// /**
+//  * A one-shot Providus dynamic virtual account minted for exactly this payment.
+//  * Expires after ~15 minutes (GPay) and settles automatically via webhook or the
+//  * public verify poll — no treasurer step. Every field comes from the backend;
+//  * the browser never holds a merchant key.
+//  */
+// export interface DynamicVirtualAccount {
+//   gateway: "gpay";
+//   channel: "dynamic_va";
+//   reference: string;
+//   amount: number;
+//   accountNumber: string;
+//   accountName: string;
+//   bankName: string;
+//   qrCode: string | null;
+//   ussd: Record<string, string> | null;
+//   /** ISO-8601 expiry (15 minutes from creation). */
+//   expiresAt: string;
+//   /** Convenience countdown seed; recompute from expiresAt client-side. */
+//   expiresInSeconds: number;
+//   invoiceNumber?: string;
+//   serviceId?: string;
+//   flow?: "new_application" | "invoice_online" | string;
+//   message?: string;
+// }
+// 
+// /** Poll result for GET /payments/gpay/dynamic-account/verify/:reference. */
+// export interface DynamicPaymentVerifyResult {
+//   status: "pending" | "expired" | "confirmed" | "failed" | string;
+//   reference?: string;
+//   rawStatus?: string;
+//   expiresAt?: string | null;
+//   alreadyConfirmed?: boolean;
+//   flow?: string;
+//   /** Present on confirmation — same completion payload as checkout verify. */
+//   invoice?: any;
+//   receipt?: any;
+//   application?: any;
+// }
 
 export const invoicesService = {
   // Get unified invoices hub data (stats + ledger)
@@ -351,26 +351,27 @@ export const invoicesService = {
   },
 
 
-  /**
-   * PUBLIC bank-transfer account for a service (no invoice yet).
-   * GET /payments/gpay/virtual-account?serviceId=<service UUID>. Send the
-   * `skip-auth` header so the interceptor strips auth. `api` auto-unwraps the
-   * envelope, so fields are read directly. 404 VIRTUAL_ACCOUNT_UNAVAILABLE
-   * means "unmapped service / inactive / upstream failure" — render the
-   * online-only fallback, it is not a crash.
-   */
-  getVirtualAccountForService: async (
-    serviceId: string,
-  ): Promise<ServiceVirtualAccount> => {
-    return await api.get<ServiceVirtualAccount>(
-      `/payments/gpay/virtual-account?serviceId=${encodeURIComponent(serviceId)}`,
-      {
-        headers: {
-          "skip-auth": "true",
-        },
-      },
-    );
-  },
+// ON HOLD — public apply is card-only; the public reserved-account lookup returns with bank transfer.
+//   /**
+//    * PUBLIC bank-transfer account for a service (no invoice yet).
+//    * GET /payments/gpay/virtual-account?serviceId=<service UUID>. Send the
+//    * `skip-auth` header so the interceptor strips auth. `api` auto-unwraps the
+//    * envelope, so fields are read directly. 404 VIRTUAL_ACCOUNT_UNAVAILABLE
+//    * means "unmapped service / inactive / upstream failure" — render the
+//    * online-only fallback, it is not a crash.
+//    */
+//   getVirtualAccountForService: async (
+//     serviceId: string,
+//   ): Promise<ServiceVirtualAccount> => {
+//     return await api.get<ServiceVirtualAccount>(
+//       `/payments/gpay/virtual-account?serviceId=${encodeURIComponent(serviceId)}`,
+//       {
+//         headers: {
+//           "skip-auth": "true",
+//         },
+//       },
+//     );
+//   },
 
   /**
    * Authenticated bank-transfer account for an existing invoice.
@@ -386,60 +387,79 @@ export const invoicesService = {
   },
 
   /**
-   * PUBLIC dynamic (15-min, auto-confirm) transfer account for the "apply + pay
-   * first" flow. POST /payments/gpay/dynamic-account/public with `skip-auth`.
-   * Unlike the reserved account, this settles automatically (webhook / verify
-   * poll) — no treasurer confirmation needed.
+   * Citizen/staff proof-of-payment upload for a pending invoice bank transfer.
+   * POST /invoices/:invoiceNumber/payment-proof (multipart, field "proof").
+   * Never confirms the payment — the treasurer does that from the worklist.
    */
-  createDynamicPublicPayment: async (data: {
-    serviceId: string;
-    fullName: string;
-    email: string;
-    phone: string;
-  }): Promise<DynamicVirtualAccount> => {
-    return await api.post<DynamicVirtualAccount>(
-      "/payments/gpay/dynamic-account/public",
-      data,
-      {
-        headers: {
-          "skip-auth": "true",
-        },
-      },
-    );
-  },
-
-  /**
-   * Authenticated dynamic (15-min, auto-confirm) transfer account for an
-   * existing invoice. POST /payments/gpay/dynamic-account/invoices/:invoiceNumber
-   * (invoice NUMBER, not id).
-   */
-  createDynamicInvoicePayment: async (
+  uploadPaymentProof: async (
     invoiceNumber: string,
-  ): Promise<DynamicVirtualAccount> => {
-    return await api.post<DynamicVirtualAccount>(
-      `/payments/gpay/dynamic-account/invoices/${encodeURIComponent(invoiceNumber)}`,
-      {},
+    file: File,
+  ): Promise<{ payment: Payment; proofUrl: string; parkedForConfirmation: boolean }> => {
+    const formData = new FormData();
+    formData.append("proof", file);
+    return await api.upload(
+      `/invoices/${encodeURIComponent(invoiceNumber)}/payment-proof`,
+      formData,
     );
   },
 
-  /**
-   * PUBLIC poll for a minted dynamic account.
-   * GET /payments/gpay/dynamic-account/verify/:reference. Drives the 15-min
-   * countdown UI; the webhook is the primary settlement signal, this is the
-   * fallback so the citizen's page updates without a push.
-   */
-  verifyDynamicPayment: async (
-    reference: string,
-  ): Promise<DynamicPaymentVerifyResult> => {
-    return await api.get<DynamicPaymentVerifyResult>(
-      `/payments/gpay/dynamic-account/verify/${encodeURIComponent(reference)}`,
-      {
-        headers: {
-          "skip-auth": "true",
-        },
-      },
-    );
-  },
+
+// ON HOLD — dynamic VA (15-min) methods; routes commented out in gpay.routes.ts.
+//   /**
+//    * PUBLIC dynamic (15-min, auto-confirm) transfer account for the "apply + pay
+//    * first" flow. POST /payments/gpay/dynamic-account/public with `skip-auth`.
+//    * Unlike the reserved account, this settles automatically (webhook / verify
+//    * poll) — no treasurer confirmation needed.
+//    */
+//   createDynamicPublicPayment: async (data: {
+//     serviceId: string;
+//     fullName: string;
+//     email: string;
+//     phone: string;
+//   }): Promise<DynamicVirtualAccount> => {
+//     return await api.post<DynamicVirtualAccount>(
+//       "/payments/gpay/dynamic-account/public",
+//       data,
+//       {
+//         headers: {
+//           "skip-auth": "true",
+//         },
+//       },
+//     );
+//   },
+// 
+//   /**
+//    * Authenticated dynamic (15-min, auto-confirm) transfer account for an
+//    * existing invoice. POST /payments/gpay/dynamic-account/invoices/:invoiceNumber
+//    * (invoice NUMBER, not id).
+//    */
+//   createDynamicInvoicePayment: async (
+//     invoiceNumber: string,
+//   ): Promise<DynamicVirtualAccount> => {
+//     return await api.post<DynamicVirtualAccount>(
+//       `/payments/gpay/dynamic-account/invoices/${encodeURIComponent(invoiceNumber)}`,
+//       {},
+//     );
+//   },
+// 
+//   /**
+//    * PUBLIC poll for a minted dynamic account.
+//    * GET /payments/gpay/dynamic-account/verify/:reference. Drives the 15-min
+//    * countdown UI; the webhook is the primary settlement signal, this is the
+//    * fallback so the citizen's page updates without a push.
+//    */
+//   verifyDynamicPayment: async (
+//     reference: string,
+//   ): Promise<DynamicPaymentVerifyResult> => {
+//     return await api.get<DynamicPaymentVerifyResult>(
+//       `/payments/gpay/dynamic-account/verify/${encodeURIComponent(reference)}`,
+//       {
+//         headers: {
+//           "skip-auth": "true",
+//         },
+//       },
+//     );
+//   },
 
   
   // Public payment initialization for citizen apply flow (Paystack)

@@ -35,6 +35,7 @@ export default function CertificatePublicPage({ params }: CertificatePublicPageP
                   width={80}
                   height={80}
                   className="object-contain animate-pulse opacity-80"
+                  loading='eager'
                 />
               </div>
               <div className="absolute inset-0 flex items-center justify-center">

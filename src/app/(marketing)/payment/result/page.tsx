@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
+  AlertCircle,
   Loader2,
   CheckCircle2,
   XCircle,
@@ -75,6 +76,8 @@ function PaymentResultPage() {
   const [message, setMessage] = useState<string>("");
   const [isNormalFlow, setIsNormalFlow] = useState<boolean>(false);
   const [wasAlreadySettled, setWasAlreadySettled] = useState<boolean>(false);
+  // Set when the payment settled but the confirmation email failed to send.
+  const [emailWarning, setEmailWarning] = useState<string>("");
   // Guards the one-shot mirror of the reference into the URL (see below).
   const mirroredToUrlRef = useRef(false);
 
@@ -151,6 +154,14 @@ function PaymentResultPage() {
           // Terminal state: safe to drop the stash.
           clearPendingPayment();
           mirrorReferenceToUrl();
+          // Backend flags a settled payment whose confirmation email failed.
+          if (res?.emailSent === false) {
+            setEmailWarning(
+              res?.emailFailReason
+                ? `Your payment is confirmed, but the confirmation email could not be sent (${res.emailFailReason}). Contact the LGA with your reference ${reference}.`
+                : `Your payment is confirmed, but the confirmation email could not be sent. Contact the LGA with your reference ${reference}.`,
+            );
+          }
         } else if (isFailed) {
           setState("failed");
           setMessage(
@@ -178,6 +189,34 @@ function PaymentResultPage() {
         const notFound = err?.backendCode === "NOT_FOUND" || err?.status === 404;
         const amountMismatch =
           err?.backendCode === "AMOUNT_MISMATCH" || err?.status === 409;
+        // The backend returns EMAIL_SEND_FAILED when the money settled but the
+        // confirmation/credentials email could not be sent. The payment IS
+        // good — show the confirmed state with an explicit warning instead of
+        // a generic failure (settlement facts arrive in backendDetails).
+        const emailFailed = err?.backendCode === "EMAIL_SEND_FAILED";
+
+        if (emailFailed) {
+          const details = (err?.backendDetails ?? {}) as any;
+          setInvoiceNumber(details?.invoice?.invoiceNumber ?? null);
+          setReceiptNumber(details?.receipt?.receiptNumber ?? null);
+          setApplicationId(
+            details?.application?.id ?? details?.invoice?.applicationId ?? null,
+          );
+          setServiceName(details?.application?.serviceName ?? null);
+          setIsNormalFlow(details?.flow === "new_application");
+          setWasAlreadySettled(false);
+          setState("confirmed");
+          setMessage(
+            "Your payment was confirmed and recorded. Your receipt is ready.",
+          );
+          setEmailWarning(
+            err?.message ||
+              "The confirmation email with your login credentials could not be sent. Contact the LGA help desk with your payment reference.",
+          );
+          clearPendingPayment();
+          mirrorReferenceToUrl();
+          return;
+        }
 
         setState("error");
 
@@ -256,6 +295,15 @@ function PaymentResultPage() {
                 )}
 
                 <p className="text-sm text-muted-foreground">{message}</p>
+
+                {emailWarning && (
+                  <div className="rounded-lg border border-amber-500/40 bg-amber-500/10 p-3 text-sm text-amber-800 dark:text-amber-300 text-left">
+                    <div className="flex items-start gap-2">
+                      <AlertCircle className="h-4 w-4 mt-0.5 shrink-0" />
+                      <span>{emailWarning}</span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {(invoiceNumber || receiptNumber || reference || serviceName) && (

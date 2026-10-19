@@ -42,7 +42,7 @@ import {
   ShieldCheck,
   Loader2,
 } from "lucide-react";
-import {  createOfficer, setOfficerStatus, type LevyCategory } from "@/lib/store";
+import { CreateAccountDialog } from "@/components/lgaAdmin/CreateAccountDialog";
 import { useAuth } from "@/hooks/queries/useAuth";
 import { TreasurerRole, useTreasurerOfficer } from "@/hooks/queries/useTreasurer";
 import { tokenManager } from "@/services/apiAuth";
@@ -67,9 +67,9 @@ export default function FieldOfficersPage() {
   const user = tokenManager.getUser();
 
   // if(!user) return null
-  const { data,isLoading,error } = useTreasurerOfficer(user?.role as TreasurerRole);
+  const { data,isLoading,error, refetch } = useTreasurerOfficer(user?.role as TreasurerRole);
   
-  console.log(data,"tres",user)
+
   const officers = useMemo(() => {
     return data?.officers || [];
   }, [data]);
@@ -88,7 +88,7 @@ export default function FieldOfficersPage() {
   // Filter for contractor view
   const visibleOfficers = useMemo(() => {
     if (userRole === "contractor") {
-      return officers.filter((o: any) => o.contractorId === user?.id);
+      return officers.filter((o: FieldOfficer) => o.createdBy?.id === user?.id);
     }
     return officers;
   }, [officers, userRole, user?.id]);
@@ -108,7 +108,7 @@ export default function FieldOfficersPage() {
   if (isLoading) {
     return (
       <div>
-        <PageHeader title="Field Officers" subtitle="Create, assign and monitor government revenue collection officers" />
+        <PageHeader title="Field Officers" subtitle="Create, assign and monitor service applications, registered users and confirmed service revenue" />
         <div className="flex items-center justify-center min-h-[400px]">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
@@ -119,7 +119,7 @@ export default function FieldOfficersPage() {
   if (error) {
     return (
       <div>
-        <PageHeader title="Field Officers" subtitle="Create, assign and monitor government revenue collection officers" />
+        <PageHeader title="Field Officers" subtitle="Create, assign and monitor service applications, registered users and confirmed service revenue" />
         <div className="text-center py-12">
           <p className="text-red-500 mb-4">Failed to load field officers</p>
           <button 
@@ -137,11 +137,11 @@ export default function FieldOfficersPage() {
     <div>
       <PageHeader
         title="Field Officers"
-        subtitle="Create, assign and monitor government revenue collection officers"
-        action={canManage ? <CreateOfficerDialog /> : undefined}
+        subtitle="Create, assign and monitor service applications, registered users and confirmed service revenue"
+        action={canManage ? <CreateAccountDialog onSuccess={() => { void refetch(); }} /> : undefined}
       />
 
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         <StatCard
           label="Total Officers"
           value={String(stats.totalOfficers || visibleOfficers.length)}
@@ -161,11 +161,12 @@ export default function FieldOfficersPage() {
           color="warning"
         />
         <StatCard
-          label="Total Collected"
-          value={`₦${((stats.totalCollected || visibleOfficers.reduce((s: number, o: any) => s + o.totalCollected, 0)) / 1000).toFixed(1)}K`}
+          label="Confirmed Service Revenue"
+          value={new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(stats.totalCollected)}
           icon={Wallet}
           color="info"
         />
+        <StatCard label="Users Registered" value={String(visibleOfficers.reduce((sum, officer) => sum + (officer.usersRegistered ?? 0), 0))} icon={Users} color="primary" />
       </div>
 
       <Card className="p-0 bg-gradient-card border-border/40 overflow-hidden">
@@ -175,9 +176,9 @@ export default function FieldOfficersPage() {
               <TableRow>
                 <TableHead>Officer</TableHead>
                 <TableHead>Ward</TableHead>
-                <TableHead>Levies</TableHead>
-                <TableHead>Invoices</TableHead>
-                <TableHead>Collected</TableHead>
+                <TableHead>Services</TableHead>
+                <TableHead className="text-center">Users Registered</TableHead>
+                <TableHead className="text-right">Collected</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Created By</TableHead>
                 {/* <TableHead className="text-right">Actions</TableHead> */}
@@ -205,22 +206,32 @@ export default function FieldOfficersPage() {
                   </TableCell>
                   <TableCell>{officer.ward?.name || "-"}</TableCell>
                   <TableCell>
-                    {/* <div className="flex flex-wrap gap-1">
-                      {officer.levies.slice(0, 2).map((levy: string) => (
-                        <Badge key={levy} variant="outline" className="text-[10px]">
-                          {levy.replace(/_/g, ' ')}
-                        </Badge>
-                      ))}
-                      {officer.levies.length > 2 && (
-                        <Badge variant="outline" className="text-[10px]">
-                          +{officer.levies.length - 2}
-                        </Badge>
-                      )}
-                    </div> */}
+                    {officer.services && officer.services.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {officer.services.slice(0, 2).map((svc: string) => (
+                          <Badge
+                            key={svc}
+                            variant="outline"
+                            className="text-[10px]"
+                          >
+                            {svc.replace(/_/g, " ")}
+                          </Badge>
+                        ))}
+                        {officer.services.length > 2 && (
+                          <Badge variant="outline" className="text-[10px]">
+                            +{officer.services.length - 2}
+                          </Badge>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">—</span>
+                    )}
                   </TableCell>
-                  <TableCell className="font-mono text-sm">{officer.totalCollected}</TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {/* ₦{officer.totalCollected.toLocaleString()} */}
+                  <TableCell className="text-center text-xs">
+                    {officer.usersRegistered ?? "-"}
+                  </TableCell>
+                  <TableCell className="text-right font-mono text-sm">
+                    {new Intl.NumberFormat("en-NG", { style: "currency", currency: "NGN" }).format(officer.totalCollected)}
                   </TableCell>
                   <TableCell>
                     <Badge
@@ -252,7 +263,7 @@ export default function FieldOfficersPage() {
               ))}
               {visibleOfficers.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="py-10 text-center text-muted-foreground">
+                  <TableCell colSpan={7} className="py-10 text-center text-muted-foreground">
                     No officers yet. Create your first officer.
                   </TableCell>
                 </TableRow>
@@ -265,153 +276,3 @@ export default function FieldOfficersPage() {
   );
 }
 
-function OfficerActions({ id, status, name }: { id: string; status: string ,name:string}) {
-  const { user } = useAuth();
-  if (!user) return null;
-  const act = (s: "active" | "suspended" | "deactivated") => {
-    setOfficerStatus(id, s, name, user.role);
-    toast.success(`Officer ${s}`);
-  };
-  return (
-    <div className="flex justify-end gap-1">
-      {status !== "active" && (
-        <Button size="sm" variant="outline" onClick={() => act("active")}>
-          <Power className="h-3.5 w-3.5 mr-1" /> Activate
-        </Button>
-      )}
-      {status === "active" && (
-        <Button size="sm" variant="outline" onClick={() => act("suspended")}>
-          <ShieldOff className="h-3.5 w-3.5 mr-1" /> Suspend
-        </Button>
-      )}
-      {status !== "deactivated" && (
-        <Button
-          size="sm"
-          variant="outline"
-          className="text-destructive border-destructive/30"
-          onClick={() => act("deactivated")}
-        >
-          <PowerOff className="h-3.5 w-3.5" />
-        </Button>
-      )}
-    </div>
-  );
-}
-
-function CreateOfficerDialog() {
-  const user = tokenManager.getUser();
-   const { categories:LEVIES } = useRevenueCategories("LEVY");
-    const { wards:WARDS } = useWards();
-  const [open, setOpen] = useState(false);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    ward: "Atan",
-    levy: "Market Levy" as LevyCategory,
-  });
-  if (!user) return null;
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    createOfficer({
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
-      ward: form.ward,
-      levies: [form.levy],
-      status: "active",
-      createdBy: user.firstName,
-      createdByRole: user.role ,
-      contractorId: user.role === "contractor" ? user.id : undefined,
-    });
-    toast.success(`Officer ${form.name} created`);
-    setOpen(false);
-    setForm({ name: "", email: "", phone: "", ward: "Atan", levy: "Market Levy" });
-  };
-  return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-gradient-hero shadow-elegant">
-          <Plus className="h-4 w-4 mr-1.5" /> New Officer
-        </Button>
-      </DialogTrigger>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Create Field Officer</DialogTitle>
-        </DialogHeader>
-        <form onSubmit={submit} className="space-y-3">
-          <div>
-            <Label>Full Name</Label>
-            <Input
-              required
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="mt-1.5"
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label>Email</Label>
-              <Input
-                type="email"
-                required
-                value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="mt-1.5"
-              />
-            </div>
-            <div>
-              <Label>Phone</Label>
-              <Input
-                required
-                value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                className="mt-1.5"
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label>Ward</Label>
-              <Select value={form.ward} onValueChange={(v) => setForm({ ...form, ward: v })}>
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {WARDS.map((w) => (
-                    <SelectItem key={w.id} value={w.id}>
-                      {w.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label>Primary Levy</Label>
-              <Select
-                value={form.levy}
-                onValueChange={(v) => setForm({ ...form, levy: v as LevyCategory })}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {LEVIES.map((l) => (
-                    <SelectItem key={l.id} value={l.id}>
-                      {l.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button type="submit" className="bg-gradient-hero">
-              <Plus className="h-4 w-4 mr-1.5" /> Create Officer
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
-}

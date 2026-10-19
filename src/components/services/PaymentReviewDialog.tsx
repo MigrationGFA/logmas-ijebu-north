@@ -34,37 +34,38 @@ import {
   PAYMENT_PROVIDER_LABELS,
   type PaymentProvider,
 } from "@/config/paymentGateway";
-import type { DynamicVirtualAccount } from "@/services/apiInvoice";
+// import type { DynamicVirtualAccount } from "@/services/apiInvoice";
 import { QRCodeSVG } from "@/components/dashboard/qr-code";
 
-/** Live mm:ss countdown to an ISO expiry. Turns red under 60s. */
-function ExpiryCountdown({ expiresAt }: { expiresAt: string }) {
-  const [now, setNow] = useState(() => Date.now());
-
-  useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-
-  const remaining = Math.max(
-    0,
-    Math.floor((new Date(expiresAt).getTime() - now) / 1000),
-  );
-  const mins = Math.floor(remaining / 60);
-  const secs = remaining % 60;
-  const urgent = remaining <= 60;
-
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 font-mono font-semibold tabular-nums ${
-        urgent ? "text-destructive" : "text-foreground"
-      }`}
-    >
-      <Clock className="h-3.5 w-3.5" />
-      {mins}:{secs.toString().padStart(2, "0")}
-    </span>
-  );
-}
+// ON HOLD — live countdown for the dynamic 15-minute transfer account.
+// /** Live mm:ss countdown to an ISO expiry. Turns red under 60s. */
+// function ExpiryCountdown({ expiresAt }: { expiresAt: string }) {
+//   const [now, setNow] = useState(() => Date.now());
+// 
+//   useEffect(() => {
+//     const id = setInterval(() => setNow(Date.now()), 1000);
+//     return () => clearInterval(id);
+//   }, []);
+// 
+//   const remaining = Math.max(
+//     0,
+//     Math.floor((new Date(expiresAt).getTime() - now) / 1000),
+//   );
+//   const mins = Math.floor(remaining / 60);
+//   const secs = remaining % 60;
+//   const urgent = remaining <= 60;
+// 
+//   return (
+//     <span
+//       className={`inline-flex items-center gap-1.5 font-mono font-semibold tabular-nums ${
+//         urgent ? "text-destructive" : "text-foreground"
+//       }`}
+//     >
+//       <Clock className="h-3.5 w-3.5" />
+//       {mins}:{secs.toString().padStart(2, "0")}
+//     </span>
+//   );
+// }
 
 /**
  * A dedicated virtual account for this specific payment.
@@ -98,23 +99,36 @@ export interface PaymentReviewDialogProps {
   fee: number;
   provider: PaymentProvider;
   isProcessing: boolean;
-  /** Only pass this once the backend can also reconcile the transfer. */
-  virtualAccount?: VirtualAccountDetails | null;
-  /** One-shot 15-min Providus account (auto-confirms). Present once minted. */
-  dynamicAccount?: DynamicVirtualAccount | null;
-  /** True while the dynamic account is being created. */
-  isCreatingDynamicAccount?: boolean;
-  /** Error from the last dynamic-account creation attempt, if any. */
-  dynamicAccountError?: string;
-  /** Mint the dynamic account (starts the 15-min clock). */
-  onStartDynamicTransfer?: () => void;
-  /** Poll the gateway for settlement of the minted dynamic account. */
-  onCheckDynamicStatus?: () => void;
-  /** True while a dynamic-account status poll is in flight. */
-  isCheckingDynamicStatus?: boolean;
+// ON HOLD (public apply = card only): reserved/dynamic account + proof props — restore with the static tab below.
+//   /** Only pass this once the backend can also reconcile the transfer. */
+//   virtualAccount?: VirtualAccountDetails | null;
+//   /** Static (reserved) account details returned by the gateway.
+//    * Used when the service does not use the one-shot dynamic transfer flow.
+//    */
+//   staticAccount?: VirtualAccountDetails | null;
+//   /** One-shot 15-min Providus account (auto-confirms). Present once minted. */
+//   dynamicAccount?: DynamicVirtualAccount | null;
+//   /** True while the dynamic account is being created. */
+//   isCreatingDynamicAccount?: boolean;
+//   /** Error from the last dynamic-account creation attempt, if any. */
+//   dynamicAccountError?: string;
+//   /** Static account reference. Present if the service uses a reserved account. */
+//   staticAccountReference?: string | null;
+//   /** Why the reserved account could not be loaded, when the fetch failed. */
+//   staticAccountError?: string;
+//   /** Callback to upload proof of payment for the static account. */
+//   onUploadProof?: (paymentId: string, file: File) => void;
+//   /** Whether the proof has been uploaded. */
+//   proofUploaded?: boolean;
+//   /** Mint the dynamic account (starts the 15-min clock). */
+//   onStartDynamicTransfer?: () => void;
+//   /** Poll the gateway for settlement of the minted dynamic account. */
+//   onCheckDynamicStatus?: () => void;
+//   /** True while a dynamic-account status poll is in flight. */
+//   isCheckingDynamicStatus?: boolean;
   onCheckout: () => void;
   onEditDetails: () => void;
-  onCheckTransferStatus?: () => void;
+//   onCheckTransferStatus?: () => void;
 }
 
 export function PaymentReviewDialog({
@@ -128,12 +142,17 @@ export function PaymentReviewDialog({
   fee,
   provider,
   isProcessing,
-  dynamicAccount,
-  isCreatingDynamicAccount,
-  dynamicAccountError,
-  onStartDynamicTransfer,
-  onCheckDynamicStatus,
-  isCheckingDynamicStatus,
+//   staticAccount,
+//   dynamicAccount,
+//   isCreatingDynamicAccount,
+//   dynamicAccountError,
+//   staticAccountReference,
+//   staticAccountError,
+//   onUploadProof,
+//   proofUploaded,
+//   onStartDynamicTransfer,
+//   onCheckDynamicStatus,
+//   isCheckingDynamicStatus,
   onCheckout,
   onEditDetails,
 }: PaymentReviewDialogProps) {
@@ -172,46 +191,46 @@ export function PaymentReviewDialog({
   // Instant transfer mints a real, amount-bound account and the receipt is
   // emailed to the applicant — so it gets the same email-confirmation gate as
   // checkout. A payer who skipped the field gets a pointer back to it.
-  const handleStartDynamic = () => {
-    if (!emailsMatch) {
-      setConfirmError(
-        "Confirm your email address above before generating a transfer account. Your receipt and login details are matched to this address.",
-      );
-      return;
-    }
-    onStartDynamicTransfer?.();
-  };
+//   const handleStartDynamic = () => {
+//     if (!emailsMatch) {
+//       setConfirmError(
+//         "Confirm your email address above before generating a transfer account. Your receipt and login details are matched to this address.",
+//       );
+//       return;
+//     }
+//     onStartDynamicTransfer?.();
+//   };
 
   // Ticks once a second while a minted account is displayed so a lapsed 15-min
   // account can offer "Generate new account" instead of a dead countdown.
-  const [now, setNow] = useState(() => Date.now());
-  useEffect(() => {
-    if (!open || !dynamicAccount) return;
-    setNow(Date.now());
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, [open, dynamicAccount]);
-  const dynamicExpired =
-    !!dynamicAccount &&
-    new Date(dynamicAccount.expiresAt).getTime() <= now;
+//   const [now, setNow] = useState(() => Date.now());
+//   useEffect(() => {
+//     if (!open || !dynamicAccount) return;
+//     setNow(Date.now());
+//     const id = setInterval(() => setNow(Date.now()), 1000);
+//     return () => clearInterval(id);
+//   }, [open, dynamicAccount]);
+//   const dynamicExpired =
+//     !!dynamicAccount &&
+//     new Date(dynamicAccount.expiresAt).getTime() <= now;
 
   const handleClose = () => {
     if (isProcessing) return;
     onOpenChange(false);
   };
 
-  const copyDynamic = async (text: string, message: string) => {
-    try {
-      await navigator.clipboard.writeText(text);
-      toast.success(message);
-    } catch {
-      toast.error("Could not copy. Please write it down manually.");
-    }
-  };
+//   const copyDynamic = async (text: string, message: string) => {
+//     try {
+//       await navigator.clipboard.writeText(text);
+//       toast.success(message);
+//     } catch {
+//       toast.error("Could not copy. Please write it down manually.");
+//     }
+//   };
 
-  const dynamicUssdList = dynamicAccount?.ussd
-    ? Object.entries(dynamicAccount.ussd)
-    : [];
+//   const dynamicUssdList = dynamicAccount?.ussd
+//     ? Object.entries(dynamicAccount.ussd)
+//     : [];
 
   const summaryRows: { label: string; value: string }[] = [
     { label: "Statutory service", value: serviceName },
@@ -326,9 +345,11 @@ export function PaymentReviewDialog({
               <TabsTrigger value="online" className="flex-1">
                 <CreditCard className="mr-1.5 h-4 w-4" /> Pay online
               </TabsTrigger>
-              <TabsTrigger value="auto" className="flex-1">
-                <Zap className="mr-1.5 h-4 w-4" /> Bank transfer
+{/* ON HOLD — bank transfer (static) tab trigger; public apply shows card payment only.
+              <TabsTrigger value="static" className="flex-1">
+                <FileCheck2 className="mr-1.5 h-4 w-4" /> Bank transfer (static)
               </TabsTrigger>
+*/}
             </TabsList>
 
             <TabsContent
@@ -371,256 +392,162 @@ export function PaymentReviewDialog({
               </Button>
             </TabsContent>
 
+{/* ON HOLD — public apply is card-only. Restore the bank-transfer tab trigger above to bring this panel back.
             <TabsContent
-              value="auto"
+              value="static"
               className="p-4 rounded-lg border border-border/60 bg-background space-y-3"
             >
-              {isCreatingDynamicAccount ? (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground py-6 justify-center">
-                  <Loader2 className="h-4 w-4 animate-spin" /> Creating your
-                  transfer account...
-                </div>
-              ) : dynamicAccountError ? (
+              {staticAccount ? (
                 <>
                   <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
-                    We could not create a transfer account
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {dynamicAccountError}
-                  </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={handleStartDynamic}
-                    disabled={isProcessing}
-                  >
-                    <RefreshCw className="mr-1.5 h-3.5 w-3.5" /> Try again
-                  </Button>
-                </>
-              ) : dynamicAccount ? (
-                <>
-                {dynamicExpired ? (
-                  <div className="rounded-lg border border-amber-500/50 bg-amber-50 p-3 space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                      <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
-                      This transfer account has expired
-                    </div>
-                    <p className="text-xs text-muted-foreground">
-                      The 15-minute window has closed. Generate a new account to
-                      continue. If you already sent money to the expired
-                      account, it is still reconciled automatically — we check
-                      it for settlement before minting the new one.
-                    </p>
-                    {onStartDynamicTransfer ? (
-                      <Button
-                        type="button"
-                        className="w-full bg-gradient-hero text-primary-foreground font-semibold shadow-elegant"
-                        onClick={handleStartDynamic}
-                        disabled={isProcessing || isCreatingDynamicAccount}
-                      >
-                        {isCreatingDynamicAccount ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
-                            Checking your previous transfer...
-                          </>
-                        ) : (
-                          <>
-                            <RefreshCw className="mr-1.5 h-4 w-4" /> Generate
-                            new account
-                          </>
-                        )}
-                      </Button>
-                    ) : null}
-                  </div>
-                ) : (
-                  <>
-                <div className="flex items-center justify-between gap-2">
-                  <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                    Transfer to this account
-                  </div>
-                  <ExpiryCountdown expiresAt={dynamicAccount.expiresAt} />
-                </div>
-                <div className="flex items-center justify-between gap-2">
-                  <div>
-                    <div className="text-2xl font-mono font-bold">
-                      {dynamicAccount.accountNumber}
-                    </div>
-                    <div className="text-xs text-muted-foreground mt-1">
-                      {dynamicAccount.bankName} &bull;{" "}
-                      {dynamicAccount.accountName}
-                    </div>
-                  </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() =>
-                      copyDynamic(
-                        dynamicAccount.accountNumber,
-                        "Account number copied",
-                      )
-                    }
-                  >
-                    <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy
-                  </Button>
-                </div>
-
-                <dl className="divide-y divide-border/40 rounded-lg border border-border/60">
-                  <div className="flex items-center justify-between px-3 py-2 text-xs">
-                    <dt className="text-muted-foreground">Amount to pay</dt>
-                    <dd className="font-semibold text-foreground">
-                      &#8358;{dynamicAccount.amount.toLocaleString()}
-                    </dd>
-                  </div>
-                  <div className="flex items-center justify-between gap-2 px-3 py-2 text-xs">
-                    <dt className="text-muted-foreground">
-                      Transfer reference
-                    </dt>
-                    <dd className="flex items-center gap-2">
-                      <span className="font-mono font-semibold text-foreground">
-                        {dynamicAccount.reference}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          copyDynamic(
-                            dynamicAccount.reference,
-                            "Reference copied",
-                          )
-                        }
-                        className="inline-flex items-center gap-1 rounded-md border border-border/60 px-1.5 py-0.5 text-[11px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60"
-                      >
-                        <Copy className="h-3 w-3" /> Copy
-                      </button>
-                    </dd>
-                  </div>
-                </dl>
-
-                {dynamicAccount.qrCode ? (
-                  <div className="rounded-lg border border-border/60 p-3 text-center">
-                    {/^(https?:|data:image\/)/i.test(dynamicAccount.qrCode) ? (
-                      <img
-                        src={dynamicAccount.qrCode}
-                        alt="Scan to pay (NQR)"
-                        className="mx-auto h-28 w-28 object-contain"
-                      />
-                    ) : (
-                      // GPay returned the raw EMVCo NQR string rather than an
-                      // image URL — render it with the shared QR component.
-                      <QRCodeSVG
-                        value={dynamicAccount.qrCode}
-                        size={112}
-                        className="mx-auto"
-                      />
-                    )}
-                    <p className="mt-1 text-[11px] text-muted-foreground">
-                      Scan this NQR code with your bank app to pay.
-                    </p>
-                  </div>
-                ) : null}
-
-                {dynamicUssdList.length > 0 ? (
-                  <div className="rounded-lg border border-border/60 p-3 space-y-1.5">
-                    <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                      Or pay by USSD
-                    </div>
-                    {dynamicUssdList.slice(0, 4).map(([bank, code]) => (
-                      <div
-                        key={bank}
-                        className="flex items-center justify-between gap-2 text-xs"
-                      >
-                        <span className="text-muted-foreground">{bank}</span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            copyDynamic(code, `${bank} USSD copied`)
-                          }
-                          className="font-mono font-semibold text-foreground hover:text-primary"
-                        >
-                          {code}
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                ) : null}
-
-                <p className="text-xs text-muted-foreground">
-                  Transfer the exact amount before the timer runs out. This
-                  account is{" "}
-                  <span className="font-semibold text-foreground">
-                    auto-confirmed
-                  </span>{" "}
-                  — no treasurer step needed. Your portal account is created the
-                  moment payment settles.
-                </p>
-
-                {onCheckDynamicStatus ? (
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="w-full"
-                    onClick={onCheckDynamicStatus}
-                    disabled={isCheckingDynamicStatus}
-                  >
-                    {isCheckingDynamicStatus ? (
-                      <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
-                        Checking payment...
-                      </>
-                    ) : (
-                      <>
-                        <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" /> I have
-                        paid — check now
-                      </>
-                    )}
-                  </Button>
-                ) : null}
-                </>
-                )}
-                </>
-              ) : (
-                <>
-                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                    <Zap className="h-4 w-4 text-primary shrink-0" /> Bank
-                    transfer (auto-confirms in 15 min)
+                    <FileCheck2 className="h-4 w-4 text-primary shrink-0" />
+                    Bank transfer (static)
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    We will generate a dedicated Providus Bank account for
-                    exactly{" "}
+                    A reserved account has been set up for this service. Use the
+                    details below to pay the exact amount{" "}
                     <span className="font-semibold text-foreground">
                       &#8358;{fee.toLocaleString()}
                     </span>
-                    . It stays open for 15 minutes and confirms your payment
-                    automatically — no waiting for a treasurer.
+                    . Your payment will be reviewed and confirmed by the
+                    treasurer.
                   </p>
-                  {onStartDynamicTransfer ? (
-                    <Button
-                      type="button"
-                      className="w-full bg-gradient-hero text-primary-foreground font-semibold shadow-elegant"
-                      onClick={handleStartDynamic}
-                      disabled={isProcessing || isCreatingDynamicAccount}
-                    >
-                      {isCreatingDynamicAccount ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />{" "}
-                          Generating...
-                        </>
-                      ) : (
-                        <>
-                          <Zap className="mr-1.5 h-4 w-4" /> Generate transfer
-                          account
-                        </>
-                      )}
-                    </Button>
+                  <div className="rounded-lg border border-border/60 bg-muted/30 space-y-3 p-3">
+                    <div>
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Account number
+                      </div>
+                      <div className="mt-1 flex items-center justify-between gap-2">
+                        <span className="break-all font-mono text-sm text-foreground">
+                          {staticAccount.accountNumber}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            copyDynamic(
+                              staticAccount.accountNumber,
+                              "Account number copied",
+                            )
+                          }
+                        >
+                          <Copy className="h-3.5 w-3.5 mr-1.5" /> Copy
+                        </Button>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Bank
+                      </div>
+                      <div className="text-sm text-foreground">
+                        {staticAccount.bankName}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Account name
+                      </div>
+                      <div className="text-sm text-foreground">
+                        {staticAccount.accountName}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Transfer reference
+                      </div>
+                      <div className="mt-1 flex items-center justify-between gap-2">
+                        <span className="break-all font-mono text-sm font-semibold text-foreground">
+                          {staticAccount.reference}
+                        </span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() =>
+                            copyDynamic(
+                              staticAccount.reference,
+                              "Reference copied",
+                            )
+                          }
+                        >
+                          <Copy className="h-3.5 w-3.5 mr-1.5" /> Copy
+                        </Button>
+                      </div>
+                      <p className="mt-1 text-[11px] text-muted-foreground">
+                        Quote this reference in the transfer narration so the
+                        treasury can match your payment.
+                      </p>
+                    </div>
+                    <div>
+                      <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                        Amount
+                      </div>
+                      <div className="text-lg font-bold text-foreground">
+                        &#8358;{(staticAccount.expectedAmount ?? staticAccount.amount).toLocaleString()}
+                      </div>
+                    </div>
+                  </div>
+                  {onUploadProof ? (
+                    <div className="rounded-lg border border-border/60 bg-muted/30 p-3 space-y-3">
+                      <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                        <FileCheck2 className="h-4 w-4 text-primary shrink-0" />
+                        Upload proof of payment
+                      </div>
+                      <p className="text-xs text-muted-foreground">
+                        Upload a screenshot or PDF of your transfer to speed up
+                        treasurer confirmation.
+                      </p>
+                      <Label htmlFor="proof-upload">Proof of payment (PNG, JPG, PDF)</Label>
+                      <Input
+                        id="proof-upload"
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.pdf"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            onUploadProof("", file);
+                          }
+                        }}
+                      />
+                      {proofUploaded ? (
+                        <p className="text-xs text-emerald-600">
+                          <CheckCircle2 className="inline h-3.5 w-3.5 mr-1" />
+                          Proof uploaded and linked to your account.
+                        </p>
+                      ) : null}
+                    </div>
                   ) : null}
                 </>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                    <FileCheck2 className="h-4 w-4 text-primary shrink-0" />
+                    Bank transfer (static)
+                  </div>
+                  {staticAccountError ? (
+                    <>
+                      <p className="text-sm text-muted-foreground">
+                        {staticAccountError}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        You can still use the Pay online tab to complete this
+                        payment.
+                      </p>
+                    </>
+                  ) : (
+                    <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <Loader2 className="h-4 w-4 animate-spin shrink-0" />
+                      Loading this service&apos;s reserved bank account...
+                    </p>
+                  )}
+                </div>
               )}
             </TabsContent>
-          </Tabs>
-        </div>
+*/}
 
+        </Tabs>
+        </div>
         <DialogFooter className="sm:justify-between gap-2">
           <Button
             type="button"

@@ -13,7 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { ServiceApplicationGuideSteps } from "./ServiceApplicationGuideSteps";
-import { invoicesService, type DynamicVirtualAccount, type ServiceVirtualAccount } from "@/services/apiInvoice";
+import { invoicesService } from "@/services/apiInvoice";
+// import { invoicesService, type DynamicVirtualAccount, type ServiceVirtualAccount } from "@/services/apiInvoice";
 import { toast } from "sonner";
 import {
   User,
@@ -78,21 +79,21 @@ function PublicServiceApplyWidgetInner({
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [virtualAccount, setVirtualAccount] = useState<
-    import("@/components/services/PaymentReviewDialog").VirtualAccountDetails | null
-  >(null);
-  const [virtualAccountError, setVirtualAccountError] = useState("");
+//   const [virtualAccount, setVirtualAccount] = useState<
+//     import("@/components/services/PaymentReviewDialog").VirtualAccountDetails | null
+//   >(null);
+//   const [virtualAccountError, setVirtualAccountError] = useState("");
   const [formError, setFormError] = useState("");
   // Applicant details are reviewed in a dialog before any checkout session is
   // created, so nothing is charged until they confirm there.
   const [isReviewOpen, setIsReviewOpen] = useState(false);
 
   // ── Dynamic (15-min, auto-confirm) transfer account ──────────────────────
-  const [dynamicAccount, setDynamicAccount] =
-    useState<DynamicVirtualAccount | null>(null);
-  const [dynamicAccountError, setDynamicAccountError] = useState("");
-  const [isCreatingDynamic, setIsCreatingDynamic] = useState(false);
-  const [isCheckingDynamic, setIsCheckingDynamic] = useState(false);
+//   const [dynamicAccount, setDynamicAccount] =
+//     useState<DynamicVirtualAccount | null>(null);
+//   const [dynamicAccountError, setDynamicAccountError] = useState("");
+//   const [isCreatingDynamic, setIsCreatingDynamic] = useState(false);
+//   const [isCheckingDynamic, setIsCheckingDynamic] = useState(false);
 
   // Sync state when URL serviceId or initialServiceId changes
   useEffect(() => {
@@ -135,46 +136,47 @@ function PublicServiceApplyWidgetInner({
   // within a 60-min reuse window). serviceId MUST be the service UUID from
   // useServices() — a code string (e.g. "certificate_of_origin") returns
   // NOT_FOUND. Any 404/400 lands on the online-only fallback, never a crash.
-  useEffect(() => {
-    if (!isReviewOpen || !selectedService?.id) return;
-    const serviceId = selectedService.id;
-    let cancelled = false;
-    setVirtualAccountError("");
-
-    const applyVa = (va: ServiceVirtualAccount) => {
-      if (cancelled) return;
-      setVirtualAccount({
-        accountNumber: va.accountNumber,
-        bankName: va.bankName,
-        accountName: va.accountName,
-        reference: va.reference,
-        amount: va.expectedAmount,
-        expectedAmount: va.expectedAmount,
-        invoiceNumber: null,
-      });
-    };
-
-    const cached = reservedVaCache.get(serviceId);
-    if (cached) {
+// ON HOLD — public apply shows card payment only; no reserved-account fetch.
+//   useEffect(() => {
+//     if (!isReviewOpen || !selectedService?.id) return;
+//     const serviceId = selectedService.id;
+//     let cancelled = false;
+//     setVirtualAccountError("");
+// 
+//     const applyVa = (va: ServiceVirtualAccount) => {
+//       if (cancelled) return;
+//       setVirtualAccount({
+//         accountNumber: va.accountNumber,
+//         bankName: va.bankName,
+//         accountName: va.accountName,
+//         reference: va.reference,
+//         amount: va.expectedAmount,
+//         expectedAmount: va.expectedAmount,
+//         invoiceNumber: null,
+//       });
+//     };
+// 
+//     const cached = reservedVaCache.get(serviceId);
+//     if (cached) {
       // Served from cache — no network call, no rate-limit hit.
-      applyVa(cached);
-    } else {
-      invoicesService
-        .getVirtualAccountForService(serviceId)
-        .then((va) => {
-          reservedVaCache.set(serviceId, va);
-          applyVa(va);
-        })
-        .catch((err: any) => {
-          if (cancelled) return;
-          setVirtualAccount(null);
-          setVirtualAccountError(err?.message || "Bank transfer unavailable");
-        });
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [isReviewOpen, selectedService?.id]);
+//       applyVa(cached);
+//     } else {
+//       invoicesService
+//         .getVirtualAccountForService(serviceId)
+//         .then((va) => {
+//           reservedVaCache.set(serviceId, va);
+//           applyVa(va);
+//         })
+//         .catch((err: any) => {
+//           if (cancelled) return;
+//           setVirtualAccount(null);
+//           setVirtualAccountError(err?.message || "Bank transfer unavailable");
+//         });
+//     }
+//     return () => {
+//       cancelled = true;
+//     };
+//   }, [isReviewOpen, selectedService?.id]);
 
   // Calculate required documents
   const requiredDocuments: string[] = useMemo(() => {
@@ -365,104 +367,105 @@ function PublicServiceApplyWidgetInner({
   // Poll the gateway for settlement of the minted dynamic account. On confirm
   // we redirect to the shared result page — settlement (invoice/receipt/portal
   // account) already happened server-side inside settleIntent.
-  const pollDynamicStatus = async (reference: string): Promise<boolean> => {
-    try {
-      const result = await invoicesService.verifyDynamicPayment(reference);
-      if (result.status === "confirmed") {
-        toast.success("Payment confirmed — preparing your receipt...");
-        window.location.href = `/payment/result?reference=${encodeURIComponent(
-          reference,
-        )}`;
-        return true;
-      }
-      if (result.status === "failed" || result.status === "expired") {
-        setDynamicAccountError(
-          "This transfer account has expired. Please generate a new one.",
-        );
-        toast.error(
-          "No confirmed payment on this account yet. If you already transferred, the bank may still be processing — try again shortly or generate a new account.",
-        );
-        return false;
-      }
+// ON HOLD — dynamic 15-min VA flow; restore together with gpay.routes.ts (routes commented out there).
+//   const pollDynamicStatus = async (reference: string): Promise<boolean> => {
+//     try {
+//       const result = await invoicesService.verifyDynamicPayment(reference);
+//       if (result.status === "confirmed") {
+//         toast.success("Payment confirmed — preparing your receipt...");
+//         window.location.href = `/payment/result?reference=${encodeURIComponent(
+//           reference,
+//         )}`;
+//         return true;
+//       }
+//       if (result.status === "failed" || result.status === "expired") {
+//         setDynamicAccountError(
+//           "This transfer account has expired. Please generate a new one.",
+//         );
+//         toast.error(
+//           "No confirmed payment on this account yet. If you already transferred, the bank may still be processing — try again shortly or generate a new account.",
+//         );
+//         return false;
+//       }
       // Still pending — say so explicitly. A silent return makes the button
       // look like it did nothing.
-      toast.info(
-        "Your transfer has not settled yet. Bank transfers can take a few minutes — tap \"I have paid\" again after a while.",
-      );
-      return false;
-    } catch (err: any) {
-      console.error("Dynamic payment poll failed:", err);
-      toast.error(
-        "Could not verify the payment just now. Please check your connection and try again.",
-      );
-    }
-    return false;
-  };
-
-  const handleCheckDynamicStatus = async () => {
-    if (!dynamicAccount) return;
-    setIsCheckingDynamic(true);
-    await pollDynamicStatus(dynamicAccount.reference);
-    setIsCheckingDynamic(false);
-  };
-
-  const handleStartDynamicTransfer = async () => {
-    setFormError("");
-    setDynamicAccountError("");
-
+//       toast.info(
+//         "Your transfer has not settled yet. Bank transfers can take a few minutes — tap \"I have paid\" again after a while.",
+//       );
+//       return false;
+//     } catch (err: any) {
+//       console.error("Dynamic payment poll failed:", err);
+//       toast.error(
+//         "Could not verify the payment just now. Please check your connection and try again.",
+//       );
+//     }
+//     return false;
+//   };
+// 
+//   const handleCheckDynamicStatus = async () => {
+//     if (!dynamicAccount) return;
+//     setIsCheckingDynamic(true);
+//     await pollDynamicStatus(dynamicAccount.reference);
+//     setIsCheckingDynamic(false);
+//   };
+// 
+//   const handleStartDynamicTransfer = async () => {
+//     setFormError("");
+//     setDynamicAccountError("");
+// 
     // If we already minted an account and its 15-min timer lapsed, re-check it
     // BEFORE creating a new one. Money sent into an expired account is NOT lost
     // — the gateway/webhook still settles it against this same reference — so we
     // must confirm it rather than silently abandoning the payer into a new VA.
-    if (dynamicAccount) {
-      setIsCheckingDynamic(true);
-      const alreadyPaid = await pollDynamicStatus(dynamicAccount.reference);
-      setIsCheckingDynamic(false);
-      if (alreadyPaid) return; // confirmed -> already redirected to /payment/result
-      toast.info(
-        "No payment found on the previous account yet. Generating a fresh one — a transfer already made is still reconciled automatically.",
-      );
-    }
-
-    const { error, phone: formattedPhone } = validateDetails();
-    if (error) {
-      setFormError(error);
-      toast.error(error);
-      return;
-    }
-
-    const serviceId = selectedService?.id || selectedServiceId;
-    setIsCreatingDynamic(true);
-    try {
-      const va = await invoicesService.createDynamicPublicPayment({
-        serviceId,
-        fullName: fullName.trim(),
-        email: email.trim(),
-        phone: formattedPhone,
-      });
-      setDynamicAccount(va);
+//     if (dynamicAccount) {
+//       setIsCheckingDynamic(true);
+//       const alreadyPaid = await pollDynamicStatus(dynamicAccount.reference);
+//       setIsCheckingDynamic(false);
+//       if (alreadyPaid) return; // confirmed -> already redirected to /payment/result
+//       toast.info(
+//         "No payment found on the previous account yet. Generating a fresh one — a transfer already made is still reconciled automatically.",
+//       );
+//     }
+// 
+//     const { error, phone: formattedPhone } = validateDetails();
+//     if (error) {
+//       setFormError(error);
+//       toast.error(error);
+//       return;
+//     }
+// 
+//     const serviceId = selectedService?.id || selectedServiceId;
+//     setIsCreatingDynamic(true);
+//     try {
+//       const va = await invoicesService.createDynamicPublicPayment({
+//         serviceId,
+//         fullName: fullName.trim(),
+//         email: email.trim(),
+//         phone: formattedPhone,
+//       });
+//       setDynamicAccount(va);
       // Stash so /payment/result can verify even if the tab navigates away.
-      stashPendingPayment(va.reference, "gpay");
-      sessionStorage.setItem("publicPaymentServiceId", serviceId);
-      toast.success("Transfer account ready — it expires in 15 minutes.");
-    } catch (err: any) {
-      console.error("Dynamic account creation failed:", err);
-      const msg =
-        err?.message ||
-        err?.response?.data?.message ||
-        "Could not create a transfer account. Please try the online option.";
-      setDynamicAccountError(msg);
-      toast.error(msg);
-    } finally {
-      setIsCreatingDynamic(false);
-    }
-  };
-
+//       stashPendingPayment(va.reference, "gpay");
+//       sessionStorage.setItem("publicPaymentServiceId", serviceId);
+//       toast.success("Transfer account ready — it expires in 15 minutes.");
+//     } catch (err: any) {
+//       console.error("Dynamic account creation failed:", err);
+//       const msg =
+//         err?.message ||
+//         err?.response?.data?.message ||
+//         "Could not create a transfer account. Please try the online option.";
+//       setDynamicAccountError(msg);
+//       toast.error(msg);
+//     } finally {
+//       setIsCreatingDynamic(false);
+//     }
+//   };
+// 
   // A minted account is tied to one amount; reset it if the service changes.
-  useEffect(() => {
-    setDynamicAccount(null);
-    setDynamicAccountError("");
-  }, [selectedServiceId]);
+//   useEffect(() => {
+//     setDynamicAccount(null);
+//     setDynamicAccountError("");
+//   }, [selectedServiceId]);
 
   return (
     <div
@@ -763,25 +766,28 @@ function PublicServiceApplyWidgetInner({
         fee={statutoryFee}
         provider={getActivePaymentProvider()}
         isProcessing={isProcessing}
-        virtualAccount={virtualAccount}
-        dynamicAccount={dynamicAccount}
-        isCreatingDynamicAccount={isCreatingDynamic}
-        dynamicAccountError={dynamicAccountError}
-        isCheckingDynamicStatus={isCheckingDynamic}
-        onStartDynamicTransfer={handleStartDynamicTransfer}
-        onCheckDynamicStatus={handleCheckDynamicStatus}
+//         virtualAccount={virtualAccount}
+//         staticAccount={virtualAccount}
+//         staticAccountError={virtualAccountError}
+//         dynamicAccount={dynamicAccount}
+//         isCreatingDynamicAccount={isCreatingDynamic}
+//         dynamicAccountError={dynamicAccountError}
+//         isCheckingDynamicStatus={isCheckingDynamic}
+//         onStartDynamicTransfer={handleStartDynamicTransfer}
+//         onCheckDynamicStatus={handleCheckDynamicStatus}
         onCheckout={startCheckout}
         onEditDetails={() => setIsReviewOpen(false)}
-        onCheckTransferStatus={() => setIsReviewOpen(false)}
+//         onCheckTransferStatus={() => setIsReviewOpen(false)}
       />
     </div>
   );
 }
 
+// ON HOLD — public apply shows card payment only; the reserved-VA cache returns with bank transfer.
 // Reserved (static) VA is stable per service and its endpoint is rate-limited
 // (60 req / 15 min). Cache at module scope so reopening the review dialog or
 // re-entering the payment tab never re-hits the gateway for the same service.
-const reservedVaCache = new Map<string, ServiceVirtualAccount>();
+// const reservedVaCache = new Map<string, ServiceVirtualAccount>();
 
 export function PublicServiceApplyWidget(props: PublicServiceApplyWidgetProps) {
   return (

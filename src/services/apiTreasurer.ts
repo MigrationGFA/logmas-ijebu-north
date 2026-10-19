@@ -202,6 +202,8 @@ export interface FieldOfficer {
   } | null;
   status: "active" | "suspended" | "deactivated";
   totalCollected: number;
+  services?: string[];
+  usersRegistered?: number;
   createdAt: string;
   createdBy: {
     id: string;
@@ -424,6 +426,7 @@ export interface AwaitingConfirmationPayment {
   proofUrl: string | null;
   proofUploadedAt: string | null;
   proofUploadedBy: { id: string; firstName: string; lastName: string } | null;
+  confirmedAt?: string | null;
   createdAt: string;
 }
 
@@ -434,6 +437,7 @@ export interface AwaitingConfirmationApplication {
   fullName: string;
   email: string;
   phone: string | null;
+  declineReason?: string | null;
   createdAt: string;
   service: { id: string; name: string; code: string };
   applicant: {
@@ -453,6 +457,8 @@ export interface AwaitingConfirmationApplication {
     id: string;
     invoiceNumber: string;
     amount: number;
+    virtualBankName?: string | null;
+    virtualAccountNumber?: string | null;
     payments: AwaitingConfirmationPayment[];
   } | null;
 }
@@ -530,7 +536,7 @@ export const treasurerService = {
    * GET /treasurer/applications/awaiting-confirmation
    * Worklist of applications parked at `awaiting_payment_confirmation`.
    */
-  listAwaitingConfirmation: (params?: { page?: number; limit?: number }) =>
+  listAwaitingConfirmation: (params?: { page?: number; limit?: number; status?: string }) =>
     api.get<PaginatedResponse<AwaitingConfirmationApplication>>(
       "/treasurer/applications/awaiting-confirmation",
       { params },

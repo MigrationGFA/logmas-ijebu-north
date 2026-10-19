@@ -153,13 +153,13 @@ function ReviewDialog({ app, canDecide, councillor }: ReviewDialogProps) {
 
   const handleViewCertificate = () => {
     const certToken =
-      app.certificate?.certificateNumber ||
-      app.certificate?.verificationCode ||
-      app.certificate?.qrToken ||
-      app.certificate?.id ||
-      app.certificateNumber ||
-      app.verificationCode ||
-      app.qrToken ||
+      app.certificate?.certificateNumber ??
+      app.certificate?.verificationCode ??
+      app.certificate?.qrToken ??
+      app.certificate?.id ??
+      app.certificateNumber ??
+      app.verificationCode ??
+      app.qrToken ??
       app.id;
 
     if (!certToken) {

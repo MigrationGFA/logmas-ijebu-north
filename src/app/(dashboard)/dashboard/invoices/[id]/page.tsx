@@ -32,15 +32,16 @@ import {
   Link2,
   CheckCircle2,
   Loader2,
-  Clock,
-  Zap,
+  Landmark,
+  Upload,
   AlertCircle,
   RefreshCw,
 } from "lucide-react";
 import {
   useInvoiceDetails,
   useInvoicePayment,
-  useInvoiceDynamicPayment,
+  useInvoiceVirtualAccount,
+  useUploadInvoicePaymentProof,
 } from "@/hooks/queries/useInvoices";
 
 import { tokenManager } from "@/services/apiAuth";
@@ -49,32 +50,6 @@ import Link from "next/link";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { DetailSkeleton } from "@/components/ui/LoadingSkeleton";
 import { readPendingPayment, resolvePaymentProvider } from "@/config/paymentGateway";
-
-/** Live mm:ss countdown to an ISO expiry. Turns red under 60s. */
-function DynCountdown({ expiresAt }: { expiresAt: string }) {
-  const [now, setNow] = React.useState(() => Date.now());
-  React.useEffect(() => {
-    const id = setInterval(() => setNow(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-  const remaining = Math.max(
-    0,
-    Math.floor((new Date(expiresAt).getTime() - now) / 1000),
-  );
-  const mins = Math.floor(remaining / 60);
-  const secs = remaining % 60;
-  const urgent = remaining <= 60;
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 font-mono font-semibold tabular-nums ${
-        urgent ? "text-destructive" : "text-foreground"
-      }`}
-    >
-      <Clock className="h-3.5 w-3.5" />
-      {mins}:{secs.toString().padStart(2, "0")}
-    </span>
-  );
-}
 
 export default function InvoiceDetail({
   params,
@@ -106,15 +81,25 @@ export default function InvoiceDetail({
     isVerifyingPayment,
   } = useInvoicePayment(invoiceId, invoice?.invoiceNumber);
 
-  // Authenticated dynamic (15-min, auto-confirm) transfer for payers.
+  // Reserved (static) bank-transfer account for this invoice. The one-shot
+  // dynamic minting routes are disabled server-side, so the reserved account
+  // carries the bank-transfer flow: display details, citizen transfers,
+  // webhook/treasurer confirmation.
   const {
-    dynamicAccount,
-    dynamicAccountError,
-    isCheckingDynamic,
-    isCreatingDynamic,
-    createDynamicInvoice,
-    verifyDynamicPayment: checkDynamicPayment,
-  } = useInvoiceDynamicPayment(invoiceId, invoice?.invoiceNumber);
+    virtualAccount: invoiceVa,
+    isLoading: isVaLoading,
+    error: vaError,
+    refetch: refetchVa,
+  } = useInvoiceVirtualAccount(invoice?.invoiceNumber, isPayable);
+
+  // Citizen/staff upload of transfer evidence for THIS invoice — records the
+  // proof on the pending bank_transfer Payment and parks the application for
+  // the treasurer's Payment Confirmations worklist. Never confirms payment.
+  const { uploadProofAsync, isUploadingProof } = useUploadInvoicePaymentProof(
+    invoiceId,
+    invoice?.invoiceNumber,
+  );
+  const [proofFile, setProofFile] = React.useState<File | null>(null);
 
   // Auto-verify if we're landing back from a gateway redirect. The provider was
   React.useEffect(() => {
@@ -132,22 +117,19 @@ export default function InvoiceDetail({
     toast.success(`${label} copied`);
   };
 
-  // Ticks once a second while a minted account is displayed so a lapsed 15-min
-  // account can offer "Generate new account" instead of a dead countdown.
-  const [nowTick, setNowTick] = React.useState(() => Date.now());
-  React.useEffect(() => {
-    if (!dynamicAccount) return;
-    setNowTick(Date.now());
-    const id = setInterval(() => setNowTick(Date.now()), 1000);
-    return () => clearInterval(id);
-  }, [dynamicAccount]);
-  const dynamicExpired =
-    !!dynamicAccount &&
-    new Date(dynamicAccount.expiresAt).getTime() <= nowTick;
-
-  const dynamicUssdList = dynamicAccount?.ussd
-    ? Object.entries(dynamicAccount.ussd)
-    : [];
+  const [isRefreshingTransfer, setIsRefreshingTransfer] = React.useState(false);
+  // After a manual transfer the webhook or treasurer confirms the payment;
+  // "I have paid" just re-pulls the invoice + reserved account so the page
+  // reflects a confirmation without a full reload.
+  const handleRefreshTransferStatus = async () => {
+    setIsRefreshingTransfer(true);
+    try {
+      await refetchVa();
+      await refetch();
+    } finally {
+      setIsRefreshingTransfer(false);
+    }
+  };
 
   const fullPaymentUrl =
     typeof window !== "undefined"
@@ -183,6 +165,23 @@ export default function InvoiceDetail({
       0,
     ) || 0;
   const balanceDue = totalAmount - amountPaid;
+
+  // Proof already attached to any payment on this invoice (uploaded by the
+  // citizen or staff) — drives the Bank Transfer tab's status block.
+  const transferProof = invoice.payments?.find((p) => p.proofUrl) || null;
+
+  const handleUploadProof = async () => {
+    if (!proofFile) {
+      toast.error("Choose a proof file (PNG, JPG or PDF) first");
+      return;
+    }
+    try {
+      await uploadProofAsync(proofFile);
+      setProofFile(null);
+    } catch {
+      // The hook already surfaced the error toast.
+    }
+  };
 
   // Get customer information from application
   const customerName =
@@ -297,18 +296,19 @@ export default function InvoiceDetail({
           {isPayable ? (
             <Card className="p-6 bg-gradient-card border-border/40">
               <h3 className="font-semibold mb-4">Payment Options</h3>
-              <Tabs defaultValue={isPayer ? "online" : "pos"}>
+              <Tabs defaultValue={isPayer ? "online" : isOfficer ? "pos" : "transfer"}>
                 <TabsList className="mb-4">
                   {isPayer && (
                     <TabsTrigger value="online">
                       <Link2 className="h-4 w-4 mr-1.5" /> Pay online
                     </TabsTrigger>
                   )}
-                  {isPayer && (
-                    <TabsTrigger value="dynamic">
-                      <Zap className="h-4 w-4 mr-1.5" /> Bank Transfer
-                    </TabsTrigger>
-                  )}
+                  {/* Bank transfer is visible to EVERYONE with invoice access —
+                      staff/FO need the account details to relay to citizens and
+                      merchants who cannot pay online. */}
+                  <TabsTrigger value="transfer">
+                    <Landmark className="h-4 w-4 mr-1.5" /> Bank Transfer
+                  </TabsTrigger>
                   {isOfficer && (
                     <>
                       <TabsTrigger value="pos">
@@ -344,117 +344,69 @@ export default function InvoiceDetail({
                     </Button>
                   </div>
                 </TabsContent>
-                <TabsContent value="dynamic">
+                <TabsContent value="transfer">
                   <div className="p-4 rounded-lg border border-border/60 bg-background space-y-3">
-                    {isCreatingDynamic && !dynamicAccount && (
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground py-6 justify-center">
-                        <Loader2 className="h-4 w-4 animate-spin" /> Creating
-                        your transfer account...
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                      Bank transfer (reserved account)
+                    </div>
+
+                    {isVaLoading && (
+                      <div className="flex items-center justify-center gap-2 py-6 text-sm text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin" /> Loading bank
+                        transfer details...
                       </div>
                     )}
 
-                    {!dynamicAccount && !dynamicAccountError && !isCreatingDynamic && (
-                      <>
-                        <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                          Instant bank transfer
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          Generate a dedicated Providus Bank account for exactly
-                          ₦{balanceDue.toLocaleString()}. It stays open for 15
-                          minutes and{" "}
-                          <span className="font-semibold text-foreground">
-                            auto-confirms
-                          </span>{" "}
-                          the moment your transfer settles — no treasurer step.
-                        </p>
-                        <Button
-                          className="w-full bg-gradient-hero"
-                          onClick={() => createDynamicInvoice()}
-                        >
-                          <Zap className="h-4 w-4 mr-1.5" /> Generate transfer
-                          account
-                        </Button>
-                      </>
-                    )}
-
-                    {dynamicAccountError && !dynamicAccount && (
+                    {!isVaLoading && !invoiceVa && (
                       <div className="space-y-3">
                         <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
                           <AlertCircle className="h-4 w-4 text-destructive shrink-0" />
-                          We could not create a transfer account
+                          Bank transfer is unavailable for this invoice
                         </div>
                         <p className="text-xs text-muted-foreground">
-                          {dynamicAccountError}
+                          {vaError?.message ||
+                            "We could not load the reserved account for this service."}
                         </p>
                         <Button
                           variant="outline"
                           className="w-full"
-                          onClick={() => createDynamicInvoice()}
+                          onClick={() => refetchVa()}
                         >
                           <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> Try again
                         </Button>
                       </div>
                     )}
 
-                    {dynamicAccount && (
+                    {invoiceVa && (
                       <>
-                        {dynamicExpired ? (
-                          <div className="rounded-lg border border-amber-500/50 bg-amber-50 p-3 space-y-2">
-                            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                              <AlertCircle className="h-4 w-4 text-amber-600 shrink-0" />
-                              This transfer account has expired
-                            </div>
-                            <p className="text-xs text-muted-foreground">
-                              The 15-minute window has closed. Generate a new
-                              account to continue. If you already sent money to
-                              the expired account, it is still reconciled
-                              automatically — we check it for settlement before
-                              minting the new one.
-                            </p>
-                            <Button
-                              className="w-full bg-gradient-hero"
-                              onClick={() => createDynamicInvoice()}
-                              disabled={isCreatingDynamic || isCheckingDynamic}
-                            >
-                              {isCreatingDynamic || isCheckingDynamic ? (
-                                <>
-                                  <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />{" "}
-                                  Checking your previous transfer...
-                                </>
-                              ) : (
-                                <>
-                                  <RefreshCw className="h-4 w-4 mr-1.5" />{" "}
-                                  Generate new account
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                        ) : (
-                          <>
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="text-xs uppercase tracking-wider text-muted-foreground">
-                            Transfer to this account
-                          </div>
-                          <DynCountdown expiresAt={dynamicAccount.expiresAt} />
-                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          Transfer{" "}
+                          <span className="font-semibold text-foreground">
+                            &#8358;{(invoiceVa.amount || balanceDue).toLocaleString()}
+                          </span>{" "}
+                          to the account below and use{" "}
+                          <span className="font-mono font-semibold text-foreground">
+                            {invoiceVa.reference}
+                          </span>{" "}
+                          as the transfer reference. The treasury reviews and
+                          confirms incoming transfers - your receipt follows once
+                          it lands.
+                        </p>
+
                         <div className="flex items-center justify-between gap-2">
                           <div>
                             <div className="text-2xl font-mono font-bold">
-                              {dynamicAccount.accountNumber}
+                              {invoiceVa.accountNumber}
                             </div>
                             <div className="text-xs text-muted-foreground mt-1">
-                              {dynamicAccount.bankName} &bull;{" "}
-                              {dynamicAccount.accountName}
+                              {invoiceVa.bankName} &bull; {invoiceVa.accountName}
                             </div>
                           </div>
                           <Button
                             variant="outline"
                             size="sm"
                             onClick={() =>
-                              copy(
-                                dynamicAccount.accountNumber,
-                                "Account number",
-                              )
+                              copy(invoiceVa.accountNumber, "Account number")
                             }
                           >
                             <Copy className="h-3.5 w-3.5 mr-1.5" /> Copy
@@ -463,109 +415,105 @@ export default function InvoiceDetail({
 
                         <div className="flex items-center justify-between gap-2 text-xs">
                           <span className="text-muted-foreground">
-                            Amount / Reference
+                            Transfer reference
                           </span>
                           <span className="flex items-center gap-2">
-                            <span className="font-semibold">
-                              ₦{dynamicAccount.amount.toLocaleString()}
-                            </span>
                             <span className="font-mono font-semibold">
-                              {dynamicAccount.reference}
+                              {invoiceVa.reference}
                             </span>
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() =>
-                                copy(dynamicAccount.reference, "Reference")
-                              }
+                              onClick={() => copy(invoiceVa.reference, "Reference")}
                             >
                               <Copy className="h-3.5 w-3.5 mr-1.5" /> Copy
                             </Button>
                           </span>
                         </div>
 
-                        {dynamicAccount.qrCode ? (
-                          <div className="rounded-lg border border-border/60 p-3 text-center">
-                            {/^(https?:|data:image\/)/i.test(
-                              dynamicAccount.qrCode,
-                            ) ? (
-                              <img
-                                src={dynamicAccount.qrCode}
-                                alt="Scan to pay (NQR)"
-                                className="mx-auto h-28 w-28 object-contain"
-                              />
-                            ) : (
-                              // GPay returned the raw EMVCo NQR string rather
-                              // than an image URL — render it with the shared
-                              // QR component.
-                              <QRCodeSVG
-                                value={dynamicAccount.qrCode}
-                                size={112}
-                                className="mx-auto"
-                              />
-                            )}
-                            <p className="mt-1 text-[11px] text-muted-foreground">
-                              Scan this NQR code with your bank app to pay.
-                            </p>
-                          </div>
-                        ) : null}
-
-                        {dynamicUssdList.length > 0 ? (
-                          <div className="rounded-lg border border-border/60 p-3 space-y-1.5">
-                            <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
-                              Or pay by USSD
+                        {/* Proof of payment — required before the treasurer confirms */}
+                        {transferProof ? (
+                          <div className="rounded-lg border border-emerald-500/40 bg-emerald-500/5 p-3 space-y-1.5">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+                              <CheckCircle2 className="h-4 w-4 shrink-0" />{" "}
+                              Proof uploaded — awaiting treasurer confirmation
                             </div>
-                            {dynamicUssdList.slice(0, 4).map(([bank, code]) => (
-                              <div
-                                key={bank}
-                                className="flex items-center justify-between gap-2 text-xs"
+                            <p className="text-xs text-muted-foreground">
+                              This invoice stays at &quot;Pay now&quot; until the
+                              treasurer reviews your proof and confirms the
+                              transfer. Your receipt follows immediately after.
+                            </p>
+                            {transferProof.proofUrl && (
+                              <a
+                                href={transferProof.proofUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-block text-xs text-primary underline"
                               >
-                                <span className="text-muted-foreground">
-                                  {bank}
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => copy(code, `${bank} USSD`)}
-                                  className="font-mono font-semibold text-foreground hover:text-primary"
-                                >
-                                  {code}
-                                </button>
-                              </div>
-                            ))}
+                                View uploaded proof
+                              </a>
+                            )}
                           </div>
-                        ) : null}
-
-                        <p className="text-xs text-muted-foreground">
-                          Transfer the exact amount before the timer runs out.
-                          This account{" "}
-                          <span className="font-semibold text-foreground">
-                            auto-confirms
-                          </span>{" "}
-                          — your receipt follows automatically.
-                        </p>
-
-                        <Button
-                          variant="outline"
-                          className="w-full"
-                          onClick={() => checkDynamicPayment()}
-                          disabled={isCheckingDynamic}
-                        >
-                          {isCheckingDynamic ? (
-                            <>
-                              <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />{" "}
-                              Checking payment...
-                            </>
-                          ) : (
-                            <>
-                              <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> I
-                              have paid — check now
-                            </>
-                          )}
-                        </Button>
+                        ) : (
+                          <>
+                            <div className="rounded-lg border border-border/60 bg-muted/30 p-3 space-y-2">
+                            <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                              <Upload className="h-4 w-4 text-primary shrink-0" />{" "}
+                              Upload proof of payment
+                            </div>
+                            <p className="text-xs text-muted-foreground">
+                              1) Transfer with the reference above. 2) Upload a
+                              screenshot or PDF of your receipt. 3) The treasurer
+                              reviews and confirms — until then this invoice
+                              still shows &quot;Pay now&quot;.
+                            </p>
+                            <Input
+                              type="file"
+                              accept=".png,.jpg,.jpeg,.pdf"
+                              onChange={(e) =>
+                                setProofFile(e.target.files?.[0] ?? null)
+                              }
+                            />
+                            <Button
+                              className="w-full"
+                              onClick={handleUploadProof}
+                              disabled={!proofFile || isUploadingProof}
+                            >
+                              {isUploadingProof ? (
+                                <>
+                                  <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />{" "}
+                                  Uploading...
+                                </>
+                              ) : (
+                                <>
+                                  <Upload className="h-4 w-4 mr-1.5" /> Send proof
+                                  to treasurer
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                            <Button
+                              variant="outline"
+                              className="w-full mt-3"
+                              onClick={handleRefreshTransferStatus}
+                              disabled={isRefreshingTransfer}
+                            >
+                              {isRefreshingTransfer ? (
+                                <>
+                                  <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" />{" "}
+                                  Checking payment status...
+                                </>
+                              ) : (
+                                <>
+                                  <CheckCircle2 className="h-3.5 w-3.5 mr-1.5" /> I have
+                                  paid - refresh status
+                                </>
+                              )}
+                            </Button>
                           </>
                         )}
-                      </>
-                    )}
+                          </>
+                        )}
                   </div>
                 </TabsContent>
                 <TabsContent value="pos">
