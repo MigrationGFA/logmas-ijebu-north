@@ -210,7 +210,13 @@ export function SiteHeader() {
 
   const services = useMemo(() => {
     const list = Array.isArray(servicesData)
-      ? servicesData
+      ? servicesData.sort((a: any, b: any) => {
+          const aIsCoo = a.id === "state_of_origin" || a.code === "state_of_origin";
+          const bIsCoo = b.id === "state_of_origin" || b.code === "state_of_origin";
+          if (aIsCoo && !bIsCoo) return -1;
+          if (!aIsCoo && bIsCoo) return 1;
+          return 0;
+        })
       : (servicesData as any)?.data || [];
     if (list && list.length > 0) {
       // i want to add icons to the list

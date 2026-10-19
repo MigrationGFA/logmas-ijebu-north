@@ -50,7 +50,7 @@ export interface PublicServiceApplyWidgetProps {
 }
 
 function PublicServiceApplyWidgetInner({
-  initialServiceId = "certificate_of_origin",
+  initialServiceId = "state_of_origin",
   className = "",
   showStepGuide = true,
 }: PublicServiceApplyWidgetProps) {
@@ -63,7 +63,13 @@ function PublicServiceApplyWidgetInner({
 
   const services = useMemo(() => {
     const list = Array.isArray(servicesData)
-      ? servicesData
+      ? servicesData.sort((a: any, b: any) => {
+          const aIsCoo = a.id === "state_of_origin" || a.code === "state_of_origin";
+          const bIsCoo = b.id === "state_of_origin" || b.code === "state_of_origin";
+          if (aIsCoo && !bIsCoo) return -1;
+          if (!aIsCoo && bIsCoo) return 1;
+          return 0;
+        })
       : (servicesData as any)?.data || [];
     if (list && list.length > 0) {
       return list;
@@ -73,7 +79,7 @@ function PublicServiceApplyWidgetInner({
 
   // Initial state derived from URL or initialServiceId
   const [selectedServiceId, setSelectedServiceId] = useState<string>(
-    urlServiceId || initialServiceId || "certificate_of_origin",
+    urlServiceId || initialServiceId || "state_of_origin",
   );
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -114,7 +120,13 @@ function PublicServiceApplyWidgetInner({
         s.id?.toLowerCase() === selectedServiceId?.toLowerCase() ||
         s.slug?.toLowerCase() === selectedServiceId?.toLowerCase(),
     );
-    return match || services[0];
+    return match || services.sort((a: any, b: any) => {
+      const aIsCoo = a.id === "state_of_origin" || a.code === "state_of_origin";
+      const bIsCoo = b.id === "state_of_origin" || b.code === "state_of_origin";
+      if (aIsCoo && !bIsCoo) return -1;
+      if (!aIsCoo && bIsCoo) return 1;
+      return 0;
+    })[0];
   }, [services, selectedServiceId]);
 
   // Calculate statutory fee
@@ -545,7 +557,7 @@ function PublicServiceApplyWidgetInner({
                     </Label>
                     <select
                       id="service-select"
-                      value={selectedService?.id || selectedServiceId}
+                      value={selectedService?.id ?? selectedServiceId}
                       onChange={(e) => handleServiceChange(e.target.value)}
                       className="mt-1.5 w-full rounded-lg border border-border/80 bg-background px-3.5 py-2.5 text-sm font-medium text-foreground focus:border-primary focus:ring-1 focus:ring-primary shadow-2xs"
                     >

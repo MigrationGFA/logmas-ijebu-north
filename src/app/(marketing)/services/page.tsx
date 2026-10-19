@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { SiteHeader, SiteFooter } from "@/components/site-chrome";
-import {  getConfiguredFeeForService } from "@/config/lgaServices";
+import { getConfiguredFeeForService } from "@/config/lgaServices";
 import { useServices } from "@/hooks/queries/useServices";
 import { ServiceApplicationGuideSteps } from "@/components/services/ServiceApplicationGuideSteps";
 import { PublicServiceApplyWidget } from "@/components/services/PublicServiceApplyWidget";
@@ -63,7 +63,9 @@ function ServicesPageContent() {
   const { services: servicesData, isLoading } = useServices();
 
   const services = useMemo(() => {
-    const list = Array.isArray(servicesData) ? servicesData : (servicesData as any)?.data || [];
+    const list = Array.isArray(servicesData)
+      ? servicesData
+      : (servicesData as any)?.data || [];
     if (list && list.length > 0) {
       return list;
     }
@@ -73,7 +75,7 @@ function ServicesPageContent() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [selectedQuickService, setSelectedQuickService] = useState<string>(
-    urlServiceId || "certificate_of_origin"
+    urlServiceId || "certificate_of_origin",
   );
 
   // Sync state when URL serviceId changes
@@ -96,14 +98,19 @@ function ServicesPageContent() {
     .filter((service: any) => {
       const matchesSearch =
         (service.name || "").toLowerCase().includes(search.toLowerCase()) ||
-        (service.description || "").toLowerCase().includes(search.toLowerCase()) ||
-        (service.revenueHead || "").toLowerCase().includes(search.toLowerCase());
-      const matchesCategory = selectedCategory === "All" || service.category === selectedCategory;
+        (service.description || "")
+          .toLowerCase()
+          .includes(search.toLowerCase()) ||
+        (service.revenueHead || "")
+          .toLowerCase()
+          .includes(search.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "All" || service.category === selectedCategory;
       return matchesSearch && matchesCategory;
     })
     .sort((a: any, b: any) => {
-      const aIsCoo = a.id === "certificate_of_origin" || a.code === "certificate_of_origin";
-      const bIsCoo = b.id === "certificate_of_origin" || b.code === "certificate_of_origin";
+      const aIsCoo = a.id === "state_of_origin" || a.code === "state_of_origin";
+      const bIsCoo = b.id === "state_of_origin" || b.code === "state_of_origin";
       if (aIsCoo && !bIsCoo) return -1;
       if (!aIsCoo && bIsCoo) return 1;
       return 0;
@@ -112,7 +119,9 @@ function ServicesPageContent() {
   const handleApplyClick = (serviceId: string) => {
     setSelectedQuickService(serviceId);
     try {
-      const params = new URLSearchParams(searchParams ? searchParams.toString() : "");
+      const params = new URLSearchParams(
+        searchParams ? searchParams.toString() : "",
+      );
       params.set("serviceId", serviceId);
       router.replace(`${pathname}?${params.toString()}`, { scroll: false });
     } catch (e) {
@@ -141,7 +150,9 @@ function ServicesPageContent() {
               Statutory Services & Licences for {LGA_CONFIG.identity.name}
             </h1>
             <p className="mt-3 text-muted-foreground max-w-2xl mx-auto text-base">
-              Apply for State of Origin, business permits, haulage passes, property rates, and trade licences online with end-to-end digital verification.
+              Apply for State of Origin, business permits, haulage passes,
+              property rates, and trade licences online with end-to-end digital
+              verification.
             </p>
 
             <div className="mt-6 flex flex-wrap justify-center gap-3">
@@ -152,7 +163,8 @@ function ServicesPageContent() {
                 }}
                 className="bg-gradient-hero text-primary-foreground font-semibold shadow-elegant"
               >
-                <Sparkles className="mr-2 h-4 w-4" /> First-Timer? Select Service & Pay
+                <Sparkles className="mr-2 h-4 w-4" /> First-Timer? Select
+                Service & Pay
               </Button>
               <Button asChild variant="outline">
                 <Link href="#services-catalog">Browse All Services</Link>
@@ -172,7 +184,10 @@ function ServicesPageContent() {
         </section>
 
         {/* First Timer Interactive Application & Payment Section */}
-        <section id="quick-apply-section" className="container mx-auto px-4 py-12">
+        <section
+          id="quick-apply-section"
+          className="container mx-auto px-4 py-12"
+        >
           <PublicServiceApplyWidget
             initialServiceId={selectedQuickService}
             showStepGuide={false}
@@ -180,7 +195,10 @@ function ServicesPageContent() {
         </section>
 
         {/* Filter and Services Grid */}
-        <section id="services-catalog" className="container mx-auto px-4 py-12 md:py-16 border-t border-border/40">
+        <section
+          id="services-catalog"
+          className="container mx-auto px-4 py-12 md:py-16 border-t border-border/40"
+        >
           <div className="mb-8">
             <Badge variant="outline" className="mb-2">
               Full Statutory Directory
@@ -189,7 +207,8 @@ function ServicesPageContent() {
               Available Council Services & Tariffs
             </h2>
             <p className="text-xs md:text-sm text-muted-foreground mt-1">
-              Select any service below to view SLA requirements or initiate your statutory payment and application.
+              Select any service below to view SLA requirements or initiate your
+              statutory payment and application.
             </p>
           </div>
 
@@ -226,11 +245,18 @@ function ServicesPageContent() {
             {filteredServices.map((s: any) => {
               const Icon = ICONS[s.icon] || FileBadge;
               const fee = Number(
-                s.feeConfig?.amount ?? getConfiguredFeeForService(s.id) ?? s.defaultFee ?? 0
+                s.feeConfig?.amount ??
+                  getConfiguredFeeForService(s.id) ??
+                  s.defaultFee ??
+                  0,
               );
               const processingTime =
-                s.processingTime || (s.estimatedDays ? `${s.estimatedDays} Business Days` : "1 - 3 Business Days");
-              const reqDocsCount = (s.requiredDocuments || s.requirements || []).length;
+                s.processingTime ||
+                (s.estimatedDays
+                  ? `${s.estimatedDays} Business Days`
+                  : "1 - 3 Business Days");
+              const reqDocsCount = (s.requiredDocuments || s.requirements || [])
+                .length;
 
               return (
                 <Card
@@ -245,9 +271,15 @@ function ServicesPageContent() {
                           backgroundColor: `color-mix(in oklab, var(--${s.color || "primary"}) 12%, transparent)`,
                         }}
                       >
-                        <Icon className="h-6 w-6" style={{ color: `var(--${s.color || "primary"})` }} />
+                        <Icon
+                          className="h-6 w-6"
+                          style={{ color: `var(--${s.color || "primary"})` }}
+                        />
                       </div>
-                      <Badge variant="secondary" className="text-[10px] font-semibold">
+                      <Badge
+                        variant="secondary"
+                        className="text-[10px] font-semibold"
+                      >
                         {s.category || "Statutory"}
                       </Badge>
                     </div>
@@ -263,25 +295,33 @@ function ServicesPageContent() {
                       <div className="flex justify-between items-center text-muted-foreground">
                         <span>Statutory Fee:</span>
                         <span className="font-bold text-foreground">
-                          {fee > 0 ? `₦${fee.toLocaleString()}` : s.feeDescription || "Variable Tariff"}
+                          {fee > 0
+                            ? `₦${fee.toLocaleString()}`
+                            : s.feeDescription || "Variable Tariff"}
                         </span>
                       </div>
                       <div className="flex justify-between items-center text-muted-foreground">
                         <span>Processing Time:</span>
                         <span className="font-medium text-foreground flex items-center gap-1">
-                          <Clock className="h-3 w-3 text-primary" /> {processingTime}
+                          <Clock className="h-3 w-3 text-primary" />{" "}
+                          {processingTime}
                         </span>
                       </div>
                       <div className="flex justify-between items-center text-muted-foreground pt-0.5">
                         <span>Revenue Head:</span>
-                        <span className="font-mono text-[11px] text-foreground">{s.revenueHead || "1001"}</span>
+                        <span className="font-mono text-[11px] text-foreground">
+                          {s.revenueHead || "1001"}
+                        </span>
                       </div>
                     </div>
 
                     <div className="mt-4 space-y-1 text-xs text-muted-foreground">
                       <div className="flex items-center gap-1.5">
                         <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-                        <span>Requires {reqDocsCount > 0 ? reqDocsCount : 2} verification documents</span>
+                        <span>
+                          Requires {reqDocsCount > 0 ? reqDocsCount : 2}{" "}
+                          verification documents
+                        </span>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <QrCode className="h-3.5 w-3.5 text-primary" />
@@ -291,7 +331,12 @@ function ServicesPageContent() {
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-border/40 grid grid-cols-2 gap-2">
-                    <Button asChild variant="outline" size="sm" className="text-xs">
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="sm"
+                      className="text-xs"
+                    >
                       <Link href={`/services/${s.id}`}>Details & SLA</Link>
                     </Button>
                     <Button
@@ -310,9 +355,12 @@ function ServicesPageContent() {
           {filteredServices.length === 0 && (
             <Card className="p-12 text-center bg-muted/20 border-dashed">
               <ShieldAlert className="h-8 w-8 text-muted-foreground mx-auto mb-3" />
-              <h3 className="font-semibold text-base">No statutory services match your search</h3>
+              <h3 className="font-semibold text-base">
+                No statutory services match your search
+              </h3>
               <p className="text-xs text-muted-foreground mt-1 max-w-sm mx-auto">
-                Try clearing your search query or selecting &ldquo;All&rdquo; categories.
+                Try clearing your search query or selecting &ldquo;All&rdquo;
+                categories.
               </p>
               <Button
                 variant="outline"
