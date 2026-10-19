@@ -1,4 +1,4 @@
-# DEMO PORTAL DEPLOYMENT & CONVERSION GUIDE (`demo.logmas.com.ng`)
+﻿# DEMO PORTAL DEPLOYMENT & CONVERSION GUIDE (`demo.logmas.com.ng`)
 
 > **Context for AI Agents & Developers in a New Chat Session:**
 > This repository is being prepared/converted into a **100% standalone, zero-external-backend presentation demo** hosted at `demo.logmas.com.ng`. 
@@ -8,7 +8,7 @@
 
 ## 1. Executive Overview & Rules
 
-1. **Branding Transition**: Replace all occurrences of "Odeda" with "Demo Local Government Area" / "Demo LGA".
+1. **Branding Transition**: Replace all occurrences of "Ijebu North East" with "Demo Local Government Area" / "Demo LGA".
 2. **Zero Backend Dependency**: Cut off the external backend completely. The entire application must operate client-side using `localStorage`, React state/React Query, or Next.js route handlers (`app/api/*`).
 3. **Seamless Login**: Provide instantaneous demo logins (Citizen, Admin, Revenue Collector, Field Officer, Executive Chairman) with pre-filled buttons—no password recovery or backend authorization hurdles.
 4. **Working End-to-End Payment Flow**: Users must be able to apply for any service, generate an invoice, open a simulated payment modal (or Next.js API mock payment), complete payment with test cards/instant button, receive an official PDF-ready receipt, and view the issued certificate.
@@ -264,7 +264,7 @@ Ensure `src/lib/mock-data.ts` has at least 5 realistic pre-seeded records:
 
 ## 7. Checklist for Verifying the Demo Deployment
 
-- [ ] Navigating to `/` displays "Demo Local Government Area" with zero mentions of "Odeda".
+- [ ] Navigating to `/` displays "Demo Local Government Area" with zero mentions of "Ijebu North East".
 - [ ] One-click demo login works for Citizen, Admin, and Chairman accounts.
 - [ ] Submitting an application saves immediately in browser storage.
 - [ ] Simulating payment generates a receipt and issues a statutory certificate.

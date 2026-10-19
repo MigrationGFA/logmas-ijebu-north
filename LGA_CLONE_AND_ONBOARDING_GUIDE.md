@@ -157,7 +157,7 @@ labels) and all notification/SMS/email branding now read from `LGA_CONFIG`
 ## Part 3 — Services data file format
 
 `prisma/data/<LGA_ID>.services.json` is the drop-in catalog (see
-`prisma/data/odeda.services.json` for the live example). It is a JSON array:
+`prisma/data/services.template.json` for the live example). It is a JSON array:
 
 | Field | Type | Notes |
 |---|---|---|

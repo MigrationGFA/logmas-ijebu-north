@@ -1,4 +1,4 @@
-# Certificate Subsystem File Inventory & Architecture
+﻿# Certificate Subsystem File Inventory & Architecture
 
 This document provides a comprehensive inventory of every file involved in certificate generation, rendering, coordinate configuration, heraldic security elements, public viewing, download/print flows, and service mapping across the application.
 
@@ -46,7 +46,7 @@ This document provides a comprehensive inventory of every file involved in certi
 - **`src/config/certificateFieldConfig.ts`**  
   The primary configuration engine. Defines two complete master templates: `PORTRAIT_TEMPLATE_CONFIG` and `LANDSCAPE_TEMPLATE_CONFIG`. Specifies exact x/y percentage coordinates, bounding boxes (`width`, `height`), text alignments, container-query font sizes (`cqw`), font families, font weights, colors, and dynamic formatters for every field (e.g. LGA title, certificate number, citizen name, ward, date of issuance, and QR code placement).
 - **`src/config/certificateTemplates.ts`**  
-  Provides alternative and extended coordinate sets (`ODEDA_CERTIFICATE_TEMPLATES`), detailed layout metadata, boundary calibrations, and fallback configurations for Club Registrations and State of Origin certificates.
+  Provides alternative and extended coordinate sets (`IJEBU_NORTH_EAST_CERTIFICATE_TEMPLATES`), detailed layout metadata, boundary calibrations, and fallback configurations for Club Registrations and State of Origin certificates.
 - **`src/config/certificateTemplateMap.ts`**  
   The routing bridge between statutory services and visual templates. Maps service codes (such as `LG-COO-01`, `LG-CR-01`, `LG-BL-01`) to either `portrait` or `landscape`, defining display titles, categories, and orientation settings.
 

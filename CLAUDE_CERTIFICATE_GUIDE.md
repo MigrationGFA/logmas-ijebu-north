@@ -1,6 +1,6 @@
-# LOGMAS Certificate Design & Architecture Guide
+﻿# LOGMAS Certificate Design & Architecture Guide
 
-This guide is for developers and AI assistants (including Claude) working on the certificate designs, coordinate overlays, typography, and templates in the **LOGMAS Odeda** (Local Government Management and Administration System) application.
+This guide is for developers and AI assistants (including Claude) working on the certificate designs, coordinate overlays, typography, and templates in the **LOGMAS Ijebu North East** (Local Government Management and Administration System) application.
 
 ---
 
@@ -28,8 +28,8 @@ The certificate system in LOGMAS uses a **high-precision hybrid canvas/HTML over
 | `src/components/certificate/templates/ClubRegistrationTemplate.tsx` | **Template Wrapper** | Preconfigured wrapper component targeting the Club Registration layout. |
 | `src/components/certificate/shared/CertificateSignature.tsx` | **Component** | Reusable official signatory block featuring digital signature script, Chairman title, divider, and council seal text. |
 | `src/components/certificate/shared/CertificateQRCode.tsx` | **Component** | Official SVG verification QR code linking to the live public verification URL. |
-| `src/components/certificate/shared/CertificateSeal.tsx` | **Component** | Official gold/green embossed vector seal of Odeda Local Government. |
-| `src/components/certificate/shared/CertificateWatermark.tsx` | **Component** | Security background watermark ("AUTHENTIC DOCUMENT - ODEDA LGA"). |
+| `src/components/certificate/shared/CertificateSeal.tsx` | **Component** | Official gold/green embossed vector seal of IJEBU NORTH EAST LOCAL GOVERNMENT. |
+| `src/components/certificate/shared/CertificateWatermark.tsx` | **Component** | Security background watermark ("AUTHENTIC DOCUMENT - Ijebu North East LGA"). |
 | `src/components/certificate/shared/CertificateEmblems.tsx` | **Component** | Nigerian National Coat of Arms and Ogun State Government insignia. |
 | `public/certificates/templates/origin-template.jpg` | **Asset (A4 Portrait)** | Master raster artwork for Certificate of Origin, Indigene Letters, and Statutory Permits (aspect ratio `1 : 1.414`). |
 | `public/certificates/templates/club-registration-template.jpg` | **Asset (A4 Landscape)** | Master raster artwork for Club Registration, CDA Registration, and NGOs (aspect ratio `1.414 : 1`). |
@@ -76,7 +76,7 @@ The typography follows official local council standards:
 
 | Font Constant (`CERTIFICATE_FONTS`) | Actual Font Family | Intended Use in Certificate |
 |---|---|---|
-| `CINZEL_BOLD` | `'Cinzel', 'Trajan Pro', serif` | Main Council Header ("ODEDA LOCAL GOVERNMENT"), Certificate Titles ("CERTIFICATE OF ORIGIN"), Title Banners. |
+| `CINZEL_BOLD` | `'Cinzel', 'Trajan Pro', serif` | Main Council Header ("IJEBU NORTH EAST LOCAL GOVERNMENT"), Certificate Titles ("CERTIFICATE OF ORIGIN"), Title Banners. |
 | `EB_GARAMOND` | `'EB Garamond', 'Garamond', serif` | Preamble narrative ("This is to certify that..."), dynamic field values, general body clauses. |
 | `LIBERTINUS_SERIF_BOLD` | `'Libertinus Serif', serif` | Formal field labels ("Name of Applicant", "Ward", "Date of Issue"), Signatory Chairman Name. |
 | `ARIMO` | `'Arimo', Arial, sans-serif` | Council postal address, certificate reference numbers, security codes, regulatory footers, QR instructions. |

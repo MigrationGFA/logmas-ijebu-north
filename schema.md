@@ -1,7 +1,7 @@
-# Odeda Local Government Revenue & Service Management Portal (LOGMAS)
+﻿# IJEBU NORTH EAST LOCAL GOVERNMENT Revenue & Service Management Portal (LOGMAS)
 ## Database Schema Specification (`schema.md`)
 
-This document defines the production-ready Prisma schema designed for the streamlined **Odeda Local Government Area (LGA) LOGMAS Portal**.
+This document defines the production-ready Prisma schema designed for the streamlined **IJEBU NORTH EAST LOCAL GOVERNMENT Area (LGA) LOGMAS Portal**.
 
 ---
 
@@ -292,7 +292,7 @@ model Invoice {
   paymentStatus       PaymentStatus @default(pending)
   
   // Dedicated Virtual Bank Account for direct settlement
-  virtualBankName     String?       @default("Zenith Bank / Odeda Treasury")
+  virtualBankName     String?       @default("Zenith Bank / Ijebu North East Treasury")
   virtualAccountNumber String?
   virtualAccountRef   String?       @unique
   

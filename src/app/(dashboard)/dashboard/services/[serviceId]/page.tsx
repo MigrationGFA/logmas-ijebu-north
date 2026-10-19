@@ -294,7 +294,7 @@ export default function ServiceDetailPage({ params }: PageProps) {
               Statutory Fee
             </span>
             <span className="text-base sm:text-lg font-black text-primary">
-              â‚¦{currentFee.toLocaleString()}
+              ₦{currentFee.toLocaleString()}
             </span>
           </div>
           <Badge
@@ -392,7 +392,7 @@ export default function ServiceDetailPage({ params }: PageProps) {
                     Calculated Statutory Fee:
                   </span>
                   <span className="font-bold text-foreground">
-                    â‚¦
+                    ₦
                     {Number(
                       submittedApp.application?.feeAmount ||
                         submittedApp.invoice?.amount ||
@@ -470,7 +470,7 @@ export default function ServiceDetailPage({ params }: PageProps) {
                       Amount:
                     </span>
                     <span className="font-bold text-foreground">
-                      â‚¦{Number(submittedApp.invoice.amount)?.toLocaleString()}
+                      ₦{Number(submittedApp.invoice.amount)?.toLocaleString()}
                     </span>
                   </div>
                 </div>

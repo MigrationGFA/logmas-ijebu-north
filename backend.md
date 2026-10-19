@@ -1,8 +1,8 @@
-# Odeda Local Government Area (LOGMAS) — Backend Migration & Architectural Guide (`backend.md`)
+﻿# IJEBU NORTH EAST LOCAL GOVERNMENT Area (LOGMAS) — Backend Migration & Architectural Guide (`backend.md`)
 
-This document provides a comprehensive specification of all architectural, database, workflow, and API changes implemented for the **Odeda Local Government Area Revenue & Service Management Portal (LOGMAS)**. 
+This document provides a comprehensive specification of all architectural, database, workflow, and API changes implemented for the **IJEBU NORTH EAST LOCAL GOVERNMENT Area Revenue & Service Management Portal (LOGMAS)**. 
 
-Use this documentation when configuring, refactoring, or updating backend services (such as a cloned Express/Prisma/NestJS backend from Ijebu North or other LGAs) to match the simplified Odeda general services architecture.
+Use this documentation when configuring, refactoring, or updating backend services (such as a cloned Express/Prisma/NestJS backend from Ijebu North or other LGAs) to match the simplified Ijebu North East general services architecture.
 
 ---
 
@@ -14,8 +14,8 @@ In previous LGA implementations:
 * Adding new local government revenue services required creating new database tables and custom API routes for each service.
 * Separation between Treasury fee configuration, Field Officer inspections, and LGA Admin approvals was scattered or inconsistent across different role views.
 
-### New Odeda Streamlined Services Architecture
-1. **Unified Services Engine**: All **12 statutory Odeda LGA services** (Certificates, Rates, Licences, Levies, and Permits) run through a standardized `Service`, `ServiceFeeConfig`, and `Application` model.
+### New Ijebu North East Streamlined Services Architecture
+1. **Unified Services Engine**: All **12 statutory Ijebu North East LGA services** (Certificates, Rates, Licences, Levies, and Permits) run through a standardized `Service`, `ServiceFeeConfig`, and `Application` model.
 2. **Simplified Fee Linkage**: The Treasury configuration is simply the active statutory amount attached to each service (`Service` → `ServiceFeeConfig.amount`). No complex calculation engine or separate manual Treasury assessment table is required.
 3. **Dedicated Treasury Fee Portal**: Treasurers configure fee amounts and active/inactive statuses for all 12 services from a single, unified interface. Deletion is forbidden to maintain financial integrity.
 4. **Clean Direct Flow**:
@@ -26,7 +26,7 @@ In previous LGA implementations:
 
 ---
 
-## 2. The 12 Statutory Odeda Local Government Services
+## 2. The 12 Statutory IJEBU NORTH EAST LOCAL GOVERNMENT Services
 
 The backend service registry and seed scripts must populate these **12 core services**:
 
@@ -92,7 +92,7 @@ Selects Service & Submits Form Details (FormData JSON)
 * Issue final **Approval** (which auto-triggers certificate generation) or **Decline** (with required explanation).
 
 ### 3. Citizen / Business Owner (`citizen` / `business_owner`)
-* Apply for any of the 12 statutory Odeda services.
+* Apply for any of the 12 statutory Ijebu North East services.
 * View exact payable statutory fee configured by Treasury.
 * Pay via dedicated virtual bank transfer or online gateway.
 * Download QR-verified Certificate/Licence upon LGA approval.
@@ -128,9 +128,9 @@ Refer to `/treasurer.md` and `/schema.md` for complete Prisma models:
 npx prisma generate
 
 # 2. Create and run migration
-npx prisma migrate dev --name init_odeda_general_services
+npx prisma migrate dev --name init_lga_general_services
 
-# 3. Seed 12 statutory Odeda services and default Treasury fee schedules
+# 3. Seed 12 statutory Ijebu North East services and default Treasury fee schedules
 npx prisma db seed
 ```
 
@@ -140,7 +140,7 @@ npx prisma db seed
 
 | Method | Endpoint | Description | Role Required |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/v1/services` | List all 12 Odeda statutory services | Public / Citizen |
+| `GET` | `/api/v1/services` | List all 12 Ijebu North East statutory services | Public / Citizen |
 | `GET` | `/api/v1/treasurer/fee-schedules?category=certificates` | List Certificate fee schedules | `treasurer`, `super_admin` |
 | `GET` | `/api/v1/treasurer/fee-schedules?category=levies_permits` | List Rates, Levies & Permits fee schedules | `treasurer`, `super_admin` |
 | `POST` | `/api/v1/treasurer/fee-schedules` | Create or update fee schedule | `treasurer` |
@@ -162,7 +162,7 @@ npx prisma db seed
 The frontend UI running at `src/` is fully compiled and configured to consume these exact models:
 * **Treasurer Portal** (`/dashboard/levies`): Contains 4 dedicated tabs — Certificate Fee Schedules, Rates/Levies Fee Schedules, Assessments & Invoice Authorisation, and Real-Time Bank Reconciliation.
 * **Field Officer Portal** (`/dashboard/page` as `field_officer`): Interactive Field Inspection queue with instant findings & recommendation submission.
-* **Services Portal** (`/dashboard/services`): Displays all 12 Odeda services with dynamic 13-step submission forms.
+* **Services Portal** (`/dashboard/services`): Displays all 12 Ijebu North East services with dynamic 13-step submission forms.
 * **Applications Hub** (`/dashboard/applications`): Full state-machine view across all 15 application status stages.
 
 This completes the architectural reference for updating your cloned backend codebase!

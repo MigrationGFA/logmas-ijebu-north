@@ -7,7 +7,7 @@ const getApiUrl = () => {
 
   // Development fallback
   if (process.env.NODE_ENV === "development") {
-    return "http://localhost:3004/api/v1";
+    return "http://localhost:3006/api/v1";
   }
 
   // Production fallback (you'll replace this with your actual URL)

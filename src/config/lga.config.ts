@@ -12,19 +12,19 @@
  */
 
 export interface LgaIdentityConfig {
-  /** Unique system identifier / slug (e.g. "odeda", "ikeja", "abeokuta-north") */
+  /** Unique system identifier / slug (e.g. "ijebu-north-east", "ikeja", "abeokuta-north") */
   id: string;
-  /** Primary common name (e.g. "Odeda") */
+  /** Primary common name (e.g. "Ijebu North East") */
   name: string;
-  /** Full official government entity name (e.g. "Odeda Local Government") */
+  /** Full official government entity name (e.g. "Ijebu North East Local Government") */
   fullName: string;
-  /** Formal administrative title (e.g. "Odeda Local Government Area") */
+  /** Formal administrative title (e.g. "Ijebu North East Local Government Area") */
   formalTitle: string;
-  /** Official council authority name (e.g. "Odeda Local Government Council") */
+  /** Official council authority name (e.g. "Ijebu North East Local Government Council") */
   councilName: string;
-  /** Short abbreviation code used in identifiers (e.g. "ODE") */
+  /** Short abbreviation code used in identifiers (e.g. "INE") */
   shortCode: string;
-  /** Official acronym (e.g. "ODLG") */
+  /** Official acronym (e.g. "INELG") */
   acronym: string;
   /** State name including 'State' (e.g. "Ogun State") */
   state: string;
@@ -40,7 +40,7 @@ export interface LgaIdentityConfig {
   establishedYear: number | string;
   /** Principal establishing legal authority / edict */
   establishingLaw: string;
-  /** Geographic headquarters town (e.g. "Odeda") */
+  /** Geographic headquarters town (e.g. "Atan") */
   headquarters: string;
 }
 
@@ -252,7 +252,7 @@ export interface LgaConfiguration {
 }
 
 /**
- * ACTIVE LOCAL GOVERNMENT CONFIGURATION (ODEDA LGA)
+ * ACTIVE LOCAL GOVERNMENT CONFIGURATION (IJEBU NORTH EAST LGA)
  */
 export const LGA_CONFIG: LgaConfiguration = {
   platform: {
@@ -261,33 +261,33 @@ export const LGA_CONFIG: LgaConfiguration = {
     version: "2.0.0",
   },
   identity: {
-    id: "odeda",
-    name: "Odeda",
-    fullName: "Odeda Local Government",
-    formalTitle: "Odeda Local Government Area",
-    councilName: "Odeda Local Government Council",
-    shortCode: "ODE",
-    acronym: "ODLG",
+    id: "ijebu-north-east",
+    name: "Ijebu North East",
+    fullName: "Ijebu North East Local Government",
+    formalTitle: "Ijebu North East Local Government Area",
+    councilName: "Ijebu North East Local Government Council",
+    shortCode: "INE",
+    acronym: "INELG",
     state: "Ogun State",
     stateShort: "Ogun",
     country: "Nigeria",
     geopoliticalZone: "South West",
-    motto: "Our People, Our Priority",
-    establishedYear: 1976,
-    establishingLaw: "Local Government (Establishment) Law of Ogun State, 2006 and other applicable laws.",
-    headquarters: "Odeda",
+    motto: "Transparency, Service & Progress",
+    establishedYear: 1996,
+    establishingLaw: "Ogun State Local Government Creation Edict, 1996",
+    headquarters: "Atan",
   },
 
   leadership: {
     chairman: {
-      name: "Hon. Dr. Waliat Folasade Adeyemo",
-      honorific: "Hon. Dr.",
+      name: "Hon. Folusho Joseph Badejo",
+      honorific: "Hon.",
       title: "Executive Chairman",
-      fullTitle: "Executive Chairman\nOdeda Local Government",
+      fullTitle: "Hon. Folusho Joseph Badejo\nExecutive Chairman, Ijebu North East Local Government",
       signatureImagePath: "/certificates/signatures/chairman-signature.png",
       portraitImagePath: "/assets/chairman.jpg",
-      officeEmail: "chairman@odedalga.com",
-      tenureNote: "Executive Chairman, Odeda Local Government Area · Ogun State",
+      officeEmail: "folushobadejo@yahoo.com",
+      tenureNote: "Executive Chairman, Ijebu North East Local Government Area · Ogun State",
     },
     viceChairman: {
       name: "Hon. Vice Chairman",
@@ -302,62 +302,62 @@ export const LGA_CONFIG: LgaConfiguration = {
       title: "Council Treasurer",
     },
     headOfLocalGovAdmin: {
-      name: "Dr. K. A. Adebisi",
+      name: "Head of Local Government Administration",
       title: "Head of Local Government Administration (HOLGA)",
     },
     councillor: {
-      name: "Hon. Osunnowo Azeez",
+      name: "Hon. Ward Councillor",
       title: "Ward Councillor",
     },
   },
 
   contact: {
-    phone: "+234 80 333 789 71",
-    phoneRaw: "+2348033378971",
-    phoneTel: "tel:+2348033378971",
+    phone: "+234 803 373 3155",
+    phoneRaw: "+2348033733155",
+    phoneTel: "tel:+2348033733155",
     altPhone: "+234 803 373 3155",
     altPhoneRaw: "+2348033733155",
     emergencyPhone: "112",
-    email: "info@odedalga.com",
-    emailMailto: "mailto:info@odedalga.com",
-    supportEmail: "support@odedalga.com",
-    chairmanEmail: "chairman@odedalga.com",
-    revenueEmail: "revenue@odedalga.com",
-    secretariatAddress: "LGA Secretariat, Abeokuta-Ibadan Expressway, Odeda, Ogun State",
-    shortAddress: "LGA Secretariat, Odeda, Ogun State",
+    email: "info@ijebunortheastlga.com.ng",
+    emailMailto: "mailto:info@ijebunortheastlga.com.ng",
+    supportEmail: "support@ijebunortheastlga.com.ng",
+    chairmanEmail: "folushobadejo@yahoo.com",
+    revenueEmail: "revenue@ijebunortheastlga.com.ng",
+    secretariatAddress: "LGA Secretariat, Atan, Ijebu North East, Ogun State",
+    shortAddress: "LGA Secretariat, Atan, Ogun State",
     officeHours: "Monday - Friday: 8:00 AM - 5:00 PM",
     operatingDays: "Mon - Fri, 8am - 5pm",
     weekendHours: "Closed (Emergency & online services active 24/7)",
-    portalUrl: "https://www.odedalga.com",
-    helpdeskTitle: "Odeda Council Citizens Helpdesk",
+    portalUrl: "https://www.ijebunortheastlga.com.ng",
+    helpdeskTitle: "Ijebu North East Council Citizens Helpdesk",
     socials: {
-      facebook: "https://facebook.com/odedalga",
-      twitter: "https://x.com/odedalga",
-      instagram: "https://instagram.com/odedalga",
-      youtube: "https://youtube.com/@odedalga",
+      facebook: "https://facebook.com/ijebunortheastlga",
+      twitter: "https://x.com/ijebunortheastlga",
+      instagram: "https://instagram.com/ijebunortheastlga",
+      youtube: "https://youtube.com/@ijebunortheastlga",
     },
   },
 
   verification: {
-    domain: "verify.odeda.ogunstate.gov.ng",
-    verifyUrl: "https://verify.odeda.ogunstate.gov.ng/verify",
-    publicLookupUrl: "https://logmas.gov.ng/certificate",
-    verificationMessage: "Authentic certificate issued by Odeda Local Government Secretariat.",
-    publicVerificationNotice: "Verify the authenticity of Odeda LGA Certificates of Origin, trade permits, and official receipts.",
+    domain: "verify.ijebunortheastlga.com.ng",
+    verifyUrl: "https://verify.ijebunortheastlga.com.ng/verify",
+    publicLookupUrl: "https://www.ijebunortheastlga.com.ng/certificate",
+    verificationMessage: "Authentic certificate issued by Ijebu North East Local Government Secretariat.",
+    publicVerificationNotice: "Verify the authenticity of Ijebu North East LGA Certificates of Origin, trade permits, and official receipts.",
     securedBadgeText: "Verified & Active in Council Registry",
     disclaimer: "This certificate is computer generated and does not require further signature. • ðŸ”’ Secure Document",
   },
 
   certificates: {
     namingConventions: {
-      originPrefix: "ODLG/CO",
-      clubPrefix: "ODLG/CR",
-      generalPrefix: "ODE/CERT",
-      permitPrefix: "ODE/PRM",
-      receiptPrefix: "ODE/REC",
-      invoicePrefix: "INV-ODE",
-      applicationPrefix: "ODE-APP",
-      verificationPrefix: "VER-ODE",
+      originPrefix: "INE/CO",
+      clubPrefix: "INE/CR",
+      generalPrefix: "INE/CERT",
+      permitPrefix: "INE/PRM",
+      receiptPrefix: "INE/REC",
+      invoicePrefix: "INV-INE",
+      applicationPrefix: "INE-APP",
+      verificationPrefix: "VER-INE",
     },
     templates: {
       landscape: {
@@ -381,61 +381,57 @@ export const LGA_CONFIG: LgaConfiguration = {
     },
     legalWording: {
       statutoryLawNotice: "This Certificate is issued in accordance with the provisions of the Local Government (Establishment) Law of Ogun State, 2006 and other applicable laws.",
-      originPreamble: "This is to certify that the applicant named below has fulfilled all statutory requirements and is confirmed a bonafide indigene of Odeda Local Government Area, Ogun State, Nigeria.",
-      clubPreamble: "This is to certify that the organization named below has satisfied statutory requirements and is officially registered under the Community Development regulations of Odeda Local Government Authority.",
+      originPreamble: "This is to certify that the applicant named below has fulfilled all statutory requirements and is confirmed a bonafide indigene of Ijebu North East Local Government Area, Ogun State, Nigeria.",
+      clubPreamble: "This is to certify that the organization named below has satisfied statutory requirements and is officially registered under the Community Development regulations of Ijebu North East Local Government Authority.",
       receiptNotice: "Official Council Revenue Settlement • Audited and Secured by Local Government Treasury.",
-      footerBannerText: "ODEDA LOCAL GOVERNMENT - OUR PEOPLE, OUR PRIORITY",
+      footerBannerText: "IJEBU NORTH EAST LOCAL GOVERNMENT - TRANSPARENCY, SERVICE & PROGRESS",
       citizenDeclaration: "I solemnly declare that the information provided in this statutory application is true, authentic, and accurate. I understand that false statements or forged documentation incur criminal liability and automatic nullification under Local Government bye-laws.",
     },
   },
 
   branding: {
     logoPath: "/logo.png",
-    councilEmblemPath: "/images/odeda-crest.png",
+    councilEmblemPath: "/images/ijebu-north-east-crest.png",
     stateEmblemPath: "/images/ogun-crest.png",
     nationalEmblemPath: "/images/nigeria-crest.png",
     faviconPath: "/favicon.ico",
-    appTitle: "LOGMAS Odeda",
-    appDescription: "Local Government Management and Administration System for Odeda Local Government Area",
+    appTitle: "LOGMAS Ijebu North East",
+    appDescription:
+      "Local Government Management and Administration System for Ijebu North East Local Government Area",
   },
 
   wards: [
-    { id: "ward-1", name: "Ward 1 (Odeda Secretariat)", code: "W01", description: "Odeda Central Administrative Ward" },
-    { id: "ward-2", name: "Ward 2 (Osiele Market)", code: "W02", description: "Commercial Market Corridor" },
-    { id: "ward-3", name: "Ward 3 (Obantoko Corridor)", code: "W03", description: "Urban Residential District" },
-    { id: "ward-4", name: "Ward 4 (Alagbagba)", code: "W04", description: "Agricultural and Settlement Area" },
-    { id: "ward-5", name: "Ward 5 (Ilugun)", code: "W05", description: "Historic Farming Community" },
-    { id: "ward-6", name: "Ward 6 (Opeji)", code: "W06", description: "Quarry and Agro-Corridor" },
-    { id: "ward-7", name: "Ward 7 (Itesi / Camp)", code: "W07", description: "Educational and Residential Hub" },
-    { id: "ward-8", name: "Ward 8 (Kuto / Border)", code: "W08", description: "Border Commercial Corridor" },
-    { id: "ward-9", name: "Ward 9 (Boluwaji)", code: "W09", description: "Rural Development Zone" },
-    { id: "ward-10", name: "Ward 10 (Obete)", code: "W10", description: "Eastern Farming Communities" },
+    { id: "ward-1", name: "Ward 1 (Atan)", code: "W01", description: "LGA headquarters & administrative council secretariat" },
+    { id: "ward-2", name: "Ward 2 (Owu)", code: "W02", description: "Urban residential and commercial district" },
+    { id: "ward-3", name: "Ward 3 (Ojowo)", code: "W03", description: "Major market and trading hub" },
+    { id: "ward-4", name: "Ward 4 (Ososa)", code: "W04", description: "Road junction and mixed commercial area" },
+    { id: "ward-5", name: "Ward 5 (Itele)", code: "W05", description: "Residential and small enterprise zone" },
   ],
 
   content: {
     stats: {
-      landArea: "1,560 km2",
-      landAreaTrend: "Agricultural Hub",
-      primarySector: "Quarry & Farming",
-      primarySectorTrend: "#1 Granite & Cassava",
+      landArea: "137 km2",
+      landAreaTrend: "Commerce & Agriculture",
+      primarySector: "Trade & Agro-Allied",
+      primarySectorTrend: "#1 Market & Distribution Hub",
     },
 
     testimonials: [
       {
         name: "Farmer Samuel Adebiyi",
-        role: "Cassava Producer, Osiele Ward",
+        role: "Cassava Producer, Ojowo Ward",
         quote:
           "Registering my agricultural farm and getting my certificate was fast and smooth on LOGMAS.",
       },
       {
         name: "Mrs. Toyin Ogunyemi",
-        role: "Business Owner, Obantoko",
+        role: "Business Owner, Atan",
         quote: "I paid my trade permit and liquor licence online and received my QR receipt instantly.",
       },
       {
         name: "Engr. Timothy Olalere",
-        role: "Quarry Operator",
-        quote: "LOGMAS makes haulage and quarry permit payments transparent for our fleet drivers.",
+        role: "Transport Operator, Owu",
+        quote: "LOGMAS makes haulage and market permit payments transparent for our fleet drivers.",
       },
     ],
 
@@ -443,7 +439,7 @@ export const LGA_CONFIG: LgaConfiguration = {
       {
         date: "12 May 2026",
         tag: "Announcement",
-        title: "Odeda LOGMAS Service Expansion Portal Goes Live Across All 10 Wards",
+        title: "Ijebu North East LOGMAS Service Expansion Portal Goes Live Across All Wards",
       },
     ],
 
@@ -452,7 +448,7 @@ export const LGA_CONFIG: LgaConfiguration = {
         id: "1",
         title: "Revenue Collection Officer",
         dept: "Finance & Treasury",
-        location: "Odeda Secretariat",
+        location: "Atan Secretariat",
         type: "Full-Time",
         deadline: "30 Sep 2026",
       },
@@ -460,7 +456,7 @@ export const LGA_CONFIG: LgaConfiguration = {
         id: "2",
         title: "Environmental Health Inspector",
         dept: "Health & Sanitation",
-        location: "Obantoko Ward",
+        location: "Owu Ward",
         type: "Full-Time",
         deadline: "04 Oct 2026",
       },
@@ -468,7 +464,7 @@ export const LGA_CONFIG: LgaConfiguration = {
         id: "3",
         title: "Agricultural Extension Officer",
         dept: "Agriculture",
-        location: "Osiele / Alagbagba",
+        location: "Ojowo / Ososa",
         type: "Full-Time",
         deadline: "12 Oct 2026",
       },
@@ -476,7 +472,7 @@ export const LGA_CONFIG: LgaConfiguration = {
 
     wardsInfo: [
       {
-        name: "Odeda",
+        name: "Atan",
         x: 50,
         y: 42,
         population: "38,400",
@@ -484,7 +480,7 @@ export const LGA_CONFIG: LgaConfiguration = {
         accent: "primary",
       },
       {
-        name: "Obantoko",
+        name: "Owu",
         x: 36,
         y: 30,
         population: "45,900",
@@ -492,117 +488,77 @@ export const LGA_CONFIG: LgaConfiguration = {
         accent: "success",
       },
       {
-        name: "Ilugun",
+        name: "Ojowo",
         x: 64,
         y: 32,
         population: "24,200",
-        feature: "Agricultural & timber belt community",
+        feature: "Agricultural & trading belt community",
         accent: "gold",
       },
       {
-        name: "Balogun Itesi",
+        name: "Ososa",
         x: 72,
         y: 52,
         population: "19,800",
-        feature: "Rural farming settlements & cassava production",
+        feature: "Rural farming settlements & market network",
         accent: "info",
       },
       {
-        name: "Alagbagba",
+        name: "Itele",
         x: 28,
         y: 56,
         population: "18,300",
-        feature: "Granite quarry sites & haulage route",
+        feature: "Residential & small enterprise growth zone",
         accent: "success",
-      },
-      {
-        name: "Osiele",
-        x: 44,
-        y: 68,
-        population: "36,700",
-        feature: "Educational corridor & Federal College of Education area",
-        accent: "warning",
-      },
-      {
-        name: "Alabata",
-        x: 80,
-        y: 74,
-        population: "21,600",
-        feature: "Poultry, livestock & cassava processing zone",
-        accent: "warning",
-      },
-      {
-        name: "Olodo",
-        x: 20,
-        y: 18,
-        population: "26,800",
-        feature: "Farming communities & feeder road connectivity",
-        accent: "primary",
-      },
-      {
-        name: "Obete",
-        x: 60,
-        y: 16,
-        population: "22,400",
-        feature: "Rural settlement cluster & agro-processing zone",
-        accent: "gold",
-      },
-      {
-        name: "Opeji",
-        x: 82,
-        y: 36,
-        population: "17,900",
-        feature: "Forest-edge settlement & export crop production",
-        accent: "info",
       },
     ],
 
     gallery: [
-      { id: "1", title: "Odeda Local Government Secretariat Complex", category: "Infrastructure", image: "/assets/banner5.png" },
-      { id: "2", title: "Osiele Modern Market Opening", category: "Commerce", image: "/assets/banner2.png" },
-      { id: "3", title: "Quarry Inspection & Mining Facilities", category: "Industry", image: "/assets/banner1.png" },
+      { id: "1", title: "Ijebu North East Local Government Secretariat Complex", category: "Infrastructure", image: "/assets/banner5.png" },
+      { id: "2", title: "Atan Modern Market Opening", category: "Commerce", image: "/assets/banner2.png" },
+      { id: "3", title: "Road Infrastructure & Public Facilities", category: "Infrastructure", image: "/assets/banner1.png" },
     ],
 
     investOpps: [
       {
-        title: "Granite & Quarry Mining Expansion",
-        sector: "Solid Minerals",
-        location: "Alagbagba & Ilugun Wards",
-        desc: "High yield granite reserves with direct proximity to Abeokuta-Lagos expressways.",
-        icon: "Pickaxe",
-        roi: "23%",
-      },
-      {
-        title: "Commercial Cassava Processing Plants",
+        title: "Agro-Allied Processing Plants",
         sector: "Agro-Allied Industry",
-        location: "Odeda & Olugbo Wards",
-        desc: "Abundant cassava farm supply for ethanol, starch, and flour production.",
+        location: "Ojowo & Ososa Wards",
+        desc: "Abundant farm produce supply for starch, flour and food processing production.",
         icon: "Sprout",
         roi: "19%",
       },
       {
-        title: "Student Housing & Estate Development",
-        sector: "Real Estate",
-        location: "Camp / FUNAAB Corridor",
-        desc: "High demand for modern student apartments and commercial shopping complexes.",
+        title: "Modern Market & Lockup Development",
+        sector: "Commerce",
+        location: "Atan & Ojowo Wards",
+        desc: "High demand for modern markets, lockup stores and wholesale distribution facilities.",
         icon: "Building2",
         roi: "17%",
+      },
+      {
+        title: "Transport & Haulage Logistics",
+        sector: "Transport",
+        location: "Owu / Itele Corridor",
+        desc: "Strategic location on the Ijebu corridor supports haulage and transit logistics ventures.",
+        icon: "Pickaxe",
+        roi: "23%",
       },
     ],
 
     tourism: [
       {
-        title: "Arakanga Forest Reserve & Eco-Park",
-        location: "Odeda Local Government Area",
-        category: "Eco-Tourism",
-        desc: "Lush tropical vegetation, wildlife conservation, and serene hiking trails.",
-        tag: "Eco-Tourism",
+        title: "Atan Market & Civic Square",
+        location: "Ijebu North East Local Government Area",
+        category: "Commerce & Culture",
+        desc: "Vibrant trading centre and civic hub reflecting the commercial life of the area.",
+        tag: "Commerce",
       },
       {
-        title: "Olugbo Traditional Chieftaincy Heritage",
-        location: "Olugbo Ward",
+        title: "Ijebu Traditional Heritage",
+        location: "Ijebu North East",
         category: "Cultural Heritage",
-        desc: "Rich ancestral Yoruba history and traditional festivals.",
+        desc: "Rich ancestral Yoruba history, traditional festivals and chieftaincy heritage.",
         tag: "Culture",
       },
     ],

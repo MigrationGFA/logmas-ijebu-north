@@ -1,6 +1,6 @@
-# Odeda Local Government Area (LOGMAS) — Treasury Module & Simplified Architecture (`treasurer.md`)
+﻿# IJEBU NORTH EAST LOCAL GOVERNMENT Area (LOGMAS) — Treasury Module & Simplified Architecture (`treasurer.md`)
 
-This document defines the streamlined database schema, business rules, and application lifecycle for the **Treasury Module** and overall revenue flow of Odeda Local Government Area.
+This document defines the streamlined database schema, business rules, and application lifecycle for the **Treasury Module** and overall revenue flow of IJEBU NORTH EAST LOCAL GOVERNMENT Area.
 
 ---
 
@@ -43,7 +43,7 @@ Selects 1 of 12 Statutory Services & Submits Application Form
 
 ---
 
-## 2. The 12 Statutory Odeda Local Government Services
+## 2. The 12 Statutory IJEBU NORTH EAST LOCAL GOVERNMENT Services
 
 The `Service` registry and `ServiceFeeConfig` must seed and support exactly these **12 statutory services**:
 
@@ -241,7 +241,7 @@ model Invoice {
   paymentStatus       PaymentStatus @default(PENDING)
   
   // Virtual account for direct settlement
-  virtualBankName     String?       // e.g. "Zenith Bank / Odeda LGA"
+  virtualBankName     String?       // e.g. "Zenith Bank / Ijebu North East LGA"
   virtualAccountNumber String?      // e.g. "1012398401"
   
   paidAt              DateTime?
