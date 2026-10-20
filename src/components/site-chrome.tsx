@@ -336,12 +336,12 @@ export function SiteHeader() {
                               and apply online
                             </p>
                           </div>
-                          <Badge
+                          {/* <Badge
                             variant="outline"
                             className="text-[11px] font-normal"
                           >
                             12 Services
-                          </Badge>
+                          </Badge> */}
                         </div>
 
                         {/* 2-Column List of Services */}
