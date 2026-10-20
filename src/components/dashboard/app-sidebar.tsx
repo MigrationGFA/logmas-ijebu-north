@@ -290,7 +290,7 @@ export function AppSidebar() {
           </div>
           {!collapsed && (
             <div className="leading-tight">
-              <div className="font-bold text-sidebar-foreground text-sm">LOGMAS</div>
+              <div className="font-bold text-sidebar-foreground text-sm">PORTAL</div>
               <div className="text-[10px] uppercase tracking-wider text-sidebar-foreground/70">
               {LGA_CONFIG.identity.name} Lga
               </div>

@@ -85,7 +85,7 @@ export default function ComplaintsPage() {
                         </Button>
                         {ref && (
                             <p className="text-sm text-success">
-                                Reference: {ref}. Track responses in your LOGMAS dashboard.
+                                Reference: {ref}. Track responses in your IJEJU NORTHEAST PORTAL dashboard.
                             </p>
                         )}
                     </form>
@@ -93,7 +93,7 @@ export default function ComplaintsPage() {
                 <Card className="p-6 bg-gradient-hero text-primary-foreground border-0">
                     <h3 className="font-bold">Already registered?</h3>
                     <p className="mt-2 text-sm opacity-90">
-                        Sign in to LOGMAS to submit, track and chat with the assigned officer directly.
+                        Sign in to the PORTAL to submit, track and chat with the assigned officer directly.
                     </p>
                     <Button asChild className="mt-5 bg-gold text-gold-foreground hover:bg-gold/90">
                         <Link href="/login">

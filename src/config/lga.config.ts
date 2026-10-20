@@ -395,17 +395,79 @@ export const LGA_CONFIG: LgaConfiguration = {
     stateEmblemPath: "/images/ogun-crest.png",
     nationalEmblemPath: "/images/nigeria-crest.png",
     faviconPath: "/favicon.ico",
-    appTitle: "LOGMAS Ijebu North East",
+    appTitle: "IJEJU NORTHEAST PORTAL",
     appDescription:
       "Local Government Management and Administration System for Ijebu North East Local Government Area",
   },
 
+  
   wards: [
-    { id: "ward-1", name: "Ward 1 (Atan)", code: "W01", description: "LGA headquarters & administrative council secretariat" },
-    { id: "ward-2", name: "Ward 2 (Owu)", code: "W02", description: "Urban residential and commercial district" },
-    { id: "ward-3", name: "Ward 3 (Ojowo)", code: "W03", description: "Major market and trading hub" },
-    { id: "ward-4", name: "Ward 4 (Ososa)", code: "W04", description: "Road junction and mixed commercial area" },
-    { id: "ward-5", name: "Ward 5 (Itele)", code: "W05", description: "Residential and small enterprise zone" },
+    {
+      id: "1001f59b-28fb-4835-9925-4e2f7e685762",
+      name: "Ijeun / Ilugun",
+      code: "INE-05",
+      description: "Ijeun and Ilugun agrarian community belt",
+    },
+    {
+      id: "11a64466-d8e0-4ac9-8bb4-40ce875a89f8",
+      name: "Itamapako",
+      code: "INE-06",
+      description: "Itamapako territorial boundary",
+    },
+    {
+      id: "17ca914f-0dea-4efb-b60e-4ab5421024ae",
+      name: "Atan I",
+      code: "INE-01",
+      description: "Atan Headquarters Ward 1",
+    },
+    {
+      id: "200cf7f6-be1c-42cb-bad0-71acb6ff6543",
+      name: "Imesan / Idomila",
+      code: "INE-03",
+      description: "Imesan and Idomila residential axis",
+    },
+    {
+      id: "280a0dba-843f-455b-9480-4a2a1fb88205",
+      name: "Imodi / Imosan",
+      code: "INE-10",
+      description: "Imodi and Imosan unified ward structure",
+    },
+    {
+      id: "3ec88729-1ef8-46c4-9378-0cdf44e966b2",
+      name: "Iwopin / Oru",
+      code: "INE-08",
+      description: "Iwopin and outlying settlements",
+    },
+    {
+      id: "52f2e82e-f349-4b97-930e-963aab705c40",
+      name: "Ogbogbo",
+      code: "INE-07",
+      description: "Ogbogbo community development area",
+    },
+    {
+      id: "584d04df-4040-40d0-9e6a-4205fe273ae8",
+      name: "Atan II",
+      code: "INE-02",
+      description: "Atan Headquarters Ward 2",
+    },
+    {
+      id: "abacc7e7-8195-485e-94a6-7f394ca49c6e",
+      name: "Erunwon",
+      code: "INE-09",
+      description: "Erunwon ancient township perimeter",
+    },
+    {
+      id: "b0913959-7831-448f-b203-ab2c3309c091",
+      name: "TEst ward",
+      code: "INEC-TEST-2",
+      description: "",
+    },
+    {
+      id: "e22b24a6-e0a9-4976-8621-cd0d2880ba47",
+      name: "Ilese",
+      code: "INE-04",
+      description: "Ilese township sector",
+    }
   ],
 
   content: {

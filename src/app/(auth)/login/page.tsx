@@ -189,7 +189,7 @@ function LoginPage() {
               <div className="h-9 w-9 rounded-xl bg-gradient-hero flex items-center justify-center">
                 <ShieldCheck className="h-4 w-4 text-primary-foreground" />
               </div>
-              <span className="font-bold">LOGMAS</span>
+              <span className="font-bold">IJEJU NORTHEAST PORTAL</span>
             </Link>
           </div>
 

@@ -84,7 +84,7 @@ export default function ResetPasswordPage() {
           <div className="h-10 w-10 rounded-xl bg-gradient-hero flex items-center justify-center">
             <ShieldCheck className="h-5 w-5 text-primary-foreground" />
           </div>
-          <span className="font-bold">LOGMAS</span>
+          <span className="font-bold">IJEJU NORTHEAST PORTAL</span>
         </Link>
 
         <div className="bg-card border border-border/40 rounded-2xl p-6 md:p-8 shadow-elegant">

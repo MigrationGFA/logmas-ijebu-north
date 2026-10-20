@@ -311,7 +311,7 @@ function seed(): Store {
   ];
 
   const notifications: Notification[] = [
-    { id: genId(), title: "Welcome to LOGMAS", body: "Your dashboard is ready.", type: "info", read: false, createdAt: today() },
+    { id: genId(), title: "Welcome to IJEJU NORTHEAST PORTAL", body: "Your dashboard is ready.", type: "info", read: false, createdAt: today() },
   ];
 
   const expiry = new Date(); expiry.setMonth(expiry.getMonth() + 12);
