@@ -129,7 +129,7 @@ export function DocumentsViewer({ documents, className = "" }: DocumentsViewerPr
       window.open(doc.url, "_blank");
     } else {
       // Create a dummy download
-      const blob = new Blob([`Official the LGA Statutory Document: ${doc.name}\nType: ${doc.documentType}\nUploaded: ${doc.uploadedAt || new Date().toISOString()}`], {
+      const blob = new Blob([`Official Ijebu North East LGA Statutory Document: ${doc.name}\nType: ${doc.documentType}\nUploaded: ${doc.uploadedAt || new Date().toISOString()}`], {
         type: isImage(doc) ? "image/jpeg" : "application/pdf",
       });
       const link = document.createElement("a");
@@ -327,7 +327,7 @@ export function DocumentsViewer({ documents, className = "" }: DocumentsViewerPr
                   <div className="max-w-md space-y-1">
                     <h5 className="font-bold text-sm text-foreground">{selectedDoc.name}</h5>
                     <p className="text-xs text-muted-foreground">
-                      Statutory PDF Document for the Local Government Authority Review.
+                      Statutory PDF Document for Ijebu North East LGA Authority Review.
                     </p>
                     <div className="pt-2">
                       <Badge variant="secondary" className="font-mono text-[11px]">

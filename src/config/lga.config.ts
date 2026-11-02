@@ -44,6 +44,22 @@ export interface LgaIdentityConfig {
   headquarters: string;
 }
 
+export interface LgaCouncillor {
+  /** Ward the councillor represents (must match a ward name in `wards`) */
+  ward: string;
+  /** Full name including honorific (e.g. "Hon. Osibanjo Adeleke Solomon") */
+  name: string;
+  /** Public contact phone */
+  phone: string;
+  /** Public contact email */
+  email: string;
+  /**
+   * Optional council role within the ward / council.
+   * e.g. "Ward Councillor" (default) or "Majority Leader".
+   */
+  role?: string;
+}
+
 export interface LgaExecutiveLeadership {
   chairman: {
     name: string;
@@ -71,10 +87,13 @@ export interface LgaExecutiveLeadership {
     name: string;
     title: string;
   };
+  /** Generic single-councillor slot (legacy; prefer `councillors`) */
   councillor?: {
     name: string;
     title: string;
   };
+  /** Authoritative ward councillor roster (one entry per ward) */
+  councillors?: LgaCouncillor[];
 }
 
 export interface LgaContactConfig {
@@ -305,10 +324,78 @@ export const LGA_CONFIG: LgaConfiguration = {
       name: "Head of Local Government Administration",
       title: "Head of Local Government Administration (HOLGA)",
     },
-    councillor: {
-      name: "Hon. Ward Councillor",
-      title: "Ward Councillor",
-    },
+    councillors: [
+      {
+        ward: "Atan-Imuku",
+        name: "Hon. Osibanjo Adeleke Solomon",
+        phone: "08038355995",
+        email: "osibanjoadeleke@gmail.com",
+        role: "Ward Councillor",
+      },
+      {
+        ward: "Odosimadegun/Odosenbora",
+        name: "Hon. Falujo Adeola Onabode",
+        phone: "08033313041",
+        email: "falujoonabode@gmail.com",
+        role: "Ward Councillor",
+      },
+      {
+        ward: "Imomo/Ododeyo/Imewuro",
+        name: "Hon. Ogunmosu Olabode Clement",
+        phone: "08038556949",
+        email: "Ogunmosubode@gmail.com",
+        role: "Ward Councillor",
+      },
+      {
+        ward: "Odosenlu/Okeolowu/Alaro",
+        name: "Hon. Adekogbe Ayodele Samson",
+        phone: "08100973778",
+        email: "aykogbe@gmail.com",
+        role: "Ward Councillor",
+      },
+      {
+        ward: "Igede/Itamarun",
+        name: "Hon. Okulaja Emmanuel Abiodun",
+        phone: "07033726911",
+        email: "okulajaabiodun85@gmail.com",
+        role: "Ward Councillor",
+      },
+      {
+        ward: "Oju Ona",
+        name: "Hon. Odufuwa Tosin Victor",
+        phone: "08080217611",
+        email: "emtosproperties@gmail.com",
+        role: "Majority Leader",
+      },
+      {
+        ward: "Isonyin/Apunren",
+        name: "Hon. Jagunna Olufunmilayo Janet",
+        phone: "07064317581",
+        email: "jagunnafunmilola@gmail.com",
+        role: "Ward Councillor",
+      },
+      {
+        ward: "Ilese Ijebu",
+        name: "Hon. Adeiye Oriyomi Ajoke",
+        phone: "08123100146",
+        email: "oriyomiadeiye14@gmail.com",
+        role: "Ward Councillor",
+      },
+      {
+        ward: "Ogbogbo Oke Eri",
+        name: "Hon. Parakoyi Azeez Ayomide",
+        phone: "08072703321",
+        email: "parakoyiazeez@gmail.com",
+        role: "Ward Councillor",
+      },
+      {
+        ward: "Erunwon",
+        name: "Hon. Osunnowo Azeez Olajide",
+        phone: "07061088375",
+        email: "osunnowoazeez454@gmail.com",
+        role: "Ward Councillor",
+      },
+    ],
   },
 
   contact: {
@@ -395,79 +482,73 @@ export const LGA_CONFIG: LgaConfiguration = {
     stateEmblemPath: "/images/ogun-crest.png",
     nationalEmblemPath: "/images/nigeria-crest.png",
     faviconPath: "/favicon.ico",
-    appTitle: "IJEJU NORTHEAST PORTAL",
+    appTitle: "IJEBU NORTHEAST PORTAL",
     appDescription:
       "Local Government Management and Administration System for Ijebu North East Local Government Area",
   },
 
   
-  wards: [
+    wards: [
     {
-      id: "1001f59b-28fb-4835-9925-4e2f7e685762",
-      name: "Ijeun / Ilugun",
-      code: "INE-05",
-      description: "Ijeun and Ilugun agrarian community belt",
-    },
-    {
-      id: "11a64466-d8e0-4ac9-8bb4-40ce875a89f8",
-      name: "Itamapako",
-      code: "INE-06",
-      description: "Itamapako territorial boundary",
-    },
-    {
-      id: "17ca914f-0dea-4efb-b60e-4ab5421024ae",
-      name: "Atan I",
+      id: "1dd25f41-d76c-46d6-bf8a-cf47d4981cd9",
+      name: "Atan-Imuku",
       code: "INE-01",
-      description: "Atan Headquarters Ward 1",
+      description: "LGA headquarters & civic-secretariat axis",
     },
     {
-      id: "200cf7f6-be1c-42cb-bad0-71acb6ff6543",
-      name: "Imesan / Idomila",
-      code: "INE-03",
-      description: "Imesan and Idomila residential axis",
-    },
-    {
-      id: "280a0dba-843f-455b-9480-4a2a1fb88205",
-      name: "Imodi / Imosan",
-      code: "INE-10",
-      description: "Imodi and Imosan unified ward structure",
-    },
-    {
-      id: "3ec88729-1ef8-46c4-9378-0cdf44e966b2",
-      name: "Iwopin / Oru",
-      code: "INE-08",
-      description: "Iwopin and outlying settlements",
-    },
-    {
-      id: "52f2e82e-f349-4b97-930e-963aab705c40",
-      name: "Ogbogbo",
-      code: "INE-07",
-      description: "Ogbogbo community development area",
-    },
-    {
-      id: "584d04df-4040-40d0-9e6a-4205fe273ae8",
-      name: "Atan II",
+      id: "3a4cbbdc-6a9a-420e-a405-ac80febe2425",
+      name: "Odosimadegun/Odosenbora",
       code: "INE-02",
-      description: "Atan Headquarters Ward 2",
+      description: "Mixed residential and trading ward",
     },
     {
-      id: "abacc7e7-8195-485e-94a6-7f394ca49c6e",
-      name: "Erunwon",
-      code: "INE-09",
-      description: "Erunwon ancient township perimeter",
+      id: "3b612f5c-3c05-4332-a46a-92fc8f830519",
+      name: "Imomo/Ododeyo/Imewuro",
+      code: "INE-03",
+      description: "Agricultural corridor ward",
     },
     {
-      id: "b0913959-7831-448f-b203-ab2c3309c091",
-      name: "TEst ward",
-      code: "INEC-TEST-2",
-      description: "",
-    },
-    {
-      id: "e22b24a6-e0a9-4976-8621-cd0d2880ba47",
-      name: "Ilese",
+      id: "652b0a54-5382-499f-a7d0-c552b012216c",
+      name: "Odosenlu/Okeolowu/Alaro",
       code: "INE-04",
-      description: "Ilese township sector",
-    }
+      description: "Mixed residential ward belt",
+    },
+    {
+      id: "5e304bbb-cf9b-49c6-a9a6-1bd934f4f54c",
+      name: "Igede/Itamarun",
+      code: "INE-05",
+      description: "Rural farming settlements",
+    },
+    {
+      id: "ad9d983b-376e-48e9-8409-1fc00c87bac9",
+      name: "Oju Ona",
+      code: "INE-06",
+      description: "Urban commercial ward",
+    },
+    {
+      id: "4d093ac0-7e02-47bd-915b-0fe85d2c0f0e",
+      name: "Isonyin/Apunren",
+      code: "INE-07",
+      description: "Renewable-energy and trading corridor",
+    },
+    {
+      id: "5aab4f90-023a-41f3-9bc7-9027d7f006ae",
+      name: "Ilese Ijebu",
+      code: "INE-08",
+      description: "Township residential ward",
+    },
+    {
+      id: "2f04bc56-6d90-4dbf-8e3e-a89cfa4fd217",
+      name: "Ogbogbo Oke Eri",
+      code: "INE-09",
+      description: "Coastal/rural administrative ward",
+    },
+    {
+      id: "da2bd6f7-c823-44e7-9ffa-577044d5c232",
+      name: "Erunwon",
+      code: "INE-10",
+      description: "Historic township perimeter",
+    },
   ],
 
   content: {
@@ -533,46 +614,86 @@ export const LGA_CONFIG: LgaConfiguration = {
     ],
 
     wardsInfo: [
-      {
-        name: "Atan",
-        x: 50,
-        y: 42,
-        population: "38,400",
-        feature: "LGA headquarters & administrative council secretariat",
-        accent: "primary",
-      },
-      {
-        name: "Owu",
-        x: 36,
-        y: 30,
-        population: "45,900",
-        feature: "Major urban commercial center & residential hub",
-        accent: "success",
-      },
-      {
-        name: "Ojowo",
-        x: 64,
-        y: 32,
-        population: "24,200",
-        feature: "Agricultural & trading belt community",
-        accent: "gold",
-      },
-      {
-        name: "Ososa",
-        x: 72,
-        y: 52,
-        population: "19,800",
-        feature: "Rural farming settlements & market network",
-        accent: "info",
-      },
-      {
-        name: "Itele",
-        x: 28,
-        y: 56,
-        population: "18,300",
-        feature: "Residential & small enterprise growth zone",
-        accent: "success",
-      },
+    {
+      name: "Atan-Imuku",
+      x: 50,
+      y: 42,
+      population: "",
+      feature: "LGA headquarters & civic-secretariat axis",
+      accent: "primary",
+    },
+    {
+      name: "Odosimadegun/Odosenbora",
+      x: 62,
+      y: 32,
+      population: "",
+      feature: "Mixed residential trading hub",
+      accent: "secondary",
+    },
+    {
+      name: "Imomo/Ododeyo/Imewuro",
+      x: 74,
+      y: 34,
+      population: "",
+      feature: "Agricultural corridor ward",
+      accent: "success",
+    },
+    {
+      name: "Odosenlu/Okeolowu/Alaro",
+      x: 70,
+      y: 56,
+      population: "",
+      feature: "Mixed residential ward belt",
+      accent: "warning",
+    },
+    {
+      name: "Igede/Itamarun",
+      x: 38,
+      y: 56,
+      population: "",
+      feature: "Rural farming settlements",
+      accent: "secondary",
+    },
+    {
+      name: "Oju Ona",
+      x: 86,
+      y: 40,
+      population: "",
+      feature: "Urban commercial ward",
+      accent: "primary",
+    },
+    {
+      name: "Isonyin/Apunren",
+      x: 90,
+      y: 60,
+      population: "",
+      feature: "Renewable-energy corridor",
+      accent: "gold",
+    },
+    {
+      name: "Ilese Ijebu",
+      x: 70,
+      y: 68,
+      population: "",
+      feature: "Township residential ward",
+      accent: "info",
+    },
+    {
+      name: "Ogbogbo Oke Eri",
+      x: 58,
+      y: 66,
+      population: "",
+      feature: "Coastal/rural administrative ward",
+      accent: "secondary",
+    },
+    {
+      name: "Erunwon",
+      x: 30,
+      y: 40,
+      population: "",
+      feature: "Historic township perimeter",
+      accent: "success",
+    },
     ],
 
     gallery: [

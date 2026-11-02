@@ -76,14 +76,14 @@ function AddWardDialog({ onCreate, isCreating }: { onCreate: (data: WardFormData
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Create New Ward</DialogTitle>
-          <DialogDescription>Add a new electoral ward to the LGA.</DialogDescription>
+          <DialogDescription>Add a new electoral ward to Ijebu North East LGA.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
           <div>
             <Label>Ward Name *</Label>
             <Input 
               {...register("name")} 
-              placeholder="e.g., Ward 1 (the LGA Secretariat)" 
+              placeholder="e.g., Atan-Imuku" 
               className={errors.name ? "border-red-500" : ""} 
             />
             {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>}

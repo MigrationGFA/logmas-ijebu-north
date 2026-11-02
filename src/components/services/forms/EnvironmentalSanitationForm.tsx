@@ -99,7 +99,7 @@ const STEPS: FormStep[] = [
     id: "facility_profile",
     title: "Facility & Business Profile",
     shortTitle: "Facility Profile",
-    description: "Enter commercial/industrial facility details and physical location within the LGA.",
+    description: "Enter commercial/industrial facility details and physical location within Ijebu North East LGA.",
   },
   {
     id: "drainage_waste",
@@ -143,7 +143,7 @@ const DOCUMENTS: DocumentSpec[] = [
   {
     id: "waste_contract_agreement",
     label: "Accredited PSP / Waste Evacuation Agreement",
-    description: "Service contract with an authorized Ogun State / the LGA waste management contractor.",
+    description: "Service contract with an authorized Ogun State / Ijebu North East LGA waste management contractor.",
     required: true,
   },
   {
@@ -182,7 +182,7 @@ export default function EnvironmentalSanitationForm({ service, onSubmit, isSubmi
       phone: "",
       email: "",
       physicalAddress: "",
-      ward: WARDS[0] || "the LGA",
+      ward: WARDS[0] || "Atan-Imuku",
       cacNumber: "",
       operatingHours: "",
       totalDailyStaff: "",
@@ -309,7 +309,7 @@ export default function EnvironmentalSanitationForm({ service, onSubmit, isSubmi
         { label: "Phone Number", value: formValues.phone },
         { label: "Email Address", value: formValues.email || "N/A" },
         { label: "Physical Facility Address", value: formValues.physicalAddress },
-        { label: "Ward in the LGA", value: formValues.ward },
+        { label: "Ward in Ijebu North East LGA", value: formValues.ward },
         { label: "CAC Reg Number", value: formValues.cacNumber || "N/A" },
         { label: "Operating Hours", value: formValues.operatingHours || "N/A" },
         { label: "Daily Staff & Occupants", value: `${formValues.totalDailyStaff || "0"} persons` },
@@ -388,7 +388,7 @@ export default function EnvironmentalSanitationForm({ service, onSubmit, isSubmi
               Commercial / Industrial Facility Profile
             </h4>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Enter facility location and operational parameters for the LGA Environmental Health Officers inspection.
+              Enter facility location and operational parameters for Ijebu North East LGA Environmental Health Officers inspection.
             </p>
           </div>
 
@@ -489,7 +489,7 @@ export default function EnvironmentalSanitationForm({ service, onSubmit, isSubmi
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="ward">Ward in the LGA *</Label>
+              <Label htmlFor="ward">Ward in Ijebu North East LGA *</Label>
               <Controller
                 name="ward"
                 control={control}
@@ -522,7 +522,7 @@ export default function EnvironmentalSanitationForm({ service, onSubmit, isSubmi
               <Input
                 id="physicalAddress"
                 {...register("physicalAddress")}
-                placeholder="Plot/Building No, Street name, Village/Town in the LGA"
+                placeholder="Plot/Building No, Street name, Village/Town in Ijebu North East LGA"
                 disabled={isSubmitting}
               />
               {errors.physicalAddress && (

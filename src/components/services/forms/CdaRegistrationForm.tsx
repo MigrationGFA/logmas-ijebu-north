@@ -200,7 +200,7 @@ export default function CdaRegistrationForm({
     defaultValues: {
       cdaName: "",
       cdaAcronym: "",
-      ward: WARDS[0] || "the LGA",
+      ward: WARDS[0] || "Atan-Imuku",
       hostVillage: "",
       baaleName: "",
       baalePhone: "",
@@ -596,8 +596,8 @@ export default function CdaRegistrationForm({
                       <SelectItem value="Ogun State So-Safe Corps / Local Hunters Vigilante">
                         Ogun State So-Safe Corps / Local Hunters Vigilante
                       </SelectItem>
-                      <SelectItem value="Nigeria Police Force (the LGA Div) & Community Patrol">
-                        Nigeria Police Force (the LGA Div) & Community Patrol
+                      <SelectItem value="Nigeria Police Force (Ijebu North East LGA Div) & Community Patrol">
+                        Nigeria Police Force (Ijebu North East LGA Div) & Community Patrol
                       </SelectItem>
                       <SelectItem value="Licensed Private Security Guards">
                         Licensed Private Security Guards
@@ -673,7 +673,7 @@ export default function CdaRegistrationForm({
                   <Shield className="w-4 h-4" /> CDA Executive Committee
                 </h4>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  CDA Chairman, Secretary, Treasurer, and CSO details are required by the LGA Community Dev Dept.
+                  CDA Chairman, Secretary, Treasurer, and CSO details are required by Ijebu North East LGA Community Dev Dept.
                 </p>
               </div>
               <Button
@@ -873,7 +873,7 @@ export default function CdaRegistrationForm({
           uploadedFiles={uploadedFiles}
           declarationChecked={declaration}
           onDeclarationChange={setDeclaration}
-          declarationText="We, the principal executive officers of this Community Development Association, swear that the bounds, officers, streets, and resolution submitted represent the collective decision of our residents. We pledge cooperation with the Local Government Authority for peace, security, and orderly development."
+          declarationText="We, the principal executive officers of this Community Development Association, swear that the bounds, officers, streets, and resolution submitted represent the collective decision of our residents. We pledge cooperation with Ijebu North East Local Government Authority for peace, security, and orderly development."
         />
       )}
     </FormWizard>

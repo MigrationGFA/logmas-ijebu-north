@@ -187,7 +187,7 @@ export default function FarmersRegistrationForm({
       phone: initialApplicant?.phone || "",
       email: initialApplicant?.email || "",
       residentialAddress: initialApplicant?.address || "",
-      ward: initialApplicant?.ward || WARDS[0] || "the LGA",
+      ward: initialApplicant?.ward || WARDS[0] || "Atan-Imuku",
       nin: initialApplicant?.nin || "",
       cacNumber: "",
       yearsFarming: "",
@@ -330,7 +330,7 @@ export default function FarmersRegistrationForm({
         { label: "Email Address", value: formValues.email || "N/A" },
         { label: "NIN / RC Number", value: formValues.nin || formValues.cacNumber || "N/A" },
         { label: "Residential Address", value: formValues.residentialAddress },
-        { label: "Ward in the LGA", value: formValues.ward },
+        { label: "Ward in Ijebu North East LGA", value: formValues.ward },
         {
           label: "Years in Active Farming",
           value: `${formValues.yearsFarming || "0"} years`,
@@ -533,7 +533,7 @@ export default function FarmersRegistrationForm({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="ward">Ward in the LGA *</Label>
+              <Label htmlFor="ward">Ward in Ijebu North East LGA *</Label>
               <Controller
                 name="ward"
                 control={control}
@@ -568,7 +568,7 @@ export default function FarmersRegistrationForm({
               <Input
                 id="residentialAddress"
                 {...register("residentialAddress")}
-                placeholder="Home address or primary business address in the LGA"
+                placeholder="Home address or primary business address in Ijebu North East LGA"
                 disabled={isSubmitting}
               />
               {errors.residentialAddress && (
@@ -600,7 +600,7 @@ export default function FarmersRegistrationForm({
               <Input
                 id="cooperativeName"
                 {...register("cooperativeName")}
-                placeholder="e.g. All Farmers Association of Nigeria (AFAN) the LGA"
+                placeholder="e.g. All Farmers Association of Nigeria (AFAN) Ijebu North East LGA"
                 disabled={isSubmitting}
               />
             </div>
@@ -620,7 +620,7 @@ export default function FarmersRegistrationForm({
               <Input
                 id="extensionZone"
                 {...register("extensionZone")}
-                placeholder="e.g. Zone B - Ilugun / the LGA Agricultural Belt"
+                placeholder="e.g. Zone B - Ilugun / Ijebu North East LGA Agricultural Belt"
                 disabled={isSubmitting}
               />
             </div>
@@ -701,7 +701,7 @@ export default function FarmersRegistrationForm({
                 </h5>
                 <p className="text-[11px] text-muted-foreground">
                   Record all separate parcels/plots of farmland operated in
-                  the LGA.
+                  Ijebu North East LGA.
                 </p>
               </div>
               <Button

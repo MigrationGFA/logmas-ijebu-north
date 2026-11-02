@@ -140,7 +140,7 @@ const DOCUMENTS: DocumentSpec[] = [
     id: "quarry_loading_pass",
     label: "Quarry Loading Point Pass / Waybill",
     description:
-      "Recent loading manifest from the LGA granite quarries or sand extraction sites.",
+      "Recent loading manifest from Ijebu North East LGA granite quarries or sand extraction sites.",
     required: false,
   },
   {
@@ -181,7 +181,7 @@ export default function HaulageFeesForm({
       phone: initialApplicant?.phone || "",
       email: initialApplicant?.email || "",
       officeAddress: initialApplicant?.address || "",
-      ward: initialApplicant?.ward || WARDS[0] || "the LGA",
+      ward: initialApplicant?.ward || WARDS[0] || "Atan-Imuku",
       primaryCargo: "Granite & Quarry Stone Aggregates",
       loadingPoints: "",
       destinationCorridor: "",
@@ -300,7 +300,7 @@ export default function HaulageFeesForm({
         { label: "Contact Phone", value: formValues.phone },
         { label: "Email Address", value: formValues.email || "N/A" },
         { label: "Operating Office Address", value: formValues.officeAddress },
-        { label: "Ward in the LGA", value: formValues.ward },
+        { label: "Ward in Ijebu North East LGA", value: formValues.ward },
         {
           label: "Active Fleet Count",
           value: `${vehicleFields.length} Heavy Commercial Vehicles`,
@@ -367,7 +367,7 @@ export default function HaulageFeesForm({
             </h4>
             <p className="text-xs text-muted-foreground mt-0.5">
               Enter official credentials for commercial haulage transit
-              licensing in the LGA.
+              licensing in Ijebu North East LGA.
             </p>
           </div>
 
@@ -379,7 +379,7 @@ export default function HaulageFeesForm({
               <Input
                 id="companyName"
                 {...register("companyName")}
-                placeholder="e.g. the LGA Heavy Haulage & Logistics Limited"
+                placeholder="e.g. Ijebu North East LGA Heavy Haulage & Logistics Limited"
                 disabled={isSubmitting}
               />
               {errors.companyName && (
@@ -443,7 +443,7 @@ export default function HaulageFeesForm({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="ward">Ward Operating Base in the LGA *</Label>
+              <Label htmlFor="ward">Ward Operating Base in Ijebu North East LGA *</Label>
               <Controller
                 name="ward"
                 control={control}
@@ -478,7 +478,7 @@ export default function HaulageFeesForm({
               <Input
                 id="officeAddress"
                 {...register("officeAddress")}
-                placeholder="Garage / Terminal Address, Highway Corridor, the LGA"
+                placeholder="Garage / Terminal Address, Highway Corridor, Ijebu North East LGA"
                 disabled={isSubmitting}
               />
               {errors.officeAddress && (
@@ -586,7 +586,7 @@ export default function HaulageFeesForm({
 
             <div className="space-y-1.5 md:col-span-2">
               <Label htmlFor="loadingPoints">
-                Primary Loading Points / Quarry Sites in the LGA *
+                Primary Loading Points / Quarry Sites in Ijebu North East LGA *
               </Label>
               <Input
                 id="loadingPoints"

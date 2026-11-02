@@ -10,68 +10,9 @@ import { Mail, Phone, Crown, Quote } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
-const councillors = [
-    {
-        ward: "Ward 1 (the LGA Secretariat)",
-        name: "Hon. Osunnowo Azeez Olajide",
-        phone: "07061088375",
-        email: "councillor.ward1@lga.gov.ng"
-    },
-    {
-        ward: "Ward 2 (Osiele Market)",
-        name: "Hon. Odufuwa Tosin Victor",
-        phone: "08080217611",
-        email: "councillor.ward2@lga.gov.ng"
-    },
-    {
-        ward: "Ward 3 (Obantoko Corridor)",
-        name: "Hon. Adeiye Oriyomi Ajoke",
-        phone: "08123100146",
-        email: "councillor.ward3@lga.gov.ng"
-    },
-    {
-        ward: "Ward 4 (Olugbo Community)",
-        name: "Hon. Parakoyi Azeez Ayomide",
-        phone: "08072703321",
-        email: "councillor.ward4@lga.gov.ng"
-    },
-    {
-        ward: "Ward 5 (Alagbagba Mining/Agro)",
-        name: "Hon. Osibanjo Adeleke Solomon",
-        phone: "08038355995",
-        email: "councillor.ward5@lga.gov.ng"
-    },
-    {
-        ward: "Ward 6 (Ilugun Ward)",
-        name: "Hon. Jagunna Olufunmilayo Janet",
-        phone: "07064317581",
-        email: "councillor.ward6@lga.gov.ng"
-    },
-    {
-        ward: "Ward 7 (Itesi / Camp)",
-        name: "Hon. Adekogbe Ayodele Samson",
-        phone: "08100973778",
-        email: "councillor.ward7@lga.gov.ng"
-    },
-    {
-        ward: "Ward 8 (Opeji Community)",
-        name: "Hon. Okulaja Emmanuel Abiodun",
-        phone: "07033726911",
-        email: "councillor.ward8@lga.gov.ng"
-    },
-    {
-        ward: "Ward 9 (Koto / Balogun)",
-        name: "Hon. Ogunmosu Olabode Clement",
-        phone: "08038556949",
-        email: "councillor.ward9@lga.gov.ng"
-    },
-    {
-        ward: "Ward 10 (FUNAAB / Obantoko South)",
-        name: "Hon. Falujo Adeola Onabode",
-        phone: "08033313041",
-        email: "councillor.ward10@lga.gov.ng"
-    }
-];
+// Ward councillors are sourced from the LGA config so the marketing site and
+// the admin dashboard always show the same verified roster.
+const councillors = LGA_CONFIG.leadership.councillors ?? [];
 
 export default function LeadershipPage() {
     const chairman = LEADERSHIP[0];
@@ -188,9 +129,12 @@ export default function LeadershipPage() {
                 </div>
             </section>
 
-            {/* <section className="bg-secondary/40 py-14">
+            <section className="bg-secondary/40 py-14">
                 <div className="container mx-auto px-4">
-                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">Ward Councillors</h2>
+                    <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2">Ward Councillors</h2>
+                    <p className="text-sm text-muted-foreground mb-6">
+                        The {councillors.length} elected councillors representing each ward of {LGA_CONFIG.identity.fullName}.
+                    </p>
                     <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
                         {councillors.map((c) => (
                             <Card
@@ -201,14 +145,22 @@ export default function LeadershipPage() {
                                     {c.ward}
                                 </Badge>
                                 <div className="font-semibold text-sm">{c.name}</div>
-                                <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
-                                    <Phone className="h-3 w-3" /> {c.phone}
+                                {c.role && (
+                                    <div className="text-xs text-primary font-medium mt-1">{c.role}</div>
+                                )}
+                                <div className="text-xs text-muted-foreground mt-2 space-y-1">
+                                    <div className="flex items-center gap-1.5">
+                                        <Phone className="h-3 w-3" /> {c.phone}
+                                    </div>
+                                    <div className="flex items-center gap-1.5 break-all">
+                                        <Mail className="h-3 w-3 shrink-0" /> {c.email}
+                                    </div>
                                 </div>
                             </Card>
                         ))}
                     </div>
                 </div>
-            </section> */}
+            </section>
         </PageShell>
     );
 }

@@ -152,9 +152,9 @@ export const APPLICATIONS: ApplicationRecord[] = [
     applicant: "Adebayo Ogunleye",
     dob: "1988-04-12",
     gender: "Male",
-    address: "15 the LGA Secretariat Road",
-    lga: "the LGA",
-    ward: "the LGA",
+    address: "15 Ijebu North East LGA Secretariat Road",
+    lga: "Ijebu North East LGA",
+    ward: "Atan-Imuku",
     phone: "+2348012345678",
     email: "adebayo@example.com",
     type: "Certificate of Origin",
@@ -175,7 +175,7 @@ export const APPLICATIONS: ApplicationRecord[] = [
     dob: "1992-11-03",
     gender: "Female",
     address: "8 Obantoko Express Way",
-    lga: "the LGA",
+    lga: "Ijebu North East LGA",
     ward: "Obantoko",
     phone: "+2348022345678",
     email: "obantokoclub@example.com",
@@ -281,7 +281,7 @@ export const WARDS_INFO: {
   accent: string;
 }[] = [
   {
-    name: "the LGA",
+    name: "Ijebu North East LGA",
     x: 50,
     y: 42,
     population: "38,400",
