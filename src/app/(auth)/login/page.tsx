@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { ROLE_LABELS, TEST_CREDENTIALS } from "@/lib/auth";
+
 import { useAuth } from "@/hooks/queries/useAuth";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -37,12 +37,6 @@ function LoginPage() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     login({ email, password });
-  };
-
-  const fill = (c: (typeof TEST_CREDENTIALS)[number]) => {
-    setEmail(c.email);
-    setPassword(c.password);
-    login({ email: c.email, password: c.password });
   };
 
   const searchParams = useSearchParams();
@@ -366,30 +360,6 @@ function LoginPage() {
             </Link>
           </p>
 
-          {process.env.NODE_ENV === "development" && (
-            <Card className="p-4 bg-secondary/40 border-border/40">
-              <div className="flex items-center justify-between mb-2">
-                <div className="text-xs font-semibold uppercase tracking-wider">
-                  Demo accounts
-                </div>
-                <Badge variant="outline" className="text-[10px]">
-                  click to login
-                </Badge>
-              </div>
-              <div className="grid grid-cols-2 gap-1.5">
-                {TEST_CREDENTIALS.map((c) => (
-                  <button
-                    key={c.role}
-                    type="button"
-                    onClick={() => fill(c)}
-                    className="text-left text-xs p-2 rounded-md bg-background hover:bg-primary hover:text-primary-foreground border border-border/60 transition-smooth"
-                  >
-                    {ROLE_LABELS[c.role]}
-                  </button>
-                ))}
-              </div>
-            </Card>
-          )}
         </div>
       </div>
     </div>

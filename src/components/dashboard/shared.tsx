@@ -40,17 +40,17 @@ export function StatCard({
   color?: string;
 }) {
   return (
-    <Card className="p-5 bg-gradient-card border-border/40 hover:shadow-elegant transition-smooth">
+    <Card className="p-4 sm:p-5 bg-gradient-card border-border/40 hover:shadow-elegant transition-smooth">
       <div className="flex items-start justify-between">
         <div
-          className="h-10 w-10 rounded-lg flex items-center justify-center"
+          className="h-10 w-10 rounded-lg flex items-center justify-center shrink-0"
           style={{ backgroundColor: `color-mix(in oklab, var(--${color}) 12%, transparent)` }}
         >
           <Icon className="h-5 w-5" style={{ color: `var(--${color})` }} />
         </div>
         {trend && <span className="text-xs font-semibold text-success">{trend}</span>}
       </div>
-      <div className="mt-4 text-2xl font-bold tracking-tight">{value}</div>
+      <div className="mt-4 text-xl sm:text-2xl font-bold tracking-tight leading-tight break-words">{value}</div>
       <div className="text-sm text-muted-foreground">{label}</div>
     </Card>
   );

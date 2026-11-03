@@ -1,4 +1,3 @@
-import { useStore } from '@/lib/store';
 import React from 'react'
 import { StatCard } from '../shared';
 import { AlertCircle, BarChart3, Clock, CreditCard, FilePlus2, TrendingUp, UserCog, Wallet, Loader2 } from 'lucide-react';

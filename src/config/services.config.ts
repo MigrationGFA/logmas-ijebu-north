@@ -486,8 +486,20 @@ export function getServiceById(id: string, services: ServiceType[] = DEFAULT_SER
   });
 }
 
-const STORAGE_KEY = `${LGA_CONFIG.identity.id}_service_fee_configs`;
-
+/**
+ * Fee lookup against the shipped service catalogue.
+ *
+ * This used to be a localStorage backed fee table: reads merged
+ * per-browser overrides over the defaults, and save/toggle/reset
+ * functions persisted fee changes only in the browser of whoever made
+ * them, so two officers could quote different statutory fees for the
+ * same service and no change ever reached the server. Nothing in the
+ * app called those writers anymore (live fee administration happens in
+ * the Treasury fee configuration screen, against
+ * PATCH /treasurer/fees/:serviceId), so the persistence layer is
+ * removed. These helpers now answer from the compiled catalogue only:
+ * the same fee, for every user, on every device.
+ */
 export function getInitialServiceFeeConfigs(): ServiceFeeConfig[] {
   return DEFAULT_SERVICES.map((s) => ({
     serviceId: s.id,
@@ -501,86 +513,10 @@ export function getInitialServiceFeeConfigs(): ServiceFeeConfig[] {
 }
 
 export function getServiceFeeConfigs(): ServiceFeeConfig[] {
-  if (typeof window === "undefined") {
-    return getInitialServiceFeeConfigs();
-  }
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (Array.isArray(parsed) && parsed.length > 0) {
-        const initial = getInitialServiceFeeConfigs();
-        return initial.map((init) => {
-          const found = parsed.find((p: any) => p.serviceId === init.serviceId);
-          return found
-            ? {
-                ...init,
-                fee: typeof found.fee === "number" ? found.fee : init.fee,
-                status: found.status === "inactive" ? "inactive" : "active",
-                lastUpdated: found.lastUpdated || init.lastUpdated,
-              }
-            : init;
-        });
-      }
-    }
-  } catch (e) {
-    console.error("Error loading service fee configs", e);
-  }
-  const initial = getInitialServiceFeeConfigs();
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
-  } catch {}
-  return initial;
+  return getInitialServiceFeeConfigs();
 }
 
 export function getConfiguredFeeForService(serviceId: string): number {
-  const configs = getServiceFeeConfigs();
-  const found = configs.find((c) => c.serviceId === serviceId);
-  if (found && typeof found.fee === "number") {
-    return found.fee;
-  }
   const svc = getServiceById(serviceId);
   return svc ? svc.defaultFee : 0;
-}
-
-export function saveServiceFeeConfig(
-  serviceId: string,
-  fee: number,
-  status: "active" | "inactive"
-): ServiceFeeConfig[] {
-  const current = getServiceFeeConfigs();
-  const updated = current.map((item) => {
-    if (item.serviceId === serviceId) {
-      return {
-        ...item,
-        fee: Math.max(0, Number(fee)),
-        status,
-        lastUpdated: new Date().toISOString().slice(0, 10),
-      };
-    }
-    return item;
-  });
-
-  if (typeof window !== "undefined") {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
-      window.dispatchEvent(new CustomEvent(`${LGA_CONFIG.identity.id}:service-fees-change`, { detail: updated }));
-    } catch (e) {
-      console.error("Error saving service fee configs", e);
-    }
-  }
-  return updated;
-}
-
-export function toggleServiceFeeStatus(serviceId: string): ServiceFeeConfig[] {
-  const current = getServiceFeeConfigs();
-  const target = current.find((c) => c.serviceId === serviceId);
-  const newStatus = target?.status === "active" ? "inactive" : "active";
-  return saveServiceFeeConfig(serviceId, target ? target.fee : 0, newStatus);
-}
-
-export function resetServiceFeeToDefault(serviceId: string): ServiceFeeConfig[] {
-  const svc = getServiceById(serviceId);
-  if (!svc) return getServiceFeeConfigs();
-  return saveServiceFeeConfig(serviceId, svc.defaultFee, "active");
 }

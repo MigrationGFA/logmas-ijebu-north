@@ -14,7 +14,6 @@ import {
 import { Search } from "lucide-react";
 import { type LevyCategory, type LevyPrice } from "@/lib/store";
 import ServiceFeeConfigurationTab from "@/components/treasurer/ServiceFeeConfigurationTab";
-import AssessmentApprovalTab from "@/components/treasurer/AssessmentApprovalTab";
 import BankReconciliationTab from "@/components/treasurer/BankReconciliationTab";
 
 export const LEVY_CATEGORIES: LevyCategory[] = [
@@ -54,7 +53,7 @@ export default function RevenueFrameworkPage() {
     <div className="space-y-6">
       <PageHeader
         title="the LGA Treasury Revenue Framework Portal"
-        subtitle="Configure statutory fee amounts and active statuses for all 12 the LGA services, authorize assessments and demand notices, and track real-time payments."
+        subtitle="Configure statutory fee amounts and active statuses for the LGA services against the live register, and reconcile issued invoices against confirmed payments."
       />
 
       <Tabs defaultValue="fee_configuration" className="w-full space-y-4">
@@ -62,20 +61,13 @@ export default function RevenueFrameworkPage() {
           <TabsTrigger value="fee_configuration" className="text-xs">
             Service Fee Configuration
           </TabsTrigger>
-          {/* <TabsTrigger value="assessments" className="text-xs">
-            2. Assessments & Invoice Authorisation
-          </TabsTrigger>
           <TabsTrigger value="reconciliation" className="text-xs">
-            3. Real-time Payments & Bank Reconciliation
-          </TabsTrigger> */}
+            Payments & Bank Reconciliation
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="fee_configuration">
           <ServiceFeeConfigurationTab />
-        </TabsContent>
-
-        <TabsContent value="assessments">
-          <AssessmentApprovalTab />
         </TabsContent>
 
         <TabsContent value="reconciliation">
