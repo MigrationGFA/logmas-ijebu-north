@@ -24,11 +24,25 @@
  * the worker wakes any open page and that page runs the sync engine.
  */
 
-const CACHE_VERSION = "logmas-v1";
+const CACHE_VERSION = "logmas-v2";
 const SHELL_CACHE = `${CACHE_VERSION}-shell`;
 const ASSET_CACHE = `${CACHE_VERSION}-assets`;
 
-const SHELL_URLS = ["/", "/dashboard", "/dashboard/services", "/login"];
+// The field officer working set: dashboard, the services catalogue, the
+// permits screen (where violations are logged), the offline queue and the
+// login page. Individual service form pages cannot be listed here because
+// their URLs carry service ids only the API knows; the app warms those
+// into this same cache from the dashboard while online (see
+// src/lib/offline/warm.ts), so a network drop before an officer ever
+// opened a form still leaves the form available.
+const SHELL_URLS = [
+  "/",
+  "/dashboard",
+  "/dashboard/services",
+  "/dashboard/permits",
+  "/dashboard/offline-queue",
+  "/login",
+];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(

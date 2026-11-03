@@ -21,6 +21,7 @@ import { services } from "@/services/apiServices";
 import { wardsService } from "@/services/apiWard";
 import { savePackEntry, PACK_KEYS } from "@/lib/offline/pack";
 import { syncAllForOfficer } from "@/lib/offline/syncEngine";
+import { warmOfflineRoutes } from "@/lib/offline/warm";
 
 export function OfflineRuntime() {
   useEffect(() => {
@@ -58,6 +59,12 @@ export function OfflineRuntime() {
         ]);
         if (serviceList.status === "fulfilled") {
           await savePackEntry(PACK_KEYS.services, serviceList.value);
+          // Warm every service form page into the service worker caches,
+          // so a network drop before the officer ever opened a form does
+          // not lock that form away. Runs in the background, once.
+          void warmOfflineRoutes(
+            serviceList.value as unknown as Array<{ id?: string }>,
+          );
         }
         if (wardList.status === "fulfilled") {
           await savePackEntry(PACK_KEYS.wards, wardList.value);

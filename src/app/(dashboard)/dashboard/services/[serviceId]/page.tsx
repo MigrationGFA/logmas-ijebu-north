@@ -40,6 +40,7 @@ import type {
   StaticAccountApplicationResponse,
 } from "@/services/apiFieldOfficer";
 import { toast } from "sonner";
+import { getPackEntry, PACK_KEYS } from "@/lib/offline/pack";
 import {
   captureRecord,
   extractFilesFromPayload,
@@ -74,9 +75,26 @@ export default function ServiceDetailPage({ params }: PageProps) {
   const router = useRouter();
 
   const { services: allServices, useGetServiceBySlug } = useServices();
-  const matchedFromList: any = allServices.find(
-    (s: any) => s.id === serviceId || s.code === serviceId || s.slug === serviceId
-  );
+
+  // Offline fallback: the services saved in the reference pack while the
+  // officer was online. Without this, this page can only resolve its
+  // service from the live API, so offline it would show an error screen
+  // even though the officer has everything needed to capture the form.
+  const [packServices, setPackServices] = useState<any[]>([]);
+  React.useEffect(() => {
+    let active = true;
+    void getPackEntry<any[]>(PACK_KEYS.services).then((saved) => {
+      if (active && Array.isArray(saved)) setPackServices(saved);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const matchesService = (s: any) =>
+    s.id === serviceId || s.code === serviceId || s.slug === serviceId;
+  const matchedFromList: any =
+    allServices.find(matchesService) || packServices.find(matchesService);
   const lookupKey = matchedFromList?.code || matchedFromList?.slug || serviceId;
   const {
     data: fetchedService,
@@ -103,8 +121,8 @@ export default function ServiceDetailPage({ params }: PageProps) {
   const [staticResult, setStaticResult] =
     useState<StaticAccountApplicationResponse | null>(null);
 
-  // Loading UI
-  if (isServiceLoading) {
+  // Loading UI (skipped when the offline pack already resolved the service)
+  if (isServiceLoading && !service) {
     return (
       <div className="space-y-6 max-w-5xl mx-auto py-6 px-4">
         <div className="flex flex-col items-center justify-center py-12">
@@ -117,8 +135,8 @@ export default function ServiceDetailPage({ params }: PageProps) {
     );
   }
 
-  // Error UI
-  if (error) {
+  // Error UI (only when nothing, API or offline pack, resolved a service)
+  if (error && !service) {
     return (
       <div className="space-y-6 max-w-5xl mx-auto py-6 px-4">
         <PageHeader
