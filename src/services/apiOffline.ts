@@ -1,63 +1,34 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+/**
+ * API client for the field officer offline sync endpoints.
+ *
+ * Paths are relative to the API base URL, which already ends in /api/v1
+ * (see src/config/env.ts). The first version of this client prefixed every
+ * path with /api/v1 again, so each call would have gone to
+ * /api/v1/api/v1/... and returned 404.
+ */
 import { api } from "@/lib/api";
+import type {
+  OfflineSyncRecord,
+  SyncOfflineRecordRequest,
+  SyncOfflineRecordResponse,
+} from "@/types/offline";
 
-export interface OfflineSyncRecord {
-  id: string;
-  applicationId: string;
-  application?: {
-    id: string;
-    applicationNumber: string;
-    serviceName?: string;
-    status: string;
-  };
-  formType: string;
-  formData: any;
-  source: "web" | "mobile" | "field_officer" | "manual";
-  status: "pending" | "synced" | "failed";
-  submittedAt: string;
-  syncedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+export const offlineApi = {
+  /** Create the real record (application or violation) from a captured one. */
+  syncRecord: (data: SyncOfflineRecordRequest) =>
+    api.post<SyncOfflineRecordResponse>("/offline/sync", data),
 
-export interface SyncOfflineFormRequest {
-  formType: string;
-  formData: Record<string, any>;
-  source: "web" | "mobile" | "field_officer" | "manual";
-}
+  /** The signed in officer's sync history from the server ledger. */
+  listMySyncs: (limit = 100) =>
+    api.get<OfflineSyncRecord[]>("/offline/mine", {
+      params: { limit },
+    }),
 
-export interface OfflineSyncStatusResponse {
-  id: string;
-  applicationId: string;
-  application?: {
-    id: string;
-    applicationNumber: string;
-    serviceName?: string;
-    status: string;
-  };
-  formType: string;
-  formData: Record<string, any>;
-  source: string;
-  status: "pending" | "synced" | "failed";
-  submittedAt: string;
-  syncedAt?: string;
-  createdAt: string;
-  updatedAt: string;
-}
+  /** One ledger record, by ledger id or by the device clientRecordId. */
+  getSyncStatus: (id: string) =>
+    api.get<OfflineSyncRecord>(`/offline/status/${id}`),
 
-/** Queue a form for offline sync */
-export function syncOfflineForm(data: SyncOfflineFormRequest): Promise<OfflineSyncRecord> {
-  return api.post<OfflineSyncRecord>("/api/v1/offline/sync", data);
-}
-
-/** Retrieve offline sync status by ID (includes application info) */
-export function getOfflineSyncStatus(
-  id: string
-): Promise<OfflineSyncStatusResponse> {
-  return api.get<OfflineSyncStatusResponse>(`/api/v1/offline/status/${id}`);
-}
-
-/** Reset status and retry a failed sync */
-export function retrySync(id: string): Promise<OfflineSyncRecord> {
-  return api.post<OfflineSyncRecord>(`/api/v1/offline/${id}/retry`, {});
-}
+  /** Hand a failed record back to the device queue for resending. */
+  retrySync: (id: string) =>
+    api.post<OfflineSyncRecord>(`/offline/${id}/retry`, {}),
+};

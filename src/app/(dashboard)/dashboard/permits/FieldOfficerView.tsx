@@ -48,6 +48,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Business } from "@/services/apiFieldOfficer";
 import { tokenManager } from "@/services/apiAuth";
+import { captureRecord } from "@/lib/offline/queue";
 import { NGN, statusClass } from './page';
 import { ErrorState } from "@/components/ui/ErrorState";
 import { MetricsSkeleton, TableSkeleton } from "@/components/ui/LoadingSkeleton";
@@ -181,16 +182,50 @@ function FieldOfficerView() {
           wardId: wardId,
         };
 
+    const resetViolationForm = () => {
+      setLogOpen(false);
+      setViolationForm({
+        businessId: undefined,
+        businessName: "",
+        address: "",
+        description: "",
+        severity: "minor",
+      });
+    };
+
+    // Offline: capture the violation on the device instead of losing it.
+    // It syncs through POST /offline/sync when the network returns.
+    const captureOffline = async () => {
+      if (!user?.id) return;
+      await captureRecord({
+        recordType: "violation",
+        officerId: user.id,
+        title: `Violation: ${payload.businessName || "Registered business"}`,
+        formData: payload as Record<string, unknown>,
+      });
+      toast.success(
+        "No network. Violation saved on this phone. It will sync automatically when the network returns.",
+      );
+      resetViolationForm();
+    };
+
+    if (typeof navigator !== "undefined" && !navigator.onLine) {
+      void captureOffline();
+      return;
+    }
+
     logViolation(payload, {
-      onSuccess: () => {
-        setLogOpen(false);
-        setViolationForm({
-          businessId: undefined,
-          businessName: "",
-          address: "",
-          description: "",
-          severity: "minor",
-        });
+      onSuccess: resetViolationForm,
+      onError: (err: unknown) => {
+        const message = err instanceof Error ? err.message : "";
+        const status = (err as { status?: number })?.status;
+        if (
+          !navigator.onLine ||
+          status === 0 ||
+          /network|failed to fetch|timeout|econn/i.test(message)
+        ) {
+          void captureOffline();
+        }
       },
     });
   };

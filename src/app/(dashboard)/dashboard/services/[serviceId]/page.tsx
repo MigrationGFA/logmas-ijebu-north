@@ -39,6 +39,12 @@ import {
 import type {
   StaticAccountApplicationResponse,
 } from "@/services/apiFieldOfficer";
+import { toast } from "sonner";
+import {
+  captureRecord,
+  extractFilesFromPayload,
+} from "@/lib/offline/queue";
+import { syncAllForOfficer } from "@/lib/offline/syncEngine";
 import FoBankTransferPanel from "@/components/services/FoBankTransferPanel";
 import { ApplicantSnapshot } from "@/components/services/ApplicantSelectionStep";
 import { Application } from "@/types/application";
@@ -167,6 +173,54 @@ export default function ServiceDetailPage({ params }: PageProps) {
 
     }
 
+    // Field officer offline capture. On the online pay path (never the
+    // bank transfer path: payments are not part of offline capture), a
+    // submission with no network is stored in the on-device queue with
+    // its files, and syncs automatically when the network returns.
+    const captureOffline = async () => {
+      const [firstName, ...rest] = String(applicant?.fullName || "")
+        .trim()
+        .split(" ");
+      const extracted = extractFilesFromPayload(files);
+      const record = await captureRecord({
+        recordType: "application",
+        officerId: currentUser!.id,
+        title: service.name || "Application",
+        serviceId: service.id,
+        serviceCode: service.code,
+        formData: formData as Record<string, unknown>,
+        applicant: {
+          applicantId: applicant?.applicantId || undefined,
+          firstName: applicant?.applicantId ? undefined : firstName || undefined,
+          lastName: applicant?.applicantId ? undefined : rest.join(" ") || undefined,
+          email: applicant?.email || undefined,
+          phone: applicant?.phone || undefined,
+        },
+        files: extracted,
+        requiredDocumentTypes: extracted.map((f) => f.documentType),
+      });
+      if (record.status === "draft") {
+        toast.warning(
+          "Saved on this phone, but it still needs its photo or document evidence. Add it from the Offline Queue before it can sync.",
+        );
+      } else {
+        toast.success(
+          "No network. Saved on this phone. It will sync automatically when the network returns.",
+        );
+      }
+      router.push("/dashboard/offline-queue");
+    };
+
+    if (
+      isFieldOfficer &&
+      payMethod !== "bank_transfer" &&
+      typeof navigator !== "undefined" &&
+      !navigator.onLine
+    ) {
+      await captureOffline();
+      return;
+    }
+
     // FO assisted bank-transfer path: park at awaiting_payment_confirmation
     // with a static-account transfer + proof upload for the treasurer.
     if (isFieldOfficer && payMethod === "bank_transfer") {
@@ -205,6 +259,18 @@ export default function ServiceDetailPage({ params }: PageProps) {
         setSubmittedApp(res);
       }
     } catch (err) {
+      // If the network dropped mid submission, a field officer does not
+      // lose the work: it falls into the offline queue instead.
+      const message = err instanceof Error ? err.message : "";
+      const status = (err as { status?: number })?.status;
+      const isNetworkFailure =
+        !navigator.onLine ||
+        status === 0 ||
+        /network|failed to fetch|timeout|econn/i.test(message);
+      if (isFieldOfficer && payMethod !== "bank_transfer" && isNetworkFailure) {
+        await captureOffline();
+        return;
+      }
       console.error("Submission failed:", err);
     }
   };
