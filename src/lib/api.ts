@@ -196,6 +196,18 @@ axiosInstance.interceptors.response.use(
         return axiosInstance(originalRequest);
       } catch (refreshError) {
         processQueue(refreshError as Error, null);
+        // A network failure is not an expired session. When the refresh
+        // call never reached the server (no response at all, for example
+        // the device is offline), the right move is to fail this request
+        // quietly and leave the session exactly as it was. Clearing the
+        // tokens and hard redirecting here is what used to throw field
+        // officers out of the app and into a login reload loop the
+        // moment their network dropped.
+        const isNetworkFailure = !(refreshError as { response?: unknown })
+          ?.response;
+        if (isNetworkFailure) {
+          return Promise.reject(refreshError);
+        }
         // Refresh token invalid/expired - hard-stop instead of leaving the app
         // stuck on a spinner. Clear everything and send the user to login.
         setAuthToken(null);

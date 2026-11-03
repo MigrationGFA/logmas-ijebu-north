@@ -32,6 +32,26 @@ export function OfflineRuntime() {
 
     async function registerServiceWorker() {
       if (!("serviceWorker" in navigator)) return;
+      // Production builds only. A service worker under `next dev` fights
+      // the dev server's constant rebuilds (stale cached pages against
+      // fresh chunk URLs) and can throw the app into a reload loop, which
+      // is a known dev mode trap rather than an app bug. Any worker an
+      // earlier dev session registered is removed, so a machine that hit
+      // that loop recovers simply by loading the dashboard once in dev.
+      // Offline behaviour is tested on a production build, which is also
+      // what officers actually run.
+      if (process.env.NODE_ENV !== "production") {
+        try {
+          const registrations =
+            await navigator.serviceWorker.getRegistrations();
+          await Promise.all(
+            registrations.map((registration) => registration.unregister()),
+          );
+        } catch {
+          // Nothing to clean up.
+        }
+        return;
+      }
       try {
         const registration = await navigator.serviceWorker.register("/sw.js", {
           scope: "/",

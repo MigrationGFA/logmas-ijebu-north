@@ -44,7 +44,18 @@ export function useAuth() {
   });
 
   const currentUser = user ?? tokenManager.getUser();
-   const isUserDataFresh = !!user;
+  // Freshness normally means the server just confirmed who this is, via
+  // the getMe query above. Offline that confirmation is impossible by
+  // definition, and treating it as mandatory locks a signed in officer
+  // out of the app entirely, stuck on the loading screen, which makes
+  // offline capture impossible. So when the browser is offline, a stored
+  // user with a token counts as fresh enough for LOCAL purposes: it only
+  // unlocks the interface and the on-device queue. The server still
+  // validates the token itself when the queue syncs, and rejects it
+  // there if it has expired.
+  const isOffline =
+    typeof navigator !== "undefined" && !navigator.onLine;
+  const isUserDataFresh = !!user || (isOffline && !!currentUser);
 
   // Mutation: Login
   const loginMutation = useMutation({

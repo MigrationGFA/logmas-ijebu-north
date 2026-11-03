@@ -7,9 +7,6 @@ import {
   ApplicantSearchResult,
 } from "@/types/application";
 import {
-  getLgaApplications,
-} from "@/lib/lgaApplications";
-import {
   getLgaServiceById,
 } from "@/config/lgaServices";
 import { LGA_CONFIG } from "@/config/lga.config";
@@ -452,40 +449,12 @@ export const apiApplications = {
         });
       }
     } catch {
-      // Continue to next backend-driven source.
+      // The customers API is the only source. Search results used to be
+      // topped up from a localStorage mock store of invented applications
+      // (getLgaApplications), which let fake citizens appear in a field
+      // officer's applicant search. That merge is removed: if the API
+      // returns nobody, the honest answer is nobody.
     }
-
-    // 2. Query existing backend-sourced application records for past applicants
-    const existingApps = getLgaApplications();
-    existingApps.forEach((app) => {
-      const match =
-        app.applicant.toLowerCase().includes(q) ||
-        (app.phone && app.phone.toLowerCase().includes(q)) ||
-        (app.nin && app.nin.toLowerCase().includes(q)) ||
-        (app.email && app.email.toLowerCase().includes(q));
-
-      if (
-        match &&
-        !results.some(
-          (r) => r.phone === app.phone || (app.nin && r.nin === app.nin),
-        )
-      ) {
-        results.push({
-          id: app.id,
-          name: app.applicant,
-          phone: app.phone,
-          email: app.email,
-          nin: app.nin,
-          cacNumber: app.cacNumber,
-          address: app.address,
-          ward: app.ward,
-          role:
-            app.category === "Licences & Permits"
-              ? "business_owner"
-              : "citizen",
-        });
-      }
-    });
 
     return results;
   },
