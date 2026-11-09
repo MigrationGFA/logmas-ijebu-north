@@ -1,1 +1,77 @@
-aW1wb3J0IHsgdXNlUXVlcnksIHVzZU11dGF0aW9uLCB1c2VRdWVyeUNsaWVudCB9IGZyb20gIkB0YW5zdGFjay9yZWFjdC1xdWVyeSI7CmltcG9ydCB7CiAgZGVtYW5kTm90aWNlU2VydmljZSwKICBDcmVhdGVEZW1hbmROb3RpY2VQYXlsb2FkLAogIExpc3REZW1hbmROb3RpY2VzUGFyYW1zLAp9IGZyb20gIkAvc2VydmljZXMvYXBpRGVtYW5kTm90aWNlIjsKaW1wb3J0IHsgdG9hc3QgfSBmcm9tICJzb25uZXIiOwoKZXhwb3J0IGNvbnN0IGRlbWFuZE5vdGljZUtleXMgPSB7CiAgYWxsOiBbImRlbWFuZC1ub3RpY2VzIl0gYXMgY29uc3QsCiAgbGlzdHM6ICgpID0+IFsuLi5kZW1hbmROb3RpY2VLZXlzLmFsbCwgImxpc3QiXSBhcyBjb25zdCwKICBsaXN0OiAocGFyYW1zPzogTGlzdERlbWFuZE5vdGljZXNQYXJhbXMpID0+IFsuLi5kZW1hbmROb3RpY2VLZXlzLmxpc3RzKCksIHBhcmFtc10gYXMgY29uc3QsCiAgZGV0YWlsczogKCkgPT4gWy4uLmRlbWFuZE5vdGljZUtleXMuYWxsLCAiZGV0YWlsIl0gYXMgY29uc3QsCiAgZGV0YWlsOiAocmVmZXJlbmNlOiBzdHJpbmcpID0+IFsuLi5kZW1hbmROb3RpY2VLZXlzLmRldGFpbHMoKSwgcmVmZXJlbmNlXSBhcyBjb25zdCwKfTsKCmV4cG9ydCBmdW5jdGlvbiB1c2VEZW1hbmROb3RpY2VzKHBhcmFtcz86IExpc3REZW1hbmROb3RpY2VzUGFyYW1zKSB7CiAgcmV0dXJuIHVzZVF1ZXJ5KHsKICAgIHF1ZXJ5S2V5OiBkZW1hbmROb3RpY2VLZXlzLmxpc3QocGFyYW1zKSwKICAgIHF1ZXJ5Rm46ICgpID0+IGRlbWFuZE5vdGljZVNlcnZpY2UubGlzdERlbWFuZE5vdGljZXMocGFyYW1zKSwKICAgIHN0YWxlVGltZTogMzAgKiAxMDAwLAogIH0pOwp9CgpleHBvcnQgZnVuY3Rpb24gdXNlRGVtYW5kTm90aWNlQnlSZWYocmVmZXJlbmNlOiBzdHJpbmcsIGVuYWJsZWQgPSB0cnVlKSB7CiAgcmV0dXJuIHVzZVF1ZXJ5KHsKICAgIHF1ZXJ5S2V5OiBkZW1hbmROb3RpY2VLZXlzLmRldGFpbChyZWZlcmVuY2UpLAogICAgcXVlcnlGbjogKCkgPT4gZGVtYW5kTm90aWNlU2VydmljZS5nZXREZW1hbmROb3RpY2VCeVJlZihyZWZlcmVuY2UpLAogICAgZW5hYmxlZDogISFyZWZlcmVuY2UgJiYgZW5hYmxlZCwKICAgIHN0YWxlVGltZTogMTUgKiAxMDAwLAogIH0pOwp9CgpleHBvcnQgZnVuY3Rpb24gdXNlQ3JlYXRlRGVtYW5kTm90aWNlKCkgewogIGNvbnN0IHF1ZXJ5Q2xpZW50ID0gdXNlUXVlcnlDbGllbnQoKTsKICByZXR1cm4gdXNlTXV0YXRpb24oewogICAgbXV0YXRpb25GbjogKHBheWxvYWQ6IENyZWF0ZURlbWFuZE5vdGljZVBheWxvYWQpID0+CiAgICAgIGRlbWFuZE5vdGljZVNlcnZpY2UuY3JlYXRlRGVtYW5kTm90aWNlKHBheWxvYWQpLAogICAgb25TdWNjZXNzOiAoZGF0YSkgPT4gewogICAgICBxdWVyeUNsaWVudC5pbnZhbGlkYXRlUXVlcmllcyh7IHF1ZXJ5S2V5OiBkZW1hbmROb3RpY2VLZXlzLmFsbCB9KTsKICAgICAgdG9hc3Quc3VjY2VzcygKICAgICAgICBgRGVtYW5kIG5vdGljZSAke2RhdGE/LmRhdGE/LmRlbWFuZE5vdGljZU51bWJlciB8fCAiY3JlYXRlZCJ9IGlzc3VlZCBzdWNjZXNzZnVsbHkhYAogICAgICApOwogICAgfSwKICAgIG9uRXJyb3I6IChlcnI6IGFueSkgPT4gewogICAgICB0b2FzdC5lcnJvcihlcnI/LnJlc3BvbnNlPy5kYXRhPy5tZXNzYWdlIHx8IGVycj8ubWVzc2FnZSB8fCAiRmFpbGVkIHRvIGlzc3VlIGRlbWFuZCBub3RpY2UiKTsKICAgIH0sCiAgfSk7Cn0KCmV4cG9ydCBmdW5jdGlvbiB1c2VDYW5jZWxEZW1hbmROb3RpY2UoKSB7CiAgY29uc3QgcXVlcnlDbGllbnQgPSB1c2VRdWVyeUNsaWVudCgpOwogIHJldHVybiB1c2VNdXRhdGlvbih7CiAgICBtdXRhdGlvbkZuOiAoeyBpZCwgcmVhc29uIH06IHsgaWQ6IHN0cmluZzsgcmVhc29uOiBzdHJpbmcgfSkgPT4KICAgICAgZGVtYW5kTm90aWNlU2VydmljZS5jYW5jZWxEZW1hbmROb3RpY2UoaWQsIHJlYXNvbiksCiAgICBvblN1Y2Nlc3M6ICgpID0+IHsKICAgICAgcXVlcnlDbGllbnQuaW52YWxpZGF0ZVF1ZXJpZXMoeyBxdWVyeUtleTogZGVtYW5kTm90aWNlS2V5cy5hbGwgfSk7CiAgICAgIHRvYXN0LnN1Y2Nlc3MoIkRlbWFuZCBub3RpY2UgY2FuY2VsbGVkIHN1Y2Nlc3NmdWxseSIpOwogICAgfSwKICAgIG9uRXJyb3I6IChlcnI6IGFueSkgPT4gewogICAgICB0b2FzdC5lcnJvcihlcnI/LnJlc3BvbnNlPy5kYXRhPy5tZXNzYWdlIHx8IGVycj8ubWVzc2FnZSB8fCAiRmFpbGVkIHRvIGNhbmNlbCBub3RpY2UiKTsKICAgIH0sCiAgfSk7Cn0KCmV4cG9ydCBmdW5jdGlvbiB1c2VSZXNlbmREZW1hbmROb3RpY2UoKSB7CiAgcmV0dXJuIHVzZU11dGF0aW9uKHsKICAgIG11dGF0aW9uRm46ICh7IGlkLCBlbWFpbCB9OiB7IGlkOiBzdHJpbmc7IGVtYWlsPzogc3RyaW5nIH0pID0+CiAgICAgIGRlbWFuZE5vdGljZVNlcnZpY2UucmVzZW5kRGVtYW5kTm90aWNlKGlkLCBlbWFpbCksCiAgICBvblN1Y2Nlc3M6IChyZXM6IGFueSkgPT4gewogICAgICB0b2FzdC5zdWNjZXNzKHJlcz8ubWVzc2FnZSB8fCAiRGVtYW5kIG5vdGljZSBub3RpZmljYXRpb24gcmVzZW50IHN1Y2Nlc3NmdWxseSIpOwogICAgfSwKICAgIG9uRXJyb3I6IChlcnI6IGFueSkgPT4gewogICAgICB0b2FzdC5lcnJvcihlcnI/LnJlc3BvbnNlPy5kYXRhPy5tZXNzYWdlIHx8IGVycj8ubWVzc2FnZSB8fCAiRmFpbGVkIHRvIHJlc2VuZCBub3RpY2UiKTsKICAgIH0sCiAgfSk7Cn0K
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  demandNoticeService,
+  CreateDemandNoticePayload,
+  ListDemandNoticesParams,
+} from "@/services/apiDemandNotice";
+import { toast } from "sonner";
+
+export const demandNoticeKeys = {
+  all: ["demand-notices"] as const,
+  lists: () => [...demandNoticeKeys.all, "list"] as const,
+  list: (params?: ListDemandNoticesParams) => [...demandNoticeKeys.lists(), params] as const,
+  details: () => [...demandNoticeKeys.all, "detail"] as const,
+  detail: (reference: string) => [...demandNoticeKeys.details(), reference] as const,
+};
+
+export function useDemandNotices(params?: ListDemandNoticesParams) {
+  return useQuery({
+    queryKey: demandNoticeKeys.list(params),
+    queryFn: () => demandNoticeService.listDemandNotices(params),
+    staleTime: 30 * 1000,
+  });
+}
+
+export function useDemandNoticeByRef(reference: string, enabled = true) {
+  return useQuery({
+    queryKey: demandNoticeKeys.detail(reference),
+    queryFn: () => demandNoticeService.getDemandNoticeByRef(reference),
+    enabled: !!reference && enabled,
+    staleTime: 15 * 1000,
+  });
+}
+
+export function useCreateDemandNotice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (payload: CreateDemandNoticePayload) =>
+      demandNoticeService.createDemandNotice(payload),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: demandNoticeKeys.all });
+      toast.success(
+        `Demand notice ${data?.data?.demandNoticeNumber || "created"} issued successfully!`
+      );
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || err?.message || "Failed to issue demand notice");
+    },
+  });
+}
+
+export function useCancelDemandNotice() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, reason }: { id: string; reason: string }) =>
+      demandNoticeService.cancelDemandNotice(id, reason),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: demandNoticeKeys.all });
+      toast.success("Demand notice cancelled successfully");
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || err?.message || "Failed to cancel notice");
+    },
+  });
+}
+
+export function useResendDemandNotice() {
+  return useMutation({
+    mutationFn: ({ id, email }: { id: string; email?: string }) =>
+      demandNoticeService.resendDemandNotice(id, email),
+    onSuccess: (res: any) => {
+      toast.success(res?.message || "Demand notice notification resent successfully");
+    },
+    onError: (err: any) => {
+      toast.error(err?.response?.data?.message || err?.message || "Failed to resend notice");
+    },
+  });
+}

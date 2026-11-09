@@ -1,1 +1,17 @@
-IyBMT0dNQVMgRnJvbnRlbmQ6IEVudmlyb25tZW50IFZhcmlhYmxlcwoKVGhpcyBmcm9udGVuZCBpcyBob3N0ZWQgb24gKipWZXJjZWwqKi4gU2V0IHRoZXNlIHZhcmlhYmxlcyBpbgoqKlZlcmNlbCA+IFByb2plY3QgPiBTZXR0aW5ncyA+IEVudmlyb25tZW50IFZhcmlhYmxlcyoqIGZvciB0aGUgUHJvZHVjdGlvbgooYW5kIFByZXZpZXcsIGlmIHVzZWQpIGVudmlyb25tZW50cywgdGhlbiAqKnJlZGVwbG95Kio6IGBORVhUX1BVQkxJQ19gCnZhcmlhYmxlcyBhcmUgYmFrZWQgaW50byB0aGUgYnVpbGQsIHNvIGEgY2hhbmdlIG9ubHkgdGFrZXMgZWZmZWN0IGFmdGVyIGEKbmV3IGRlcGxveW1lbnQuIGBOT0RFX0VOVmAgaXMgbWFuYWdlZCBieSBWZXJjZWw7IGRvIG5vdCBzZXQgaXQgeW91cnNlbGYuCgpUaGlzIGZpbGUgbGlzdHMgdmFyaWFibGUgTkFNRVMgYW5kIHdoYXQgdGhleSBhcmUgZm9yIG9ubHkuIE5ldmVyIGNvbW1pdCByZWFsCnNlY3JldCB2YWx1ZXMgdG8gdGhpcyByZXBvc2l0b3J5LgoKfCBWYXJpYWJsZSB8IE5vdGVzIHwKfCAtLS0gfCAtLS0gfAp8IGBORVhUX1BVQkxJQ19BUElfQkFTRV9VUkxgIHwgKipSZXF1aXJlZC4qKiBGdWxsIGJhc2UgVVJMIG9mIHRoaXMgTEdBJ3MgYmFja2VuZCBBUEkgb24gY1BhbmVsLCBlbmRpbmcgd2l0aCBgL2FwaS92MWAgKGZvciBleGFtcGxlIGBodHRwczovLzx0aGlzLWxnYS1hcGktZG9tYWluPi9hcGkvdjFgKS4gRXZlcnkgQVBJIGNhbGwgdGhlIHNpdGUgbWFrZXMgZ29lcyBoZXJlLiB8CnwgYE5FWFRfUFVCTElDX0JBU0VfVVJMYCB8IFRoaXMgZnJvbnRlbmQncyBvd24gcHVibGljIFVSTCAoaXRzIFZlcmNlbC9jdXN0b20gZG9tYWluKSwgdXNlZCBmb3IgYWJzb2x1dGUgbGlua3MgYW5kIGNhbGxiYWNrcy4gfAp8IGBORVhUX1BVQkxJQ19HT09HTEVfQ0xJRU5UX0lEYCB8IEdvb2dsZSBzaWduLWluIGNsaWVudCBpZC4gTXVzdCBiZSB0aGUgc2FtZSBHb29nbGUgcHJvamVjdCBhcyB0aGUgYmFja2VuZCdzIGBHT09HTEVfQ0xJRU5UX0lEYC4gfAp8IGBORVhUX1BVQkxJQ19QQVlNRU5UX1BST1ZJREVSYCB8IFdoaWNoIGNoZWNrb3V0IHRoZSBwYXltZW50IHNjcmVlbnMgbGVhZCB3aXRoOiBgZ3BheWAgb3IgYHBheXN0YWNrYC4gfAo=
+# LOGMAS Frontend: Environment Variables
+
+This frontend is hosted on **Vercel**. Set these variables in
+**Vercel > Project > Settings > Environment Variables** for the Production
+(and Preview, if used) environments, then **redeploy**: `NEXT_PUBLIC_`
+variables are baked into the build, so a change only takes effect after a
+new deployment. `NODE_ENV` is managed by Vercel; do not set it yourself.
+
+This file lists variable NAMES and what they are for only. Never commit real
+secret values to this repository.
+
+| Variable | Notes |
+| --- | --- |
+| `NEXT_PUBLIC_API_BASE_URL` | **Required.** Full base URL of this LGA's backend API on cPanel, ending with `/api/v1` (for example `https://<this-lga-api-domain>/api/v1`). Every API call the site makes goes here. |
+| `NEXT_PUBLIC_BASE_URL` | This frontend's own public URL (its Vercel/custom domain), used for absolute links and callbacks. |
+| `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | Google sign-in client id. Must be the same Google project as the backend's `GOOGLE_CLIENT_ID`. |
+| `NEXT_PUBLIC_PAYMENT_PROVIDER` | Which checkout the payment screens lead with: `gpay` or `paystack`. |

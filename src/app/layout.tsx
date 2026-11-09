@@ -1,1 +1,48 @@
-CmltcG9ydCB0eXBlIHsgTWV0YWRhdGEgfSBmcm9tICJuZXh0IjsKaW1wb3J0IHsgR2Vpc3QsIEdlaXN0X01vbm8gfSBmcm9tICJuZXh0L2ZvbnQvZ29vZ2xlIjsKaW1wb3J0ICIuL2dsb2JhbHMuY3NzIjsKaW1wb3J0IHsgUHJvdmlkZXJzIH0gZnJvbSAiLi9wcm92aWRlciI7CmltcG9ydCB7IFRvYXN0ZXIgfSBmcm9tICJzb25uZXIiOwppbXBvcnQgeyBUb29sdGlwUHJvdmlkZXIgfSBmcm9tICJAL2NvbXBvbmVudHMvdWkvdG9vbHRpcCI7CmltcG9ydCB7IExHQV9DT05GSUcgfSBmcm9tICJAL2NvbmZpZy9sZ2EuY29uZmlnIjsKaW1wb3J0IHsgR29vZ2xlVHJhbnNsYXRlU2NyaXB0IH0gZnJvbSAiQC9jb21wb25lbnRzL0dvb2dsZVRyYW5zbGF0ZVNjcmlwdCI7Cgpjb25zdCBnZWlzdFNhbnMgPSBHZWlzdCh7CiAgdmFyaWFibGU6ICItLWZvbnQtZ2Vpc3Qtc2FucyIsCiAgc3Vic2V0czogWyJsYXRpbiJdLAp9KTsKCmNvbnN0IGdlaXN0TW9ubyA9IEdlaXN0X01vbm8oewogIHZhcmlhYmxlOiAiLS1mb250LWdlaXN0LW1vbm8iLAogIHN1YnNldHM6IFsibGF0aW4iXSwKfSk7CgpleHBvcnQgY29uc3QgbWV0YWRhdGE6IE1ldGFkYXRhID0gewogIHRpdGxlOiB7CiAgICBkZWZhdWx0OiBgJHtMR0FfQ09ORklHLmlkZW50aXR5Lm5hbWV9IExvY2FsIEdvdmVybm1lbnQgT2ZmaWNpYWwgV2Vic2l0ZWAsCiAgICB0ZW1wbGF0ZTogYCVzIHwgJHtMR0FfQ09ORklHLmlkZW50aXR5Lm5hbWV9IExvY2FsIEdvdmVybm1lbnQgT2ZmaWNpYWwgV2Vic2l0ZWAsCiAgfSwKICBkZXNjcmlwdGlvbjogYCR7TEdBX0NPTkZJRy5wbGF0Zm9ybS5mdWxsTmFtZX0gZm9yICR7TEdBX0NPTkZJRy5pZGVudGl0eS5mdWxsTmFtZX1gLAp9OwoKZXhwb3J0IGRlZmF1bHQgZnVuY3Rpb24gUm9vdExheW91dCh7CiAgY2hpbGRyZW4sCn06IFJlYWRvbmx5PHsKICBjaGlsZHJlbjogUmVhY3QuUmVhY3ROb2RlOwp9PikgewogIHJldHVybiAoCiAgICA8aHRtbAogICAgICBsYW5nPSJlbiIKICAgICAgY2xhc3NOYW1lPXtgJHtnZWlzdFNhbnMudmFyaWFibGV9ICR7Z2Vpc3RNb25vLnZhcmlhYmxlfSBoLWZ1bGwgYW50aWFsaWFzZWRgfQogICAgPgogICAgICA8Ym9keSBjbGFzc05hbWU9Im1pbi1oLWZ1bGwgZmxleCBmbGV4LWNvbCI+CiAgICAgICAgPEdvb2dsZVRyYW5zbGF0ZVNjcmlwdCAvPgogICAgICAgIDxUb29sdGlwUHJvdmlkZXIgZGVsYXlEdXJhdGlvbj17MjAwfT4KICAgICAgICAgIDxQcm92aWRlcnM+e2NoaWxkcmVufTwvUHJvdmlkZXJzPgogICAgICAgICAgPFRvYXN0ZXIgLz4KICAgICAgICA8L1Rvb2x0aXBQcm92aWRlcj4KICAgICAgPC9ib2R5PgogICAgPC9odG1sPgogICk7Cn0K
+
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
+import "./globals.css";
+import { Providers } from "./provider";
+import { Toaster } from "sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { LGA_CONFIG } from "@/config/lga.config";
+import { GoogleTranslateScript } from "@/components/GoogleTranslateScript";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: {
+    default: `${LGA_CONFIG.identity.name} Local Government Official Website`,
+    template: `%s | ${LGA_CONFIG.identity.name} Local Government Official Website`,
+  },
+  description: `${LGA_CONFIG.platform.fullName} for ${LGA_CONFIG.identity.fullName}`,
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html
+      lang="en"
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <body className="min-h-full flex flex-col">
+        <GoogleTranslateScript />
+        <TooltipProvider delayDuration={200}>
+          <Providers>{children}</Providers>
+          <Toaster />
+        </TooltipProvider>
+      </body>
+    </html>
+  );
+}

@@ -1,1 +1,379 @@
-InVzZSBjbGllbnQiOwoKaW1wb3J0IFJlYWN0LCB7IHVzZVN0YXRlIH0gZnJvbSAicmVhY3QiOwppbXBvcnQgewogIERpYWxvZywKICBEaWFsb2dDb250ZW50LAogIERpYWxvZ0hlYWRlciwKICBEaWFsb2dUaXRsZSwKICBEaWFsb2dEZXNjcmlwdGlvbiwKICBEaWFsb2dGb290ZXIsCn0gZnJvbSAiQC9jb21wb25lbnRzL3VpL2RpYWxvZyI7CmltcG9ydCB7IEJ1dHRvbiB9IGZyb20gIkAvY29tcG9uZW50cy91aS9idXR0b24iOwppbXBvcnQgeyBJbnB1dCB9IGZyb20gIkAvY29tcG9uZW50cy91aS9pbnB1dCI7CmltcG9ydCB7IExhYmVsIH0gZnJvbSAiQC9jb21wb25lbnRzL3VpL2xhYmVsIjsKaW1wb3J0IHsKICBTZWxlY3QsCiAgU2VsZWN0Q29udGVudCwKICBTZWxlY3RJdGVtLAogIFNlbGVjdFRyaWdnZXIsCiAgU2VsZWN0VmFsdWUsCn0gZnJvbSAiQC9jb21wb25lbnRzL3VpL3NlbGVjdCI7CmltcG9ydCB7IFRleHRhcmVhIH0gZnJvbSAiQC9jb21wb25lbnRzL3VpL3RleHRhcmVhIjsKaW1wb3J0IHsKICBCdWlsZGluZzIsCiAgQ2FsZW5kYXIsCiAgQ3JlZGl0Q2FyZCwKICBGaWxlVGV4dCwKICBMYW5kbWFyaywKICBMb2FkZXIyLAogIFBsdXMsCiAgU2VuZCwKICBVc2VyLAp9IGZyb20gImx1Y2lkZS1yZWFjdCI7CmltcG9ydCB7IHVzZUNyZWF0ZURlbWFuZE5vdGljZSB9IGZyb20gIkAvaG9va3MvcXVlcmllcy91c2VEZW1hbmROb3RpY2VzIjsKaW1wb3J0IHsgTEdBX0NPTkZJRywgZ2V0TGdhU2VydmljZUJhbmtpbmcgfSBmcm9tICJAL2NvbmZpZy9sZ2EuY29uZmlnIjsKaW1wb3J0IHsgRGVtYW5kTm90aWNlUmVjb3JkIH0gZnJvbSAiQC9zZXJ2aWNlcy9hcGlEZW1hbmROb3RpY2UiOwoKaW50ZXJmYWNlIElzc3VlRGVtYW5kTm90aWNlTW9kYWxQcm9wcyB7CiAgaXNPcGVuOiBib29sZWFuOwogIG9uQ2xvc2U6ICgpID0+IHZvaWQ7CiAgb25TdWNjZXNzOiAobm90aWNlOiBEZW1hbmROb3RpY2VSZWNvcmQpID0+IHZvaWQ7Cn0KCmNvbnN0IEFQUExJQ0FCTEVfU0VSVklDRVMgPSBbCiAgeyBjb2RlOiAiZGVtYW5kX25vdGljZSIsIG5hbWU6ICJCdXNpbmVzcyBEZW1hbmQgTm90aWNlIiwgaGVhZDogIjIwMDIgLSBCdXNpbmVzcyAmIENvbW1lcmNpYWwgRGVtYW5kIE5vdGljZXMiIH0sCiAgeyBjb2RlOiAiY29tbXVuaXR5X2RldmVsb3BtZW50X2xldnkiLCBuYW1lOiAiQ29tbXVuaXR5IERldmVsb3BtZW50IExldnkiLCBoZWFkOiAiMjAwMSAtIENvbW11bml0eSBEZXZlbG9wbWVudCBMZXZ5IiB9LAogIHsgY29kZTogInN0cmVldF9uYW1pbmciLCBuYW1lOiAiU3RyZWV0IE5hbWluZyAmIFByb3BlcnR5IE51bWJlcmluZyIsIGhlYWQ6ICIyMDA2IC0gVXJiYW4gRGV2ICYgU3RyZWV0IE5hbWluZyIgfSwKICB7IGNvZGU6ICJlbnZpcm9ubWVudGFsX3Nhbml0YXRpb24iLCBuYW1lOiAiU2FuaXRhdGlvbiAmIFB1YmxpYyBIZWFsdGggTGV2eSIsIGhlYWQ6ICIxMDA1IC0gSGVhbHRoICYgU2FuaXRhdGlvbiIgfSwKICB7IGNvZGU6ICJoYXVsYWdlX2ZlZXMiLCBuYW1lOiAiSGF1bGFnZSAmIEhlYXZ5IFRyYW5zaXQgTGV2eSIsIGhlYWQ6ICIyMDAyIC0gSGF1bGFnZSAmIFRyYW5zaXQiIH0sCiAgeyBjb2RlOiAibGlxdW9yX2xpY2VuY2UiLCBuYW1lOiAiTGlxdW9yIC8gSG9zcGl0YWxpdHkgQXNzZXNzbWVudCIsIGhlYWQ6ICIyMDAzIC0gRXhjaXNlICYgVHJhZGUiIH0sCl07CgpleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBJc3N1ZURlbWFuZE5vdGljZU1vZGFsKHsKICBpc09wZW4sCiAgb25DbG9zZSwKICBvblN1Y2Nlc3MsCn06IElzc3VlRGVtYW5kTm90aWNlTW9kYWxQcm9wcykgewogIGNvbnN0IGNyZWF0ZU11dGF0aW9uID0gdXNlQ3JlYXRlRGVtYW5kTm90aWNlKCk7CgogIGNvbnN0IFtwYXllclR5cGUsIHNldFBheWVyVHlwZV0gPSB1c2VTdGF0ZTwiYnVzaW5lc3MiIHwgImluZGl2aWR1YWwiIHwgInByb3BlcnR5X293bmVyIj4oImJ1c2luZXNzIik7CiAgY29uc3QgW3BheWVyTmFtZSwgc2V0UGF5ZXJOYW1lXSA9IHVzZVN0YXRlKCIiKTsKICBjb25zdCBbdHJhZGluZ05hbWUsIHNldFRyYWRpbmdOYW1lXSA9IHVzZVN0YXRlKCIiKTsKICBjb25zdCBbcmNOdW1iZXIsIHNldFJjTnVtYmVyXSA9IHVzZVN0YXRlKCIiKTsKICBjb25zdCBbcGhvbmUsIHNldFBob25lXSA9IHVzZVN0YXRlKCIiKTsKICBjb25zdCBbZW1haWwsIHNldEVtYWlsXSA9IHVzZVN0YXRlKCIiKTsKICBjb25zdCBbd2FyZCwgc2V0V2FyZF0gPSB1c2VTdGF0ZShMR0FfQ09ORklHLndhcmRzWzBdPy5uYW1lID8/ICIiKTsKICBjb25zdCBbYWRkcmVzcywgc2V0QWRkcmVzc10gPSB1c2VTdGF0ZSgiIik7CiAgY29uc3QgW3NlcnZpY2VDb2RlLCBzZXRTZXJ2aWNlQ29kZV0gPSB1c2VTdGF0ZSgiZGVtYW5kX25vdGljZSIpOwogIGNvbnN0IFtjaGFyZ2VEZXNjcmlwdGlvbiwgc2V0Q2hhcmdlRGVzY3JpcHRpb25dID0gdXNlU3RhdGUoIkFubnVhbCBNdW5pY2lwYWwgQnVzaW5lc3MgUHJlbWlzZXMgRGVtYW5kIE5vdGljZSIpOwogIGNvbnN0IFthbW91bnRQYXlhYmxlLCBzZXRBbW91bnRQYXlhYmxlXSA9IHVzZVN0YXRlKCI1MDAwMCIpOwogIGNvbnN0IFtkdWVEYXRlLCBzZXREdWVEYXRlXSA9IHVzZVN0YXRlKCgpID0+IHsKICAgIGNvbnN0IGQgPSBuZXcgRGF0ZSgpOwogICAgZC5zZXREYXRlKGQuZ2V0RGF0ZSgpICsgMTQpOwogICAgcmV0dXJuIGQudG9JU09TdHJpbmcoKS5zcGxpdCgiVCIpWzBdOwogIH0pOwogIGNvbnN0IFtub3Rlcywgc2V0Tm90ZXNdID0gdXNlU3RhdGUoIiIpOwoKICBjb25zdCBjdXJyZW50QmFua2luZyA9IGdldExnYVNlcnZpY2VCYW5raW5nKHNlcnZpY2VDb2RlKTsKCiAgY29uc3QgaGFuZGxlU3VibWl0ID0gYXN5bmMgKGU6IFJlYWN0LkZvcm1FdmVudCkgPT4gewogICAgZS5wcmV2ZW50RGVmYXVsdCgpOwogICAgaWYgKCFwYXllck5hbWUudHJpbSgpIHx8ICFwaG9uZS50cmltKCkgfHwgIWFkZHJlc3MudHJpbSgpIHx8ICFhbW91bnRQYXlhYmxlKSB7CiAgICAgIHJldHVybjsKICAgIH0KCiAgICBjb25zdCBzZWxlY3RlZFNlcnZpY2UgPSBBUFBMSUNBQkxFX1NFUlZJQ0VTLmZpbmQoKHMpID0+IHMuY29kZSA9PT0gc2VydmljZUNvZGUpOwoKICAgIHRyeSB7CiAgICAgIGNvbnN0IHJlcyA9IGF3YWl0IGNyZWF0ZU11dGF0aW9uLm11dGF0ZUFzeW5jKHsKICAgICAgICBwYXllclR5cGUsCiAgICAgICAgcGF5ZXJOYW1lOiBwYXllck5hbWUudHJpbSgpLAogICAgICAgIHRyYWRpbmdOYW1lOiB0cmFkaW5nTmFtZS50cmltKCkgfHwgdW5kZWZpbmVkLAogICAgICAgIHJjTnVtYmVyOiByY051bWJlci50cmltKCkgfHwgdW5kZWZpbmVkLAogICAgICAgIHBob25lOiBwaG9uZS50cmltKCksCiAgICAgICAgZW1haWw6IGVtYWlsLnRyaW0oKSB8fCB1bmRlZmluZWQsCiAgICAgICAgd2FyZCwKICAgICAgICBhZGRyZXNzOiBhZGRyZXNzLnRyaW0oKSwKICAgICAgICBzZXJ2aWNlQ29kZSwKICAgICAgICByZXZlbnVlSGVhZDogc2VsZWN0ZWRTZXJ2aWNlPy5oZWFkIHx8ICIyMDAyIC0gRGVtYW5kIE5vdGljZXMiLAogICAgICAgIGNoYXJnZURlc2NyaXB0aW9uOiBjaGFyZ2VEZXNjcmlwdGlvbi50cmltKCksCiAgICAgICAgYXNzZXNzbWVudEl0ZW1zOiBbCiAgICAgICAgICB7CiAgICAgICAgICAgIGRlc2NyaXB0aW9uOiBjaGFyZ2VEZXNjcmlwdGlvbi50cmltKCksCiAgICAgICAgICAgIGFtb3VudDogTnVtYmVyKGFtb3VudFBheWFibGUpLAogICAgICAgICAgfSwKICAgICAgICBdLAogICAgICAgIGFtb3VudFBheWFibGU6IE51bWJlcihhbW91bnRQYXlhYmxlKSwKICAgICAgICBkdWVEYXRlOiBkdWVEYXRlID8gbmV3IERhdGUoZHVlRGF0ZSkudG9JU09TdHJpbmcoKSA6IHVuZGVmaW5lZCwKICAgICAgICBub3Rlczogbm90ZXMudHJpbSgpIHx8IHVuZGVmaW5lZCwKICAgICAgfSk7CgogICAgICBpZiAocmVzPy5kYXRhKSB7CiAgICAgICAgb25TdWNjZXNzKHJlcy5kYXRhLm5vdGljZSB8fCByZXMuZGF0YSk7CiAgICAgICAgb25DbG9zZSgpOwogICAgICB9CiAgICB9IGNhdGNoIChlcnIpIHsKICAgICAgLy8gSGFuZGxlZCBieSBtdXRhdGlvbiB0b2FzdAogICAgfQogIH07CgogIHJldHVybiAoCiAgICA8RGlhbG9nIG9wZW49e2lzT3Blbn0gb25PcGVuQ2hhbmdlPXsob3BlbikgPT4gIW9wZW4gJiYgb25DbG9zZSgpfT4KICAgICAgPERpYWxvZ0NvbnRlbnQgY2xhc3NOYW1lPSJtYXgtdy0yeGwgbWF4LWgtWzkwdmhdIG92ZXJmbG93LXktYXV0byI+CiAgICAgICAgPERpYWxvZ0hlYWRlcj4KICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJmbGV4IGl0ZW1zLWNlbnRlciBnYXAtMiI+CiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJ3LTggaC04IHJvdW5kZWQtZnVsbCBiZy1lbWVyYWxkLTEwMCBmbGV4IGl0ZW1zLWNlbnRlciBqdXN0aWZ5LWNlbnRlciB0ZXh0LWVtZXJhbGQtODAwIj4KICAgICAgICAgICAgICA8RmlsZVRleHQgY2xhc3NOYW1lPSJ3LTQgaC00IiAvPgogICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgPGRpdj4KICAgICAgICAgICAgICA8RGlhbG9nVGl0bGUgY2xhc3NOYW1lPSJ0ZXh0LWxnIGZvbnQtYm9sZCB0ZXh0LXNsYXRlLTkwMCI+CiAgICAgICAgICAgICAgICBJc3N1ZSBTdGF0dXRvcnkgRGVtYW5kIE5vdGljZQogICAgICAgICAgICAgIDwvRGlhbG9nVGl0bGU+CiAgICAgICAgICAgICAgPERpYWxvZ0Rlc2NyaXB0aW9uIGNsYXNzTmFtZT0idGV4dC14cyB0ZXh0LXNsYXRlLTUwMCI+CiAgICAgICAgICAgICAgICBDcmVhdGUgYW4gb2ZmaWNpYWwgYXNzZXNzbWVudCBub3RpY2Ugd2l0aCBsaW5rZWQgUHJvdmlkdXMgQmFuayB2aXJ0dWFsIHNldHRsZW1lbnQuCiAgICAgICAgICAgICAgPC9EaWFsb2dEZXNjcmlwdGlvbj4KICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICA8L2Rpdj4KICAgICAgICA8L0RpYWxvZ0hlYWRlcj4KCiAgICAgICAgPGZvcm0gb25TdWJtaXQ9e2hhbmRsZVN1Ym1pdH0gY2xhc3NOYW1lPSJzcGFjZS15LTQgcHQtMiB0ZXh0LXhzIj4KICAgICAgICAgIHsvKiBTZWN0aW9uIDE6IFBheWVyIERldGFpbHMgKi99CiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iYmctc2xhdGUtNTAgcC0zLjUgcm91bmRlZC1sZyBib3JkZXIgYm9yZGVyLXNsYXRlLTIwMCBzcGFjZS15LTMiPgogICAgICAgICAgICA8aDQgY2xhc3NOYW1lPSJmb250LWJvbGQgdGV4dC1zbGF0ZS03MDAgdGV4dC14cyB1cHBlcmNhc2UgdHJhY2tpbmctd2lkZXIgZmxleCBpdGVtcy1jZW50ZXIgZ2FwLTEuNSI+CiAgICAgICAgICAgICAgPEJ1aWxkaW5nMiBjbGFzc05hbWU9InctMy41IGgtMy41IHRleHQtZW1lcmFsZC03MDAiIC8+IExpYWJsZSBFbnRpdHkgLyBQYXllciBJbmZvcm1hdGlvbgogICAgICAgICAgICA8L2g0PgogICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0iZ3JpZCBncmlkLWNvbHMtMSBzbTpncmlkLWNvbHMtMyBnYXAtMyI+CiAgICAgICAgICAgICAgPGRpdj4KICAgICAgICAgICAgICAgIDxMYWJlbCBjbGFzc05hbWU9InRleHQtWzExcHhdIj5FbnRpdHkgQ2F0ZWdvcnk8L0xhYmVsPgogICAgICAgICAgICAgICAgPFNlbGVjdAogICAgICAgICAgICAgICAgICB2YWx1ZT17cGF5ZXJUeXBlfQogICAgICAgICAgICAgICAgICBvblZhbHVlQ2hhbmdlPXsodmFsOiBhbnkpID0+IHNldFBheWVyVHlwZSh2YWwpfQogICAgICAgICAgICAgICAgPgogICAgICAgICAgICAgICAgICA8U2VsZWN0VHJpZ2dlciBjbGFzc05hbWU9ImgtOCB0ZXh0LXhzIGJnLXdoaXRlIG10LTEiPgogICAgICAgICAgICAgICAgICAgIDxTZWxlY3RWYWx1ZSAvPgogICAgICAgICAgICAgICAgICA8L1NlbGVjdFRyaWdnZXI+CiAgICAgICAgICAgICAgICAgIDxTZWxlY3RDb250ZW50PgogICAgICAgICAgICAgICAgICAgIDxTZWxlY3RJdGVtIHZhbHVlPSJidXNpbmVzcyI+Q29tbWVyY2lhbCBCdXNpbmVzcyAvIEVudGVycHJpc2U8L1NlbGVjdEl0ZW0+CiAgICAgICAgICAgICAgICAgICAgPFNlbGVjdEl0ZW0gdmFsdWU9InByb3BlcnR5X293bmVyIj5Qcm9wZXJ0eSBPd25lciAvIFRlbmVtZW50PC9TZWxlY3RJdGVtPgogICAgICAgICAgICAgICAgICAgIDxTZWxlY3RJdGVtIHZhbHVlPSJpbmRpdmlkdWFsIj5JbmRpdmlkdWFsIFBheWVyIC8gUmVzaWRlbnQ8L1NlbGVjdEl0ZW0+CiAgICAgICAgICAgICAgICAgIDwvU2VsZWN0Q29udGVudD4KICAgICAgICAgICAgICAgIDwvU2VsZWN0PgogICAgICAgICAgICAgIDwvZGl2PgoKICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ic206Y29sLXNwYW4tMiI+CiAgICAgICAgICAgICAgICA8TGFiZWwgY2xhc3NOYW1lPSJ0ZXh0LVsxMXB4XSI+CiAgICAgICAgICAgICAgICAgIExlZ2FsIEVudGl0eSAvIFBheWVyIE5hbWUgPHNwYW4gY2xhc3NOYW1lPSJ0ZXh0LXJlZC01MDAiPio8L3NwYW4+CiAgICAgICAgICAgICAgICA8L0xhYmVsPgogICAgICAgICAgICAgICAgPElucHV0CiAgICAgICAgICAgICAgICAgIHJlcXVpcmVkCiAgICAgICAgICAgICAgICAgIHBsYWNlaG9sZGVyPSJlLmcuIERhbmdvdGUgQ2VtZW50IERlcG90IEx0ZCAvIENoaWVmIEtvbGF3b2xlIEFkZWxla2UiCiAgICAgICAgICAgICAgICAgIHZhbHVlPXtwYXllck5hbWV9CiAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0UGF5ZXJOYW1lKGUudGFyZ2V0LnZhbHVlKX0KICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPSJoLTggdGV4dC14cyBiZy13aGl0ZSBtdC0xIgogICAgICAgICAgICAgICAgLz4KICAgICAgICAgICAgICA8L2Rpdj4KCiAgICAgICAgICAgICAgPGRpdj4KICAgICAgICAgICAgICAgIDxMYWJlbCBjbGFzc05hbWU9InRleHQtWzExcHhdIj5UcmFkaW5nIC8gU2lnbmJvYXJkIE5hbWUgKGlmIGRpZmZlcmVudCk8L0xhYmVsPgogICAgICAgICAgICAgICAgPElucHV0CiAgICAgICAgICAgICAgICAgIHBsYWNlaG9sZGVyPSJlLmcuIEJlc3QgQ2hvaWNlIFN1cGVybWFya2V0IgogICAgICAgICAgICAgICAgICB2YWx1ZT17dHJhZGluZ05hbWV9CiAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0VHJhZGluZ05hbWUoZS50YXJnZXQudmFsdWUpfQogICAgICAgICAgICAgICAgICBjbGFzc05hbWU9ImgtOCB0ZXh0LXhzIGJnLXdoaXRlIG10LTEiCiAgICAgICAgICAgICAgICAvPgogICAgICAgICAgICAgIDwvZGl2PgoKICAgICAgICAgICAgICA8ZGl2PgogICAgICAgICAgICAgICAgPExhYmVsIGNsYXNzTmFtZT0idGV4dC1bMTFweF0iPkNBQyAvIFJDIFJlZ2lzdHJhdGlvbiBObyAob3B0aW9uYWwpPC9MYWJlbD4KICAgICAgICAgICAgICAgIDxJbnB1dAogICAgICAgICAgICAgICAgICBwbGFjZWhvbGRlcj0iZS5nLiBSQyAxNDkyMDIzIC8gQk4gODkyMDEiCiAgICAgICAgICAgICAgICAgIHZhbHVlPXtyY051bWJlcn0KICAgICAgICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBzZXRSY051bWJlcihlLnRhcmdldC52YWx1ZSl9CiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT0iaC04IHRleHQteHMgYmctd2hpdGUgbXQtMSIKICAgICAgICAgICAgICAgIC8+CiAgICAgICAgICAgICAgPC9kaXY+CgogICAgICAgICAgICAgIDxkaXY+CiAgICAgICAgICAgICAgICA8TGFiZWwgY2xhc3NOYW1lPSJ0ZXh0LVsxMXB4XSI+CiAgICAgICAgICAgICAgICAgIENvbnRhY3QgUGhvbmUgPHNwYW4gY2xhc3NOYW1lPSJ0ZXh0LXJlZC01MDAiPio8L3NwYW4+CiAgICAgICAgICAgICAgICA8L0xhYmVsPgogICAgICAgICAgICAgICAgPElucHV0CiAgICAgICAgICAgICAgICAgIHJlcXVpcmVkCiAgICAgICAgICAgICAgICAgIHBsYWNlaG9sZGVyPSIwODAyOTU3NTk3MyIKICAgICAgICAgICAgICAgICAgdmFsdWU9e3Bob25lfQogICAgICAgICAgICAgICAgICBvbkNoYW5nZT17KGUpID0+IHNldFBob25lKGUudGFyZ2V0LnZhbHVlKX0KICAgICAgICAgICAgICAgICAgY2xhc3NOYW1lPSJoLTggdGV4dC14cyBiZy13aGl0ZSBtdC0xIGZvbnQtbW9ubyIKICAgICAgICAgICAgICAgIC8+CiAgICAgICAgICAgICAgPC9kaXY+CgogICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJzbTpjb2wtc3Bhbi0yIj4KICAgICAgICAgICAgICAgIDxMYWJlbCBjbGFzc05hbWU9InRleHQtWzExcHhdIj5QYXllciBFbWFpbCBBZGRyZXNzIChmb3IgZWxlY3Ryb25pYyBub3RpY2UgZGVsaXZlcnkpPC9MYWJlbD4KICAgICAgICAgICAgICAgIDxJbnB1dAogICAgICAgICAgICAgICAgICB0eXBlPSJlbWFpbCIKICAgICAgICAgICAgICAgICAgcGxhY2Vob2xkZXI9ImJpbGxpbmdAZW50ZXJwcmlzZS5jb20iCiAgICAgICAgICAgICAgICAgIHZhbHVlPXtlbWFpbH0KICAgICAgICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBzZXRFbWFpbChlLnRhcmdldC52YWx1ZSl9CiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT0iaC04IHRleHQteHMgYmctd2hpdGUgbXQtMSIKICAgICAgICAgICAgICAgIC8+CiAgICAgICAgICAgICAgPC9kaXY+CgogICAgICAgICAgICAgIDxkaXY+CiAgICAgICAgICAgICAgICA8TGFiZWwgY2xhc3NOYW1lPSJ0ZXh0LVsxMXB4XSI+CiAgICAgICAgICAgICAgICAgIHtgV2FyZCBpbiAke0xHQV9DT05GSUcuaWRlbnRpdHkubmFtZX0gTEdBYH0gPHNwYW4gY2xhc3NOYW1lPSJ0ZXh0LXJlZC01MDAiPio8L3NwYW4+CiAgICAgICAgICAgICAgICA8L0xhYmVsPgogICAgICAgICAgICAgICAgPFNlbGVjdCB2YWx1ZT17d2FyZH0gb25WYWx1ZUNoYW5nZT17c2V0V2FyZH0+CiAgICAgICAgICAgICAgICAgIDxTZWxlY3RUcmlnZ2VyIGNsYXNzTmFtZT0iaC04IHRleHQteHMgYmctd2hpdGUgbXQtMSI+CiAgICAgICAgICAgICAgICAgICAgPFNlbGVjdFZhbHVlIC8+CiAgICAgICAgICAgICAgICAgIDwvU2VsZWN0VHJpZ2dlcj4KICAgICAgICAgICAgICAgICAgPFNlbGVjdENvbnRlbnQ+CiAgICAgICAgICAgICAgICAgICAge0xHQV9DT05GSUcud2FyZHMubWFwKCh3KSA9PiAoCiAgICAgICAgICAgICAgICAgICAgICA8U2VsZWN0SXRlbSBrZXk9e3cuaWR9IHZhbHVlPXt3Lm5hbWV9PgogICAgICAgICAgICAgICAgICAgICAgICB7dy5uYW1lfQogICAgICAgICAgICAgICAgICAgICAgPC9TZWxlY3RJdGVtPgogICAgICAgICAgICAgICAgICAgICkpfQogICAgICAgICAgICAgICAgICA8L1NlbGVjdENvbnRlbnQ+CiAgICAgICAgICAgICAgICA8L1NlbGVjdD4KICAgICAgICAgICAgICA8L2Rpdj4KCiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9InNtOmNvbC1zcGFuLTMiPgogICAgICAgICAgICAgICAgPExhYmVsIGNsYXNzTmFtZT0idGV4dC1bMTFweF0iPgogICAgICAgICAgICAgICAgICBQaHlzaWNhbCBQcmVtaXNlcyBBZGRyZXNzIDxzcGFuIGNsYXNzTmFtZT0idGV4dC1yZWQtNTAwIj4qPC9zcGFuPgogICAgICAgICAgICAgICAgPC9MYWJlbD4KICAgICAgICAgICAgICAgIDxJbnB1dAogICAgICAgICAgICAgICAgICByZXF1aXJlZAogICAgICAgICAgICAgICAgICBwbGFjZWhvbGRlcj0iZS5nLiBTdHJlZXQgbmFtZSwgYXJlYSwgdG93biwgT2d1biBTdGF0ZSIKICAgICAgICAgICAgICAgICAgdmFsdWU9e2FkZHJlc3N9CiAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0QWRkcmVzcyhlLnRhcmdldC52YWx1ZSl9CiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT0iaC04IHRleHQteHMgYmctd2hpdGUgbXQtMSIKICAgICAgICAgICAgICAgIC8+CiAgICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgPC9kaXY+CgogICAgICAgICAgey8qIFNlY3Rpb24gMjogQXNzZXNzbWVudCBQYXJ0aWN1bGFycyAqL30KICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJiZy1zbGF0ZS01MCBwLTMuNSByb3VuZGVkLWxnIGJvcmRlciBib3JkZXItc2xhdGUtMjAwIHNwYWNlLXktMyI+CiAgICAgICAgICAgIDxoNCBjbGFzc05hbWU9ImZvbnQtYm9sZCB0ZXh0LXNsYXRlLTcwMCB0ZXh0LXhzIHVwcGVyY2FzZSB0cmFja2luZy13aWRlciBmbGV4IGl0ZW1zLWNlbnRlciBnYXAtMS41Ij4KICAgICAgICAgICAgICA8Q3JlZGl0Q2FyZCBjbGFzc05hbWU9InctMy41IGgtMy41IHRleHQtZW1lcmFsZC03MDAiIC8+IFJldmVudWUgU2VydmljZSAmIEFzc2Vzc21lbnQgUGFydGljdWxhcnMKICAgICAgICAgICAgPC9oND4KICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImdyaWQgZ3JpZC1jb2xzLTEgc206Z3JpZC1jb2xzLTIgZ2FwLTMiPgogICAgICAgICAgICAgIDxkaXY+CiAgICAgICAgICAgICAgICA8TGFiZWwgY2xhc3NOYW1lPSJ0ZXh0LVsxMXB4XSI+UmV2ZW51ZSBDYXRlZ29yeTwvTGFiZWw+CiAgICAgICAgICAgICAgICA8U2VsZWN0IHZhbHVlPXtzZXJ2aWNlQ29kZX0gb25WYWx1ZUNoYW5nZT17c2V0U2VydmljZUNvZGV9PgogICAgICAgICAgICAgICAgICA8U2VsZWN0VHJpZ2dlciBjbGFzc05hbWU9ImgtOCB0ZXh0LXhzIGJnLXdoaXRlIG10LTEiPgogICAgICAgICAgICAgICAgICAgIDxTZWxlY3RWYWx1ZSAvPgogICAgICAgICAgICAgICAgICA8L1NlbGVjdFRyaWdnZXI+CiAgICAgICAgICAgICAgICAgIDxTZWxlY3RDb250ZW50PgogICAgICAgICAgICAgICAgICAgIHtBUFBMSUNBQkxFX1NFUlZJQ0VTLm1hcCgocykgPT4gKAogICAgICAgICAgICAgICAgICAgICAgPFNlbGVjdEl0ZW0ga2V5PXtzLmNvZGV9IHZhbHVlPXtzLmNvZGV9PgogICAgICAgICAgICAgICAgICAgICAgICB7cy5uYW1lfQogICAgICAgICAgICAgICAgICAgICAgPC9TZWxlY3RJdGVtPgogICAgICAgICAgICAgICAgICAgICkpfQogICAgICAgICAgICAgICAgICA8L1NlbGVjdENvbnRlbnQ+CiAgICAgICAgICAgICAgICA8L1NlbGVjdD4KICAgICAgICAgICAgICA8L2Rpdj4KCiAgICAgICAgICAgICAgPGRpdj4KICAgICAgICAgICAgICAgIDxMYWJlbCBjbGFzc05hbWU9InRleHQtWzExcHhdIj4KICAgICAgICAgICAgICAgICAgQW1vdW50IFBheWFibGUgKE5HTikgPHNwYW4gY2xhc3NOYW1lPSJ0ZXh0LXJlZC01MDAiPio8L3NwYW4+CiAgICAgICAgICAgICAgICA8L0xhYmVsPgogICAgICAgICAgICAgICAgPElucHV0CiAgICAgICAgICAgICAgICAgIHJlcXVpcmVkCiAgICAgICAgICAgICAgICAgIHR5cGU9Im51bWJlciIKICAgICAgICAgICAgICAgICAgbWluPSI1MDAiCiAgICAgICAgICAgICAgICAgIHN0ZXA9IjUwMCIKICAgICAgICAgICAgICAgICAgdmFsdWU9e2Ftb3VudFBheWFibGV9CiAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0QW1vdW50UGF5YWJsZShlLnRhcmdldC52YWx1ZSl9CiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT0iaC04IHRleHQteHMgYmctd2hpdGUgbXQtMSBmb250LW1vbm8gZm9udC1ib2xkIHRleHQtZW1lcmFsZC05MDAiCiAgICAgICAgICAgICAgICAvPgogICAgICAgICAgICAgIDwvZGl2PgoKICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT0ic206Y29sLXNwYW4tMiI+CiAgICAgICAgICAgICAgICA8TGFiZWwgY2xhc3NOYW1lPSJ0ZXh0LVsxMXB4XSI+QXNzZXNzbWVudCBQYXJ0aWN1bGFycyAvIExpbmUgRGVzY3JpcHRpb248L0xhYmVsPgogICAgICAgICAgICAgICAgPElucHV0CiAgICAgICAgICAgICAgICAgIHJlcXVpcmVkCiAgICAgICAgICAgICAgICAgIHZhbHVlPXtjaGFyZ2VEZXNjcmlwdGlvbn0KICAgICAgICAgICAgICAgICAgb25DaGFuZ2U9eyhlKSA9PiBzZXRDaGFyZ2VEZXNjcmlwdGlvbihlLnRhcmdldC52YWx1ZSl9CiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT0iaC04IHRleHQteHMgYmctd2hpdGUgbXQtMSIKICAgICAgICAgICAgICAgIC8+CiAgICAgICAgICAgICAgPC9kaXY+CgogICAgICAgICAgICAgIDxkaXY+CiAgICAgICAgICAgICAgICA8TGFiZWwgY2xhc3NOYW1lPSJ0ZXh0LVsxMXB4XSI+U2V0dGxlbWVudCBEdWUgRGF0ZTwvTGFiZWw+CiAgICAgICAgICAgICAgICA8SW5wdXQKICAgICAgICAgICAgICAgICAgdHlwZT0iZGF0ZSIKICAgICAgICAgICAgICAgICAgdmFsdWU9e2R1ZURhdGV9CiAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0RHVlRGF0ZShlLnRhcmdldC52YWx1ZSl9CiAgICAgICAgICAgICAgICAgIGNsYXNzTmFtZT0iaC04IHRleHQteHMgYmctd2hpdGUgbXQtMSIKICAgICAgICAgICAgICAgIC8+CiAgICAgICAgICAgICAgPC9kaXY+CgogICAgICAgICAgICAgIDxkaXY+CiAgICAgICAgICAgICAgICA8TGFiZWwgY2xhc3NOYW1lPSJ0ZXh0LVsxMXB4XSI+SW50ZXJuYWwgQXVkaXRvciAvIE9mZmljZXIgTm90ZSAob3B0aW9uYWwpPC9MYWJlbD4KICAgICAgICAgICAgICAgIDxJbnB1dAogICAgICAgICAgICAgICAgICBwbGFjZWhvbGRlcj0iZS5nLiBBc3Nlc3NlZCB1bmRlciAyMDI2IENvbW1lcmNpYWwgQmFuZCBCIgogICAgICAgICAgICAgICAgICB2YWx1ZT17bm90ZXN9CiAgICAgICAgICAgICAgICAgIG9uQ2hhbmdlPXsoZSkgPT4gc2V0Tm90ZXMoZS50YXJnZXQudmFsdWUpfQogICAgICAgICAgICAgICAgICBjbGFzc05hbWU9ImgtOCB0ZXh0LXhzIGJnLXdoaXRlIG10LTEiCiAgICAgICAgICAgICAgICAvPgogICAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgIDwvZGl2PgoKICAgICAgICAgIHsvKiBTZWN0aW9uIDM6IEFsbG9jYXRlZCBQcm92aWR1cyBCYW5rIEFjY291bnQgUHJldmlldyAqL30KICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPSJiZy1lbWVyYWxkLTUwIGJvcmRlciBib3JkZXItZW1lcmFsZC0zMDAgcm91bmRlZC1sZyBwLTMgdGV4dC14cyB0ZXh0LWVtZXJhbGQtOTUwIj4KICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImZsZXggaXRlbXMtY2VudGVyIGdhcC0xLjUgZm9udC1ib2xkIHRleHQtZW1lcmFsZC05MDAgbWItMSI+CiAgICAgICAgICAgICAgPExhbmRtYXJrIGNsYXNzTmFtZT0idy00IGgtNCB0ZXh0LWVtZXJhbGQtNzAwIiAvPgogICAgICAgICAgICAgIERlc2lnbmF0ZWQgUHJvdmlkdXMgQmFuayBWaXJ0dWFsIEFjY291bnQgKEF1dG8tQWxsb2NhdGVkKQogICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9ImdyaWQgZ3JpZC1jb2xzLTEgc206Z3JpZC1jb2xzLTQgZ2FwLTIgYmctd2hpdGUgcC0yLjUgcm91bmRlZCBib3JkZXIgYm9yZGVyLWVtZXJhbGQtMjAwIGZvbnQtbW9ubyB0ZXh0LVsxMXB4XSBtdC0xLjUiPgogICAgICAgICAgICAgIDxkaXY+CiAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9InRleHQtWzEwcHhdIHRleHQtc2xhdGUtNTAwIGJsb2NrIHVwcGVyY2FzZSBmb250LXNhbnMiPkJhbms6PC9zcGFuPgogICAgICAgICAgICAgICAgPHN0cm9uZyBjbGFzc05hbWU9InRleHQtc2xhdGUtOTAwIj57Y3VycmVudEJhbmtpbmcuYmFua05hbWV9PC9zdHJvbmc+CiAgICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgICAgPGRpdj4KICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0idGV4dC1bMTBweF0gdGV4dC1zbGF0ZS01MDAgYmxvY2sgdXBwZXJjYXNlIGZvbnQtc2FucyI+QWNjb3VudCBOYW1lOjwvc3Bhbj4KICAgICAgICAgICAgICAgIDxzdHJvbmcgY2xhc3NOYW1lPSJ0ZXh0LXNsYXRlLTgwMCB0ZXh0LVsxMHB4XSB0cnVuY2F0ZSBibG9jayI+CiAgICAgICAgICAgICAgICAgIHtjdXJyZW50QmFua2luZy5hY2NvdW50TmFtZX0KICAgICAgICAgICAgICAgIDwvc3Ryb25nPgogICAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgICAgIDxkaXY+CiAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9InRleHQtWzEwcHhdIHRleHQtc2xhdGUtNTAwIGJsb2NrIHVwcGVyY2FzZSBmb250LXNhbnMiPkFjY291bnQgTnVtYmVyOjwvc3Bhbj4KICAgICAgICAgICAgICAgIDxzdHJvbmcgY2xhc3NOYW1lPSJ0ZXh0LWVtZXJhbGQtODAwIGZvbnQtYm9sZCI+e2N1cnJlbnRCYW5raW5nLmFjY291bnROdW1iZXJ9PC9zdHJvbmc+CiAgICAgICAgICAgICAgPC9kaXY+CiAgICAgICAgICAgICAgPGRpdj4KICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT0idGV4dC1bMTBweF0gdGV4dC1zbGF0ZS01MDAgYmxvY2sgdXBwZXJjYXNlIGZvbnQtc2FucyI+U2VydmljZSBDb2RlOjwvc3Bhbj4KICAgICAgICAgICAgICAgIDxzdHJvbmcgY2xhc3NOYW1lPSJ0ZXh0LXNsYXRlLTgwMCI+e2N1cnJlbnRCYW5raW5nLnNlcnZpY2VDb2RlfTwvc3Ryb25nPgogICAgICAgICAgICAgIDwvZGl2PgogICAgICAgICAgICA8L2Rpdj4KICAgICAgICAgICAgPHAgY2xhc3NOYW1lPSJ0ZXh0LVsxMHB4XSB0ZXh0LWVtZXJhbGQtODAwIG10LTEuNSBmb250LXNhbnMiPgogICAgICAgICAgICAgIFRoZSByZWNpcGllbnQgd2lsbCByZWNlaXZlIGFuIG9mZmljaWFsIG5vdGljZSBxdW90aW5nIHRoaXMgUHJvdmlkdXMgQmFuayBhY2NvdW50LiBBdXRvbWF0ZWQgcmVjb25jaWxpYXRpb24gd2lsbCBjb25maXJtIHNldHRsZW1lbnQgdXBvbiBwYXltZW50LgogICAgICAgICAgICA8L3A+CiAgICAgICAgICA8L2Rpdj4KCiAgICAgICAgICA8RGlhbG9nRm9vdGVyIGNsYXNzTmFtZT0icHQtMiI+CiAgICAgICAgICAgIDxCdXR0b24gdHlwZT0iYnV0dG9uIiB2YXJpYW50PSJvdXRsaW5lIiBzaXplPSJzbSIgb25DbGljaz17b25DbG9zZX0+CiAgICAgICAgICAgICAgQ2FuY2VsCiAgICAgICAgICAgIDwvQnV0dG9uPgogICAgICAgICAgICA8QnV0dG9uCiAgICAgICAgICAgICAgdHlwZT0ic3VibWl0IgogICAgICAgICAgICAgIHNpemU9InNtIgogICAgICAgICAgICAgIGRpc2FibGVkPXtjcmVhdGVNdXRhdGlvbi5pc1BlbmRpbmd9CiAgICAgICAgICAgICAgY2xhc3NOYW1lPSJiZy1lbWVyYWxkLTcwMCBob3ZlcjpiZy1lbWVyYWxkLTgwMCB0ZXh0LXdoaXRlIGZvbnQtc2VtaWJvbGQgZ2FwLTEuNSIKICAgICAgICAgICAgPgogICAgICAgICAgICAgIHtjcmVhdGVNdXRhdGlvbi5pc1BlbmRpbmcgPyAoCiAgICAgICAgICAgICAgICA8PgogICAgICAgICAgICAgICAgICA8TG9hZGVyMiBjbGFzc05hbWU9InctMy41IGgtMy41IGFuaW1hdGUtc3BpbiIgLz4gSXNzdWluZyBOb3RpY2UuLi4KICAgICAgICAgICAgICAgIDwvPgogICAgICAgICAgICAgICkgOiAoCiAgICAgICAgICAgICAgICA8PgogICAgICAgICAgICAgICAgICA8U2VuZCBjbGFzc05hbWU9InctMy41IGgtMy41IiAvPiBJc3N1ZSBEZW1hbmQgTm90aWNlCiAgICAgICAgICAgICAgICA8Lz4KICAgICAgICAgICAgICApfQogICAgICAgICAgICA8L0J1dHRvbj4KICAgICAgICAgIDwvRGlhbG9nRm9vdGVyPgogICAgICAgIDwvZm9ybT4KICAgICAgPC9EaWFsb2dDb250ZW50PgogICAgPC9EaWFsb2c+CiAgKTsKfQo=
+"use client";
+
+import React, { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Building2,
+  Calendar,
+  CreditCard,
+  FileText,
+  Landmark,
+  Loader2,
+  Plus,
+  Send,
+  User,
+} from "lucide-react";
+import { useCreateDemandNotice } from "@/hooks/queries/useDemandNotices";
+import { LGA_CONFIG, getLgaServiceBanking } from "@/config/lga.config";
+import { DemandNoticeRecord } from "@/services/apiDemandNotice";
+
+interface IssueDemandNoticeModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSuccess: (notice: DemandNoticeRecord) => void;
+}
+
+const APPLICABLE_SERVICES = [
+  { code: "demand_notice", name: "Business Demand Notice", head: "2002 - Business & Commercial Demand Notices" },
+  { code: "community_development_levy", name: "Community Development Levy", head: "2001 - Community Development Levy" },
+  { code: "street_naming", name: "Street Naming & Property Numbering", head: "2006 - Urban Dev & Street Naming" },
+  { code: "environmental_sanitation", name: "Sanitation & Public Health Levy", head: "1005 - Health & Sanitation" },
+  { code: "haulage_fees", name: "Haulage & Heavy Transit Levy", head: "2002 - Haulage & Transit" },
+  { code: "liquor_licence", name: "Liquor / Hospitality Assessment", head: "2003 - Excise & Trade" },
+];
+
+export default function IssueDemandNoticeModal({
+  isOpen,
+  onClose,
+  onSuccess,
+}: IssueDemandNoticeModalProps) {
+  const createMutation = useCreateDemandNotice();
+
+  const [payerType, setPayerType] = useState<"business" | "individual" | "property_owner">("business");
+  const [payerName, setPayerName] = useState("");
+  const [tradingName, setTradingName] = useState("");
+  const [rcNumber, setRcNumber] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  const [ward, setWard] = useState(LGA_CONFIG.wards[0]?.name ?? "");
+  const [address, setAddress] = useState("");
+  const [serviceCode, setServiceCode] = useState("demand_notice");
+  const [chargeDescription, setChargeDescription] = useState("Annual Municipal Business Premises Demand Notice");
+  const [amountPayable, setAmountPayable] = useState("50000");
+  const [dueDate, setDueDate] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 14);
+    return d.toISOString().split("T")[0];
+  });
+  const [notes, setNotes] = useState("");
+
+  const currentBanking = getLgaServiceBanking(serviceCode);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!payerName.trim() || !phone.trim() || !address.trim() || !amountPayable) {
+      return;
+    }
+
+    const selectedService = APPLICABLE_SERVICES.find((s) => s.code === serviceCode);
+
+    try {
+      const res = await createMutation.mutateAsync({
+        payerType,
+        payerName: payerName.trim(),
+        tradingName: tradingName.trim() || undefined,
+        rcNumber: rcNumber.trim() || undefined,
+        phone: phone.trim(),
+        email: email.trim() || undefined,
+        ward,
+        address: address.trim(),
+        serviceCode,
+        revenueHead: selectedService?.head || "2002 - Demand Notices",
+        chargeDescription: chargeDescription.trim(),
+        assessmentItems: [
+          {
+            description: chargeDescription.trim(),
+            amount: Number(amountPayable),
+          },
+        ],
+        amountPayable: Number(amountPayable),
+        dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
+        notes: notes.trim() || undefined,
+      });
+
+      if (res?.data) {
+        onSuccess(res.data.notice || res.data);
+        onClose();
+      }
+    } catch (err) {
+      // Handled by mutation toast
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-800">
+              <FileText className="w-4 h-4" />
+            </div>
+            <div>
+              <DialogTitle className="text-lg font-bold text-slate-900">
+                Issue Statutory Demand Notice
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-500">
+                Create an official assessment notice with linked Providus Bank virtual settlement.
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="space-y-4 pt-2 text-xs">
+          {/* Section 1: Payer Details */}
+          <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-3">
+            <h4 className="font-bold text-slate-700 text-xs uppercase tracking-wider flex items-center gap-1.5">
+              <Building2 className="w-3.5 h-3.5 text-emerald-700" /> Liable Entity / Payer Information
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <Label className="text-[11px]">Entity Category</Label>
+                <Select
+                  value={payerType}
+                  onValueChange={(val: any) => setPayerType(val)}
+                >
+                  <SelectTrigger className="h-8 text-xs bg-white mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="business">Commercial Business / Enterprise</SelectItem>
+                    <SelectItem value="property_owner">Property Owner / Tenement</SelectItem>
+                    <SelectItem value="individual">Individual Payer / Resident</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="sm:col-span-2">
+                <Label className="text-[11px]">
+                  Legal Entity / Payer Name <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  required
+                  placeholder="e.g. Dangote Cement Depot Ltd / Chief Kolawole Adeleke"
+                  value={payerName}
+                  onChange={(e) => setPayerName(e.target.value)}
+                  className="h-8 text-xs bg-white mt-1"
+                />
+              </div>
+
+              <div>
+                <Label className="text-[11px]">Trading / Signboard Name (if different)</Label>
+                <Input
+                  placeholder="e.g. Best Choice Supermarket"
+                  value={tradingName}
+                  onChange={(e) => setTradingName(e.target.value)}
+                  className="h-8 text-xs bg-white mt-1"
+                />
+              </div>
+
+              <div>
+                <Label className="text-[11px]">CAC / RC Registration No (optional)</Label>
+                <Input
+                  placeholder="e.g. RC 1492023 / BN 89201"
+                  value={rcNumber}
+                  onChange={(e) => setRcNumber(e.target.value)}
+                  className="h-8 text-xs bg-white mt-1"
+                />
+              </div>
+
+              <div>
+                <Label className="text-[11px]">
+                  Contact Phone <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  required
+                  placeholder="08029575973"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="h-8 text-xs bg-white mt-1 font-mono"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <Label className="text-[11px]">Payer Email Address (for electronic notice delivery)</Label>
+                <Input
+                  type="email"
+                  placeholder="billing@enterprise.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-8 text-xs bg-white mt-1"
+                />
+              </div>
+
+              <div>
+                <Label className="text-[11px]">
+                  {`Ward in ${LGA_CONFIG.identity.name} LGA`} <span className="text-red-500">*</span>
+                </Label>
+                <Select value={ward} onValueChange={setWard}>
+                  <SelectTrigger className="h-8 text-xs bg-white mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LGA_CONFIG.wards.map((w) => (
+                      <SelectItem key={w.id} value={w.name}>
+                        {w.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="sm:col-span-3">
+                <Label className="text-[11px]">
+                  Physical Premises Address <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  required
+                  placeholder="e.g. Street name, area, town, Ogun State"
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  className="h-8 text-xs bg-white mt-1"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Assessment Particulars */}
+          <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200 space-y-3">
+            <h4 className="font-bold text-slate-700 text-xs uppercase tracking-wider flex items-center gap-1.5">
+              <CreditCard className="w-3.5 h-3.5 text-emerald-700" /> Revenue Service & Assessment Particulars
+            </h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <Label className="text-[11px]">Revenue Category</Label>
+                <Select value={serviceCode} onValueChange={setServiceCode}>
+                  <SelectTrigger className="h-8 text-xs bg-white mt-1">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {APPLICABLE_SERVICES.map((s) => (
+                      <SelectItem key={s.code} value={s.code}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label className="text-[11px]">
+                  Amount Payable (NGN) <span className="text-red-500">*</span>
+                </Label>
+                <Input
+                  required
+                  type="number"
+                  min="500"
+                  step="500"
+                  value={amountPayable}
+                  onChange={(e) => setAmountPayable(e.target.value)}
+                  className="h-8 text-xs bg-white mt-1 font-mono font-bold text-emerald-900"
+                />
+              </div>
+
+              <div className="sm:col-span-2">
+                <Label className="text-[11px]">Assessment Particulars / Line Description</Label>
+                <Input
+                  required
+                  value={chargeDescription}
+                  onChange={(e) => setChargeDescription(e.target.value)}
+                  className="h-8 text-xs bg-white mt-1"
+                />
+              </div>
+
+              <div>
+                <Label className="text-[11px]">Settlement Due Date</Label>
+                <Input
+                  type="date"
+                  value={dueDate}
+                  onChange={(e) => setDueDate(e.target.value)}
+                  className="h-8 text-xs bg-white mt-1"
+                />
+              </div>
+
+              <div>
+                <Label className="text-[11px]">Internal Auditor / Officer Note (optional)</Label>
+                <Input
+                  placeholder="e.g. Assessed under 2026 Commercial Band B"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  className="h-8 text-xs bg-white mt-1"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Section 3: Allocated Providus Bank Account Preview */}
+          <div className="bg-emerald-50 border border-emerald-300 rounded-lg p-3 text-xs text-emerald-950">
+            <div className="flex items-center gap-1.5 font-bold text-emerald-900 mb-1">
+              <Landmark className="w-4 h-4 text-emerald-700" />
+              Designated Providus Bank Virtual Account (Auto-Allocated)
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-2 bg-white p-2.5 rounded border border-emerald-200 font-mono text-[11px] mt-1.5">
+              <div>
+                <span className="text-[10px] text-slate-500 block uppercase font-sans">Bank:</span>
+                <strong className="text-slate-900">{currentBanking.bankName}</strong>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-500 block uppercase font-sans">Account Name:</span>
+                <strong className="text-slate-800 text-[10px] truncate block">
+                  {currentBanking.accountName}
+                </strong>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-500 block uppercase font-sans">Account Number:</span>
+                <strong className="text-emerald-800 font-bold">{currentBanking.accountNumber}</strong>
+              </div>
+              <div>
+                <span className="text-[10px] text-slate-500 block uppercase font-sans">Service Code:</span>
+                <strong className="text-slate-800">{currentBanking.serviceCode}</strong>
+              </div>
+            </div>
+            <p className="text-[10px] text-emerald-800 mt-1.5 font-sans">
+              The recipient will receive an official notice quoting this Providus Bank account. Automated reconciliation will confirm settlement upon payment.
+            </p>
+          </div>
+
+          <DialogFooter className="pt-2">
+            <Button type="button" variant="outline" size="sm" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              disabled={createMutation.isPending}
+              className="bg-emerald-700 hover:bg-emerald-800 text-white font-semibold gap-1.5"
+            >
+              {createMutation.isPending ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" /> Issuing Notice...
+                </>
+              ) : (
+                <>
+                  <Send className="w-3.5 h-3.5" /> Issue Demand Notice
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}

@@ -1,1 +1,127 @@
-LyoqCiAqIFBheW1lbnQgcHJvdmlkZXIgcm91dGluZyBmb3IgdGhlIHR3byBzdXBwb3J0ZWQgZ2F0ZXdheXMuCiAqCiAqICAgLSAicGF5c3RhY2siIDogbGVnYWN5IHJvdXRlcyAgLT4gUE9TVCAvaW52b2ljZXMvOmlkL3BheS1vbmxpbmUsCiAqICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFBPU1QgL2ludm9pY2VzL3B1YmxpYy9pbml0aWFsaXplLAogKiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBHRVQgIC9wYXltZW50cy92ZXJpZnkvOnJlZmVyZW5jZQogKiAgIC0gImdwYXkiICAgICA6IE1hc3RlcmNhcmQgTVBHUyAtPiBQT1NUIC9wYXltZW50cy9ncGF5L2luaXRpYWxpemUvOmludm9pY2VOdW1iZXIsCiAqICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFBPU1QgL3BheW1lbnRzL2dwYXkvcHVibGljL2luaXRpYWxpemUsCiAqICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIEdFVCAgL3BheW1lbnRzL2dwYXkvdmVyaWZ5LzpyZWZlcmVuY2UKICoKICogR1BheSByZXR1cm5zIGEgQ09NUExFVEUgY2hlY2tvdXQgVVJMLCB3aGlsZSBQYXlzdGFjayByZXR1cm5zIGEgYmFzZSBVUkwgdGhhdCB0aGUKICogY2FsbGVyIGhhcyB0byBleHRlbmQgd2l0aCAiL3BheW1lbnQvdmVyaWZ5Ii4gVGhhdCBkaWZmZXJlbmNlIGlzIGhhbmRsZWQgYnkKICogYGdldENoZWNrb3V0VXJsYCwgd2hpY2ggZXZlcnkgcmVkaXJlY3QgbXVzdCBnbyB0aHJvdWdoLgogKgogKiBUaGUgcHJvdmlkZXIgY2Fubm90IGJlIGRlcml2ZWQgZnJvbSBhIHJlZmVyZW5jZSwgc28gaXQgaXMgd3JpdHRlbiB0bwogKiBzZXNzaW9uU3RvcmFnZSBuZXh0IHRvIHRoZSByZWZlcmVuY2UgYXQgaW5pdCB0aW1lIGFuZCByZWFkIGJhY2sgYWZ0ZXIgdGhlCiAqIGdhdGV3YXkgcmVkaXJlY3QgKHNlZSBgc3Rhc2hQZW5kaW5nUGF5bWVudGAgLyBgcmVhZFBlbmRpbmdQYXltZW50YCkuCiAqLwoKZXhwb3J0IHR5cGUgUGF5bWVudFByb3ZpZGVyID0gInBheXN0YWNrIiB8ICJncGF5IjsKCmV4cG9ydCBjb25zdCBQQVlNRU5UX1JFRkVSRU5DRV9LRVkgPSAicGVuZGluZ1BheW1lbnRSZWZlcmVuY2UiOwpleHBvcnQgY29uc3QgUEFZTUVOVF9QUk9WSURFUl9LRVkgPSAicGVuZGluZ1BheW1lbnRQcm92aWRlciI7CgovKioKICogR2F0ZXdheSB1c2VkIGJ5IHRoZSAiYXBwbHkgJiBwYXkiIGFuZCAicGF5IGludm9pY2UiIGVudHJ5IHBvaW50cy4KICogT3ZlcnJpZGUgcGVyIGVudmlyb25tZW50IHdpdGggTkVYVF9QVUJMSUNfUEFZTUVOVF9QUk9WSURFUj1wYXlzdGFja3xncGF5LgogKi8KZXhwb3J0IGNvbnN0IERFRkFVTFRfUEFZTUVOVF9QUk9WSURFUjogUGF5bWVudFByb3ZpZGVyID0gImdwYXkiOwoKZXhwb3J0IGNvbnN0IFBBWU1FTlRfUFJPVklERVJfTEFCRUxTOiBSZWNvcmQ8UGF5bWVudFByb3ZpZGVyLCBzdHJpbmc+ID0gewogIHBheXN0YWNrOiAiRGViaXQgQ2FyZCAvIE9ubGluZSBQYXltZW50IiwKICBncGF5OiAiRGViaXQgQ2FyZCAvIE9ubGluZSBQYXltZW50IiwKfTsKCmV4cG9ydCBmdW5jdGlvbiBnZXRBY3RpdmVQYXltZW50UHJvdmlkZXIoKTogUGF5bWVudFByb3ZpZGVyIHsKICBjb25zdCBjb25maWd1cmVkID0gcHJvY2Vzcy5lbnYuTkVYVF9QVUJMSUNfUEFZTUVOVF9QUk9WSURFUjsKICBpZiAoY29uZmlndXJlZCA9PT0gInBheXN0YWNrIiB8fCBjb25maWd1cmVkID09PSAiZ3BheSIpIHJldHVybiBjb25maWd1cmVkOwogIHJldHVybiBERUZBVUxUX1BBWU1FTlRfUFJPVklERVI7Cn0KCi8qKgogKiBCb3RoIGdhdGV3YXlzIG1pbnQgYSBgUEFZLS4uLmAgcmVmZXJlbmNlLCBzbyBvbmx5IHRoZSBpbml0IHJlc3BvbnNlIGNhbiB0ZWxsCiAqIHRoZW0gYXBhcnQ6IHRoZSBHUGF5IGNvbnRyb2xsZXIgcmV0dXJucyBgZ2F0ZXdheTogImdwYXkiYCwgdGhlIFBheXN0YWNrCiAqIGNvbnRyb2xsZXIgcmV0dXJucyBubyBgZ2F0ZXdheWAgZmllbGQgYXQgYWxsLgogKi8KZXhwb3J0IGZ1bmN0aW9uIGlzR3BheUluaXRSZXNwb25zZShyZXNwb25zZT86IHsKICBnYXRld2F5Pzogc3RyaW5nIHwgbnVsbDsKfSk6IGJvb2xlYW4gewogIHJldHVybiByZXNwb25zZT8uZ2F0ZXdheT8udG9Mb3dlckNhc2UoKSA9PT0gImdwYXkiOwp9CgovKioKICogQmVzdC1lZmZvcnQgcHJvdmlkZXIgZm9yIGEgcmVmZXJlbmNlIHdoZW4gc2Vzc2lvblN0b3JhZ2UgaGFzIG5vIGVudHJ5IGZvciBpdAogKiAocGF5ZXIgcmV0dXJuZWQgaW4gYSBkaWZmZXJlbnQgdGFiL3Nlc3Npb24sIG9yIHN0b3JhZ2Ugd2FzIGNsZWFyZWQpLgogKiBGYWxscyBiYWNrIHRvIFBheXN0YWNrIHNvIHByZS1HUGF5IHNlc3Npb25zIGtlZXAgd29ya2luZy4KICovCmV4cG9ydCBmdW5jdGlvbiBpc0dwYXlSZWZlcmVuY2UocmVmZXJlbmNlPzogc3RyaW5nIHwgbnVsbCk6IGJvb2xlYW4gewogIHJldHVybiAhIXJlZmVyZW5jZSAmJiByZWZlcmVuY2UudHJpbSgpLnRvVXBwZXJDYXNlKCkuc3RhcnRzV2l0aCgiUEFZLSIpOwp9CgpleHBvcnQgZnVuY3Rpb24gcmVzb2x2ZVBheW1lbnRQcm92aWRlcigKICByZWZlcmVuY2U/OiBzdHJpbmcgfCBudWxsLAogIHN0b3JlZFByb3ZpZGVyPzogc3RyaW5nIHwgbnVsbCwKKTogUGF5bWVudFByb3ZpZGVyIHsKICBpZiAoc3RvcmVkUHJvdmlkZXIgPT09ICJncGF5IiB8fCBzdG9yZWRQcm92aWRlciA9PT0gInBheXN0YWNrIikgewogICAgcmV0dXJuIHN0b3JlZFByb3ZpZGVyOwogIH0KICByZXR1cm4gaXNHcGF5UmVmZXJlbmNlKHJlZmVyZW5jZSkgPyAiZ3BheSIgOiAicGF5c3RhY2siOwp9CgovKiogUGVyc2lzdCB0aGUgcmVmZXJlbmNlICsgcHJvdmlkZXIgc28gd2Uga25vdyB3aGljaCBnYXRld2F5IHRvIHZlcmlmeSBhZ2FpbnN0LiAqLwpleHBvcnQgZnVuY3Rpb24gc3Rhc2hQZW5kaW5nUGF5bWVudCgKICByZWZlcmVuY2U6IHN0cmluZywKICBwcm92aWRlcjogUGF5bWVudFByb3ZpZGVyLAopIHsKICBpZiAodHlwZW9mIHdpbmRvdyA9PT0gInVuZGVmaW5lZCIgfHwgIXJlZmVyZW5jZSkgcmV0dXJuOwogIHRyeSB7CiAgICBzZXNzaW9uU3RvcmFnZS5zZXRJdGVtKFBBWU1FTlRfUkVGRVJFTkNFX0tFWSwgcmVmZXJlbmNlKTsKICAgIHNlc3Npb25TdG9yYWdlLnNldEl0ZW0oUEFZTUVOVF9QUk9WSURFUl9LRVksIHByb3ZpZGVyKTsKICAgIC8vIGxvY2FsU3RvcmFnZSBpcyBhIGxlZ2FjeSBtaXJyb3Iga2VwdCBmb3Igb2xkZXIgc2Vzc2lvbnMuCiAgICBsb2NhbFN0b3JhZ2Uuc2V0SXRlbShQQVlNRU5UX1JFRkVSRU5DRV9LRVksIHJlZmVyZW5jZSk7CiAgfSBjYXRjaCB7CiAgICAvLyBJZ25vcmUgcXVvdGEgLyBwcml2YXRlLW1vZGUgZmFpbHVyZXM6IHZlcmlmaWNhdGlvbiBjYW4gc3RpbGwgZmFsbCBiYWNrIHRvCiAgICAvLyB0aGUgcXVlcnkgc3RyaW5nIGFuZCByZWZlcmVuY2UgaGV1cmlzdGljcy4KICB9Cn0KCmV4cG9ydCBmdW5jdGlvbiBjbGVhclBlbmRpbmdQYXltZW50KCkgewogIGlmICh0eXBlb2Ygd2luZG93ID09PSAidW5kZWZpbmVkIikgcmV0dXJuOwogIHRyeSB7CiAgICBzZXNzaW9uU3RvcmFnZS5yZW1vdmVJdGVtKFBBWU1FTlRfUkVGRVJFTkNFX0tFWSk7CiAgICBzZXNzaW9uU3RvcmFnZS5yZW1vdmVJdGVtKFBBWU1FTlRfUFJPVklERVJfS0VZKTsKICAgIGxvY2FsU3RvcmFnZS5yZW1vdmVJdGVtKFBBWU1FTlRfUkVGRVJFTkNFX0tFWSk7CiAgfSBjYXRjaCB7CiAgICAvLyBJZ25vcmUuCiAgfQp9CgovKiogUmVhZCB0aGUgcGVuZGluZyBwYXltZW50LCByZXNvbHZpbmcgdGhlIHByb3ZpZGVyIGZvciB0aGUgY2FsbGVyLiAqLwpleHBvcnQgZnVuY3Rpb24gcmVhZFBlbmRpbmdQYXltZW50KCk6IHsKICByZWZlcmVuY2U6IHN0cmluZzsKICBwcm92aWRlcjogUGF5bWVudFByb3ZpZGVyOwp9IHwgbnVsbCB7CiAgaWYgKHR5cGVvZiB3aW5kb3cgPT09ICJ1bmRlZmluZWQiKSByZXR1cm4gbnVsbDsKICB0cnkgewogICAgY29uc3QgcmVmZXJlbmNlID0gc2Vzc2lvblN0b3JhZ2UuZ2V0SXRlbShQQVlNRU5UX1JFRkVSRU5DRV9LRVkpOwogICAgaWYgKCFyZWZlcmVuY2UpIHJldHVybiBudWxsOwogICAgY29uc3Qgc3RvcmVkUHJvdmlkZXIgPSBzZXNzaW9uU3RvcmFnZS5nZXRJdGVtKFBBWU1FTlRfUFJPVklERVJfS0VZKTsKICAgIHJldHVybiB7IHJlZmVyZW5jZSwgcHJvdmlkZXI6IHJlc29sdmVQYXltZW50UHJvdmlkZXIocmVmZXJlbmNlLCBzdG9yZWRQcm92aWRlcikgfTsKICB9IGNhdGNoIHsKICAgIHJldHVybiBudWxsOwogIH0KfQoKLyoqCiAqIFBheXN0YWNrIGV4cGVjdHMgYDxiYXNlVXJsPi9wYXltZW50L3ZlcmlmeWA7IEdQYXkgaGFuZHMgYmFjayBhIGZ1bGwgTVBHUwogKiBjaGVja291dCBsaW5rIHRoYXQgbXVzdCBiZSBuYXZpZ2F0ZWQgdG8gdmVyYmF0aW0uCiAqLwpleHBvcnQgZnVuY3Rpb24gZ2V0Q2hlY2tvdXRVcmwoCiAgcmVzcG9uc2U6IHsgcGF5bWVudFVybD86IHN0cmluZyB8IG51bGw7IGdhdGV3YXk/OiBzdHJpbmcgfCBudWxsIH0sCiAgcHJvdmlkZXI6IFBheW1lbnRQcm92aWRlciwKKTogc3RyaW5nIHsKICBjb25zdCBiYXNlVXJsID0gcmVzcG9uc2U/LnBheW1lbnRVcmwgPz8gIiI7CiAgaWYgKCFiYXNlVXJsKSByZXR1cm4gIiI7CiAgcmV0dXJuIHByb3ZpZGVyID09PSAiZ3BheSIgPyBiYXNlVXJsIDogYCR7YmFzZVVybH0vcGF5bWVudC92ZXJpZnlgOwp9Cg==
+/**
+ * Payment provider routing for the two supported gateways.
+ *
+ *   - "paystack" : legacy routes  -> POST /invoices/:id/pay-online,
+ *                                     POST /invoices/public/initialize,
+ *                                     GET  /payments/verify/:reference
+ *   - "gpay"     : Mastercard MPGS -> POST /payments/gpay/initialize/:invoiceNumber,
+ *                                     POST /payments/gpay/public/initialize,
+ *                                     GET  /payments/gpay/verify/:reference
+ *
+ * GPay returns a COMPLETE checkout URL, while Paystack returns a base URL that the
+ * caller has to extend with "/payment/verify". That difference is handled by
+ * `getCheckoutUrl`, which every redirect must go through.
+ *
+ * The provider cannot be derived from a reference, so it is written to
+ * sessionStorage next to the reference at init time and read back after the
+ * gateway redirect (see `stashPendingPayment` / `readPendingPayment`).
+ */
+
+export type PaymentProvider = "paystack" | "gpay";
+
+export const PAYMENT_REFERENCE_KEY = "pendingPaymentReference";
+export const PAYMENT_PROVIDER_KEY = "pendingPaymentProvider";
+
+/**
+ * Gateway used by the "apply & pay" and "pay invoice" entry points.
+ * Override per environment with NEXT_PUBLIC_PAYMENT_PROVIDER=paystack|gpay.
+ */
+export const DEFAULT_PAYMENT_PROVIDER: PaymentProvider = "gpay";
+
+export const PAYMENT_PROVIDER_LABELS: Record<PaymentProvider, string> = {
+  paystack: "Debit Card / Online Payment",
+  gpay: "Debit Card / Online Payment",
+};
+
+export function getActivePaymentProvider(): PaymentProvider {
+  const configured = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER;
+  if (configured === "paystack" || configured === "gpay") return configured;
+  return DEFAULT_PAYMENT_PROVIDER;
+}
+
+/**
+ * Both gateways mint a `PAY-...` reference, so only the init response can tell
+ * them apart: the GPay controller returns `gateway: "gpay"`, the Paystack
+ * controller returns no `gateway` field at all.
+ */
+export function isGpayInitResponse(response?: {
+  gateway?: string | null;
+}): boolean {
+  return response?.gateway?.toLowerCase() === "gpay";
+}
+
+/**
+ * Best-effort provider for a reference when sessionStorage has no entry for it
+ * (payer returned in a different tab/session, or storage was cleared).
+ * Falls back to Paystack so pre-GPay sessions keep working.
+ */
+export function isGpayReference(reference?: string | null): boolean {
+  return !!reference && reference.trim().toUpperCase().startsWith("PAY-");
+}
+
+export function resolvePaymentProvider(
+  reference?: string | null,
+  storedProvider?: string | null,
+): PaymentProvider {
+  if (storedProvider === "gpay" || storedProvider === "paystack") {
+    return storedProvider;
+  }
+  return isGpayReference(reference) ? "gpay" : "paystack";
+}
+
+/** Persist the reference + provider so we know which gateway to verify against. */
+export function stashPendingPayment(
+  reference: string,
+  provider: PaymentProvider,
+) {
+  if (typeof window === "undefined" || !reference) return;
+  try {
+    sessionStorage.setItem(PAYMENT_REFERENCE_KEY, reference);
+    sessionStorage.setItem(PAYMENT_PROVIDER_KEY, provider);
+    // localStorage is a legacy mirror kept for older sessions.
+    localStorage.setItem(PAYMENT_REFERENCE_KEY, reference);
+  } catch {
+    // Ignore quota / private-mode failures: verification can still fall back to
+    // the query string and reference heuristics.
+  }
+}
+
+export function clearPendingPayment() {
+  if (typeof window === "undefined") return;
+  try {
+    sessionStorage.removeItem(PAYMENT_REFERENCE_KEY);
+    sessionStorage.removeItem(PAYMENT_PROVIDER_KEY);
+    localStorage.removeItem(PAYMENT_REFERENCE_KEY);
+  } catch {
+    // Ignore.
+  }
+}
+
+/** Read the pending payment, resolving the provider for the caller. */
+export function readPendingPayment(): {
+  reference: string;
+  provider: PaymentProvider;
+} | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const reference = sessionStorage.getItem(PAYMENT_REFERENCE_KEY);
+    if (!reference) return null;
+    const storedProvider = sessionStorage.getItem(PAYMENT_PROVIDER_KEY);
+    return { reference, provider: resolvePaymentProvider(reference, storedProvider) };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Paystack expects `<baseUrl>/payment/verify`; GPay hands back a full MPGS
+ * checkout link that must be navigated to verbatim.
+ */
+export function getCheckoutUrl(
+  response: { paymentUrl?: string | null; gateway?: string | null },
+  provider: PaymentProvider,
+): string {
+  const baseUrl = response?.paymentUrl ?? "";
+  if (!baseUrl) return "";
+  return provider === "gpay" ? baseUrl : `${baseUrl}/payment/verify`;
+}

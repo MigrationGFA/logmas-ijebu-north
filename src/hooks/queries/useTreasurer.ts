@@ -1,1 +1,440 @@
-LyogZXNsaW50LWRpc2FibGUgQHR5cGVzY3JpcHQtZXNsaW50L25vLWV4cGxpY2l0LWFueSAqLwppbXBvcnQgeyB1c2VNdXRhdGlvbiwgdXNlUXVlcnksIHVzZVF1ZXJ5Q2xpZW50IH0gZnJvbSAiQHRhbnN0YWNrL3JlYWN0LXF1ZXJ5IjsKaW1wb3J0IHsgdG9hc3QgfSBmcm9tICJzb25uZXIiOwppbXBvcnQgewogIHRyZWFzdXJlclNlcnZpY2UsCiAgUmV2ZW51ZUNhdGVnb3J5LAogIEludm9pY2VTdGF0dXMsCiAgVXBzZXJ0U2VydmljZUZlZURhdGEsCiAgU2VydmljZUZlZUNvbmZpZywKfSBmcm9tICJAL3NlcnZpY2VzL2FwaVRyZWFzdXJlciI7CmltcG9ydCB7IHNlcnZpY2VLZXkgfSBmcm9tICIuL3VzZVNlcnZpY2VzIjsKCmV4cG9ydCBjb25zdCB0cmVhc3VyZXJLZXlzID0gewogIGFsbDogWyJ0cmVhc3VyZXIiXSBhcyBjb25zdCwKICByZXZlbnVlOiAoKSA9PiBbLi4udHJlYXN1cmVyS2V5cy5hbGwsICJyZXZlbnVlIl0gYXMgY29uc3QsCiAgcmV2ZW51ZU92ZXJ2aWV3OiAocGFyYW1zPzogYW55KSA9PiBbLi4udHJlYXN1cmVyS2V5cy5yZXZlbnVlKCksICJvdmVydmlldyIsIHBhcmFtc10gYXMgY29uc3QsCiAgcmV2ZW51ZUJ5T2ZmaWNlcjogKHBhcmFtcz86IGFueSkgPT4gWy4uLnRyZWFzdXJlcktleXMucmV2ZW51ZSgpLCAiYnktb2ZmaWNlciIsIHBhcmFtc10gYXMgY29uc3QsCiAgcmV2ZW51ZUJ5V2FyZDogKHBhcmFtcz86IGFueSkgPT4gWy4uLnRyZWFzdXJlcktleXMucmV2ZW51ZSgpLCAiYnktd2FyZCIsIHBhcmFtc10gYXMgY29uc3QsCiAgcmVjb25jaWxpYXRpb246IChwYXJhbXM/OiBhbnkpID0+IFsuLi50cmVhc3VyZXJLZXlzLmFsbCwgInJlY29uY2lsaWF0aW9uIiwgcGFyYW1zXSBhcyBjb25zdCwKICBpbnZvaWNlczogKCkgPT4gWy4uLnRyZWFzdXJlcktleXMuYWxsLCAiaW52b2ljZXMiXSBhcyBjb25zdCwKICBpbnZvaWNlc0xpc3Q6IChwYXJhbXM/OiBhbnkpID0+IFsuLi50cmVhc3VyZXJLZXlzLmludm9pY2VzKCksIHBhcmFtc10gYXMgY29uc3QsCiAgaW52b2ljZTogKGlkOiBzdHJpbmcpID0+IFsuLi50cmVhc3VyZXJLZXlzLmludm9pY2VzKCksIGlkXSBhcyBjb25zdCwKICAKICAvLyBORVc6IFNlcnZpY2UgRmVlIE1hbmFnZW1lbnQgS2V5cwogIHNlcnZpY2VGZWVzOiAoKSA9PiBbLi4udHJlYXN1cmVyS2V5cy5hbGwsICJzZXJ2aWNlLWZlZXMiXSBhcyBjb25zdCwKICBzZXJ2aWNlRmVlc0xpc3Q6ICgpID0+IFsuLi50cmVhc3VyZXJLZXlzLnNlcnZpY2VGZWVzKCksICJsaXN0Il0gYXMgY29uc3QsCiAgc2VydmljZUZlZTogKHNlcnZpY2VJZDogc3RyaW5nKSA9PiBbLi4udHJlYXN1cmVyS2V5cy5zZXJ2aWNlRmVlcygpLCBzZXJ2aWNlSWRdIGFzIGNvbnN0LAogIAogIC8vIE5FVzogVHJlYXN1cnkgT3ZlcnZpZXcgS2V5cwogIHRyZWFzdXJ5T3ZlcnZpZXc6IChwYXJhbXM/OiBhbnkpID0+IFsuLi50cmVhc3VyZXJLZXlzLmFsbCwgInRyZWFzdXJ5LW92ZXJ2aWV3IiwgcGFyYW1zXSBhcyBjb25zdCwKICAKICAvLyBORVc6IEZpZWxkIE9mZmljZXJzIEtleXMKICBmaWVsZE9mZmljZXJzOiAocGFyYW1zPzogYW55KSA9PiBbLi4udHJlYXN1cmVyS2V5cy5hbGwsICJmaWVsZC1vZmZpY2VycyIsIHBhcmFtc10gYXMgY29uc3QsCgogIC8vIEZpZWxkLW9mZmljZXIgc3RhdGljLWFjY291bnQgcGF5bWVudCBjb25maXJtYXRpb24KICBhd2FpdGluZ0NvbmZpcm1hdGlvbjogKHBhcmFtcz86IGFueSkgPT4KICAgIFsuLi50cmVhc3VyZXJLZXlzLmFsbCwgImF3YWl0aW5nLWNvbmZpcm1hdGlvbiIsIHBhcmFtc10gYXMgY29uc3QsCn07CgovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLy8gRmllbGQtb2ZmaWNlciBzdGF0aWMtYWNjb3VudCBwYXltZW50IGNvbmZpcm1hdGlvbiBob29rcwovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KCmV4cG9ydCBmdW5jdGlvbiB1c2VBd2FpdGluZ0NvbmZpcm1hdGlvbigpIHsKICBjb25zdCBxdWVyeUNsaWVudCA9IHVzZVF1ZXJ5Q2xpZW50KCk7CgogIGNvbnN0IHVzZUdldEF3YWl0aW5nQ29uZmlybWF0aW9uID0gKHBhcmFtcz86IHsKICAgIHBhZ2U/OiBudW1iZXI7CiAgICBsaW1pdD86IG51bWJlcjsKICAgIHN0YXR1cz86IHN0cmluZzsKICB9KSA9PiB7CiAgICByZXR1cm4gdXNlUXVlcnkoewogICAgICBxdWVyeUtleTogdHJlYXN1cmVyS2V5cy5hd2FpdGluZ0NvbmZpcm1hdGlvbihwYXJhbXMpLAogICAgICBxdWVyeUZuOiAoKSA9PiB0cmVhc3VyZXJTZXJ2aWNlLmxpc3RBd2FpdGluZ0NvbmZpcm1hdGlvbihwYXJhbXMpLAogICAgICBzdGFsZVRpbWU6IDE1ICogMTAwMCwgLy8gd29ya2xpc3QgbW92ZXMgZmFzdCDigJQgMTVzCiAgICB9KTsKICB9OwoKICBjb25zdCBjb25maXJtUGF5bWVudE11dGF0aW9uID0gdXNlTXV0YXRpb24oewogICAgbXV0YXRpb25GbjogKAogICAgICBhcmdzOgogICAgICAgIHwgc3RyaW5nCiAgICAgICAgfCB7CiAgICAgICAgICAgIHBheW1lbnRJZDogc3RyaW5nOwogICAgICAgICAgICBvdmVycmlkZVVuZGVycGF5bWVudD86IGJvb2xlYW47CiAgICAgICAgICAgIHVuZGVycGF5bWVudFJlYXNvbj86IHN0cmluZzsKICAgICAgICAgIH0sCiAgICApID0+IHsKICAgICAgY29uc3QgcGlkID0gdHlwZW9mIGFyZ3MgPT09ICJzdHJpbmciID8gYXJncyA6IGFyZ3MucGF5bWVudElkOwogICAgICBjb25zdCBwYXlsb2FkID0KICAgICAgICB0eXBlb2YgYXJncyA9PT0gIm9iamVjdCIKICAgICAgICAgID8gewogICAgICAgICAgICAgIG92ZXJyaWRlVW5kZXJwYXltZW50OiBhcmdzLm92ZXJyaWRlVW5kZXJwYXltZW50LAogICAgICAgICAgICAgIHVuZGVycGF5bWVudFJlYXNvbjogYXJncy51bmRlcnBheW1lbnRSZWFzb24sCiAgICAgICAgICAgIH0KICAgICAgICAgIDogdW5kZWZpbmVkOwogICAgICByZXR1cm4gdHJlYXN1cmVyU2VydmljZS5jb25maXJtU3RhdGljQWNjb3VudFBheW1lbnQocGlkLCBwYXlsb2FkKTsKICAgIH0sCiAgICBvblN1Y2Nlc3M6IChkYXRhKSA9PiB7CiAgICAgIHRvYXN0LnN1Y2Nlc3MoCiAgICAgICAgYFBheW1lbnQgY29uZmlybWVkIOKAlCByZWNlaXB0ICR7ZGF0YS5yZWNlaXB0LnJlY2VpcHROdW1iZXJ9IGlzc3VlZGAsCiAgICAgICk7CiAgICAgIHF1ZXJ5Q2xpZW50LmludmFsaWRhdGVRdWVyaWVzKHsKICAgICAgICBxdWVyeUtleTogdHJlYXN1cmVyS2V5cy5hd2FpdGluZ0NvbmZpcm1hdGlvbigpLAogICAgICB9KTsKICAgICAgcXVlcnlDbGllbnQuaW52YWxpZGF0ZVF1ZXJpZXMoeyBxdWVyeUtleTogdHJlYXN1cmVyS2V5cy50cmVhc3VyeU92ZXJ2aWV3KCkgfSk7CiAgICB9LAogICAgb25FcnJvcjogKGVycm9yOiBhbnkpID0+IHsKICAgICAgdG9hc3QuZXJyb3IoZXJyb3IubWVzc2FnZSB8fCAiRmFpbGVkIHRvIGNvbmZpcm0gcGF5bWVudCIpOwogICAgfSwKICB9KTsKCiAgY29uc3QgZGVjbGluZVBheW1lbnRNdXRhdGlvbiA9IHVzZU11dGF0aW9uKHsKICAgIG11dGF0aW9uRm46ICh7CiAgICAgIHBheW1lbnRJZCwKICAgICAgcmVhc29uLAogICAgfTogewogICAgICBwYXltZW50SWQ6IHN0cmluZzsKICAgICAgcmVhc29uOiBzdHJpbmc7CiAgICB9KSA9PiB0cmVhc3VyZXJTZXJ2aWNlLmRlY2xpbmVTdGF0aWNBY2NvdW50UGF5bWVudChwYXltZW50SWQsIHJlYXNvbiksCiAgICBvblN1Y2Nlc3M6ICgpID0+IHsKICAgICAgdG9hc3Quc3VjY2VzcygiUGF5bWVudCBwcm9vZiBkZWNsaW5lZCDigJQgYXBwbGljYXRpb24gZGVjbGluZWQiKTsKICAgICAgcXVlcnlDbGllbnQuaW52YWxpZGF0ZVF1ZXJpZXMoewogICAgICAgIHF1ZXJ5S2V5OiB0cmVhc3VyZXJLZXlzLmF3YWl0aW5nQ29uZmlybWF0aW9uKCksCiAgICAgIH0pOwogICAgfSwKICAgIG9uRXJyb3I6IChlcnJvcjogYW55KSA9PiB7CiAgICAgIHRvYXN0LmVycm9yKGVycm9yLm1lc3NhZ2UgfHwgIkZhaWxlZCB0byBkZWNsaW5lIHBheW1lbnQiKTsKICAgIH0sCiAgfSk7CgogIGNvbnN0IHN1YkFkbWluUmV2aWV3UGF5bWVudE11dGF0aW9uID0gdXNlTXV0YXRpb24oewogICAgbXV0YXRpb25GbjogKHsKICAgICAgcGF5bWVudElkLAogICAgICBhY3Rpb24sCiAgICAgIGNvbW1lbnQsCiAgICB9OiB7CiAgICAgIHBheW1lbnRJZDogc3RyaW5nOwogICAgICBhY3Rpb246ICJhcHByb3ZlIiB8ICJyZXF1ZXN0X2NvcnJlY3Rpb24iOwogICAgICBjb21tZW50Pzogc3RyaW5nOwogICAgfSkgPT4KICAgICAgdHJlYXN1cmVyU2VydmljZS5zdWJBZG1pblJldmlld1N0YXRpY0FjY291bnRQYXltZW50KHBheW1lbnRJZCwgewogICAgICAgIGFjdGlvbiwKICAgICAgICBjb21tZW50LAogICAgICB9KSwKICAgIG9uU3VjY2VzczogKF9kYXRhLCB2YXJpYWJsZXMpID0+IHsKICAgICAgaWYgKHZhcmlhYmxlcy5hY3Rpb24gPT09ICJhcHByb3ZlIikgewogICAgICAgIHRvYXN0LnN1Y2Nlc3MoCiAgICAgICAgICAiUGF5bWVudCBldmlkZW5jZSB2ZXJpZmllZCBieSBTdWItQWRtaW4gYW5kIGZvcndhcmRlZCB0byBUcmVhc3VyZXIgZm9yIGZpbmFsIGFwcHJvdmFsIiwKICAgICAgICApOwogICAgICB9IGVsc2UgewogICAgICAgIHRvYXN0LmluZm8oCiAgICAgICAgICAiQ29ycmVjdGlvbiByZXF1ZXN0ZWQgb24gcGF5bWVudCBldmlkZW5jZSDigJQgYXBwbGljYW50IG5vdGlmaWVkIiwKICAgICAgICApOwogICAgICB9CiAgICAgIHF1ZXJ5Q2xpZW50LmludmFsaWRhdGVRdWVyaWVzKHsKICAgICAgICBxdWVyeUtleTogdHJlYXN1cmVyS2V5cy5hd2FpdGluZ0NvbmZpcm1hdGlvbigpLAogICAgICB9KTsKICAgIH0sCiAgICBvbkVycm9yOiAoZXJyb3I6IGFueSkgPT4gewogICAgICB0b2FzdC5lcnJvcihlcnJvci5tZXNzYWdlIHx8ICJGYWlsZWQgdG8gcmV2aWV3IHBheW1lbnQgZXZpZGVuY2UiKTsKICAgIH0sCiAgfSk7CgogIHJldHVybiB7CiAgICB1c2VHZXRBd2FpdGluZ0NvbmZpcm1hdGlvbiwKICAgIGNvbmZpcm1QYXltZW50OiBjb25maXJtUGF5bWVudE11dGF0aW9uLm11dGF0ZSwKICAgIGNvbmZpcm1QYXltZW50QXN5bmM6IGNvbmZpcm1QYXltZW50TXV0YXRpb24ubXV0YXRlQXN5bmMsCiAgICBpc0NvbmZpcm1pbmc6IGNvbmZpcm1QYXltZW50TXV0YXRpb24uaXNQZW5kaW5nLAogICAgZGVjbGluZVBheW1lbnQ6IGRlY2xpbmVQYXltZW50TXV0YXRpb24ubXV0YXRlLAogICAgZGVjbGluZVBheW1lbnRBc3luYzogZGVjbGluZVBheW1lbnRNdXRhdGlvbi5tdXRhdGVBc3luYywKICAgIGlzRGVjbGluaW5nOiBkZWNsaW5lUGF5bWVudE11dGF0aW9uLmlzUGVuZGluZywKICAgIHN1YkFkbWluUmV2aWV3UGF5bWVudDogc3ViQWRtaW5SZXZpZXdQYXltZW50TXV0YXRpb24ubXV0YXRlLAogICAgc3ViQWRtaW5SZXZpZXdQYXltZW50QXN5bmM6IHN1YkFkbWluUmV2aWV3UGF5bWVudE11dGF0aW9uLm11dGF0ZUFzeW5jLAogICAgaXNTdWJBZG1pblJldmlld2luZzogc3ViQWRtaW5SZXZpZXdQYXltZW50TXV0YXRpb24uaXNQZW5kaW5nLAogIH07Cn0KCi8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQovLyBORVc6IFNlcnZpY2UgRmVlIE1hbmFnZW1lbnQgSG9va3MKLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgpleHBvcnQgZnVuY3Rpb24gdXNlU2VydmljZUZlZXMoKSB7CiAgY29uc3QgcXVlcnlDbGllbnQgPSB1c2VRdWVyeUNsaWVudCgpOwoKICBjb25zdCB1c2VHZXRTZXJ2aWNlRmVlcyA9ICgpID0+IHsKICAgIHJldHVybiB1c2VRdWVyeSh7CiAgICAgIHF1ZXJ5S2V5OiB0cmVhc3VyZXJLZXlzLnNlcnZpY2VGZWVzTGlzdCgpLAogICAgICBxdWVyeUZuOiAoKSA9PiB0cmVhc3VyZXJTZXJ2aWNlLmxpc3RTZXJ2aWNlRmVlcygpLAogICAgfSk7CiAgfTsKCiAgY29uc3QgdXNlR2V0U2VydmljZUZlZSA9IChzZXJ2aWNlSWQ6IHN0cmluZykgPT4gewogICAgcmV0dXJuIHVzZVF1ZXJ5KHsKICAgICAgcXVlcnlLZXk6IHRyZWFzdXJlcktleXMuc2VydmljZUZlZShzZXJ2aWNlSWQpLAogICAgICBxdWVyeUZuOiAoKSA9PiB0cmVhc3VyZXJTZXJ2aWNlLmdldFNlcnZpY2VGZWUoc2VydmljZUlkKSwKICAgICAgZW5hYmxlZDogISFzZXJ2aWNlSWQsCiAgICB9KTsKICB9OwoKICBjb25zdCB1cHNlcnRTZXJ2aWNlRmVlTXV0YXRpb24gPSB1c2VNdXRhdGlvbih7CiAgICBtdXRhdGlvbkZuOiAoeyBzZXJ2aWNlSWQsIGRhdGEgfTogeyBzZXJ2aWNlSWQ6IHN0cmluZzsgZGF0YTogVXBzZXJ0U2VydmljZUZlZURhdGEgfSkgPT4KICAgICAgdHJlYXN1cmVyU2VydmljZS51cHNlcnRTZXJ2aWNlRmVlKHNlcnZpY2VJZCwgZGF0YSksCiAgICBvblN1Y2Nlc3M6IChfZGF0YTogU2VydmljZUZlZUNvbmZpZykgPT4gewogICAgICBxdWVyeUNsaWVudC5pbnZhbGlkYXRlUXVlcmllcyh7IHF1ZXJ5S2V5OiB0cmVhc3VyZXJLZXlzLnNlcnZpY2VGZWVzKCkgfSk7CiAgICAgIHF1ZXJ5Q2xpZW50LmludmFsaWRhdGVRdWVyaWVzKHsgcXVlcnlLZXk6IHRyZWFzdXJlcktleXMudHJlYXN1cnlPdmVydmlldygpIH0pOwogICAgICBxdWVyeUNsaWVudC5pbnZhbGlkYXRlUXVlcmllcyh7IHF1ZXJ5S2V5OiBzZXJ2aWNlS2V5LmFsbCB9KTsKICAgIH0sCiAgICBvbkVycm9yOiAoZXJyb3I6IGFueSkgPT4gewogICAgICB0b2FzdC5lcnJvcihlcnJvci5tZXNzYWdlIHx8ICJGYWlsZWQgdG8gY29uZmlndXJlIHNlcnZpY2UgZmVlIik7CiAgICB9LAogIH0pOwoKICByZXR1cm4gewogICAgdXNlR2V0U2VydmljZUZlZXMsCiAgICB1c2VHZXRTZXJ2aWNlRmVlLAogICAgdXBzZXJ0U2VydmljZUZlZTogdXBzZXJ0U2VydmljZUZlZU11dGF0aW9uLm11dGF0ZSwKICAgIHVwc2VydFNlcnZpY2VGZWVBc3luYzogdXBzZXJ0U2VydmljZUZlZU11dGF0aW9uLm11dGF0ZUFzeW5jLAogICAgaXNVcHNlcnRpbmc6IHVwc2VydFNlcnZpY2VGZWVNdXRhdGlvbi5pc1BlbmRpbmcsCiAgfTsKfQoKLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci8vIE5FVzogVHJlYXN1cnkgT3ZlcnZpZXcgSG9va3MKLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgpleHBvcnQgZnVuY3Rpb24gdXNlVHJlYXN1cnlPdmVydmlldygpIHsKICBjb25zdCB1c2VHZXRUcmVhc3VyeU92ZXJ2aWV3ID0gKHBhcmFtcz86IHsgZnJvbT86IHN0cmluZzsgdG8/OiBzdHJpbmcgfSkgPT4gewogICAgcmV0dXJuIHVzZVF1ZXJ5KHsKICAgICAgcXVlcnlLZXk6IHRyZWFzdXJlcktleXMudHJlYXN1cnlPdmVydmlldyhwYXJhbXMpLAogICAgICBxdWVyeUZuOiAoKSA9PiB0cmVhc3VyZXJTZXJ2aWNlLmdldFRyZWFzdXJ5T3ZlcnZpZXcocGFyYW1zKSwKICAgIH0pOwogIH07CgogIHJldHVybiB7IHVzZUdldFRyZWFzdXJ5T3ZlcnZpZXcgfTsKfQoKLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci8vIE5FVzogRmllbGQgT2ZmaWNlcnMgSG9va3MKLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgpleHBvcnQgZnVuY3Rpb24gdXNlRmllbGRPZmZpY2VycygpIHsKICBjb25zdCB1c2VHZXRGaWVsZE9mZmljZXJzID0gKHBhcmFtcz86IHsKICAgIGZyb20/OiBzdHJpbmc7CiAgICB0bz86IHN0cmluZzsKICAgIHBhZ2U/OiBudW1iZXI7CiAgICBsaW1pdD86IG51bWJlcjsKICB9KSA9PiB7CiAgICByZXR1cm4gdXNlUXVlcnkoewogICAgICBxdWVyeUtleTogdHJlYXN1cmVyS2V5cy5maWVsZE9mZmljZXJzKHBhcmFtcyksCiAgICAgIHF1ZXJ5Rm46ICgpID0+IHRyZWFzdXJlclNlcnZpY2UuZ2V0RmllbGRPZmZpY2VycyhwYXJhbXMpLAogICAgfSk7CiAgfTsKCiAgcmV0dXJuIHsgdXNlR2V0RmllbGRPZmZpY2VycyB9Owp9CgovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KLy8gRVhJU1RJTkc6IFJldmVudWUgQW5hbHl0aWNzIEhvb2tzIChrZXB0IGFzLWlzKQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KCmV4cG9ydCBmdW5jdGlvbiB1c2VSZXZlbnVlQW5hbHl0aWNzKCkgewogIGNvbnN0IHVzZUdldFJldmVudWVPdmVydmlldyA9IChwYXJhbXM/OiB7IGZyb20/OiBzdHJpbmc7IHRvPzogc3RyaW5nIH0pID0+IHsKICAgIHJldHVybiB1c2VRdWVyeSh7CiAgICAgIHF1ZXJ5S2V5OiB0cmVhc3VyZXJLZXlzLnJldmVudWVPdmVydmlldyhwYXJhbXMpLAogICAgICBxdWVyeUZuOiAoKSA9PiB0cmVhc3VyZXJTZXJ2aWNlLmdldFJldmVudWVPdmVydmlldyhwYXJhbXMpLAogICAgfSk7CiAgfTsKCiAgY29uc3QgdXNlR2V0UmV2ZW51ZUJ5T2ZmaWNlciA9IChwYXJhbXM/OiB7CiAgICBmcm9tPzogc3RyaW5nOwogICAgdG8/OiBzdHJpbmc7CiAgICBwYWdlPzogbnVtYmVyOwogICAgbGltaXQ/OiBudW1iZXI7CiAgfSkgPT4gewogICAgcmV0dXJuIHVzZVF1ZXJ5KHsKICAgICAgcXVlcnlLZXk6IHRyZWFzdXJlcktleXMucmV2ZW51ZUJ5T2ZmaWNlcihwYXJhbXMpLAogICAgICBxdWVyeUZuOiAoKSA9PiB0cmVhc3VyZXJTZXJ2aWNlLmdldFJldmVudWVCeU9mZmljZXIocGFyYW1zKSwKICAgIH0pOwogIH07CgogIGNvbnN0IHVzZUdldFJldmVudWVCeVdhcmQgPSAocGFyYW1zPzogeyBmcm9tPzogc3RyaW5nOyB0bz86IHN0cmluZyB9KSA9PiB7CiAgICByZXR1cm4gdXNlUXVlcnkoewogICAgICBxdWVyeUtleTogdHJlYXN1cmVyS2V5cy5yZXZlbnVlQnlXYXJkKHBhcmFtcyksCiAgICAgIHF1ZXJ5Rm46ICgpID0+IHRyZWFzdXJlclNlcnZpY2UuZ2V0UmV2ZW51ZUJ5V2FyZChwYXJhbXMpLAogICAgfSk7CiAgfTsKCiAgcmV0dXJuIHsKICAgIHVzZUdldFJldmVudWVPdmVydmlldywKICAgIHVzZUdldFJldmVudWVCeU9mZmljZXIsCiAgICB1c2VHZXRSZXZlbnVlQnlXYXJkLAogIH07Cn0KCi8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQovLyBFWElTVElORzogUmVjb25jaWxpYXRpb24gSG9vayAoa2VwdCBhcy1pcykKLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgpleHBvcnQgZnVuY3Rpb24gdXNlUmVjb25jaWxpYXRpb24oKSB7CiAgY29uc3QgdXNlR2V0UmVjb25jaWxpYXRpb24gPSAocGFyYW1zPzogewogICAgZnJvbT86IHN0cmluZzsKICAgIHRvPzogc3RyaW5nOwogICAgcGFnZT86IG51bWJlcjsKICAgIGxpbWl0PzogbnVtYmVyOwogIH0pID0+IHsKICAgIHJldHVybiB1c2VRdWVyeSh7CiAgICAgIHF1ZXJ5S2V5OiB0cmVhc3VyZXJLZXlzLnJlY29uY2lsaWF0aW9uKHBhcmFtcyksCiAgICAgIHF1ZXJ5Rm46ICgpID0+IHRyZWFzdXJlclNlcnZpY2UuZ2V0UmVjb25jaWxpYXRpb24ocGFyYW1zKSwKICAgIH0pOwogIH07CgogIHJldHVybiB7IHVzZUdldFJlY29uY2lsaWF0aW9uIH07Cn0KCi8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQovLyBFWElTVElORzogSW52b2ljZSBNYW5hZ2VtZW50IEhvb2tzIChrZXB0IGFzLWlzKQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KCmV4cG9ydCBmdW5jdGlvbiB1c2VUcmVhc3VyZXJJbnZvaWNlcygpIHsKICBjb25zdCBxdWVyeUNsaWVudCA9IHVzZVF1ZXJ5Q2xpZW50KCk7CgogIGNvbnN0IHVzZUdldEFsbEludm9pY2VzID0gKHBhcmFtcz86IHsKICAgIGZyb20/OiBzdHJpbmc7CiAgICB0bz86IHN0cmluZzsKICAgIHN0YXR1cz86IEludm9pY2VTdGF0dXM7CiAgICBjYXRlZ29yeT86IFJldmVudWVDYXRlZ29yeTsKICAgIG9mZmljZXJJZD86IHN0cmluZzsKICAgIGJ1c2luZXNzSWQ/OiBzdHJpbmc7CiAgICBwYWdlPzogbnVtYmVyOwogICAgbGltaXQ/OiBudW1iZXI7CiAgfSkgPT4gewogICAgcmV0dXJuIHVzZVF1ZXJ5KHsKICAgICAgcXVlcnlLZXk6IHRyZWFzdXJlcktleXMuaW52b2ljZXNMaXN0KHBhcmFtcyksCiAgICAgIHF1ZXJ5Rm46ICgpID0+IHRyZWFzdXJlclNlcnZpY2UuZ2V0QWxsSW52b2ljZXMocGFyYW1zKSwKICAgIH0pOwogIH07CgogIGNvbnN0IHVzZUdldEludm9pY2UgPSAoaWQ6IHN0cmluZykgPT4gewogICAgcmV0dXJuIHVzZVF1ZXJ5KHsKICAgICAgcXVlcnlLZXk6IHRyZWFzdXJlcktleXMuaW52b2ljZShpZCksCiAgICAgIHF1ZXJ5Rm46ICgpID0+IHRyZWFzdXJlclNlcnZpY2UuZ2V0SW52b2ljZUJ5SWQoaWQpLAogICAgICBlbmFibGVkOiAhIWlkLAogICAgfSk7CiAgfTsKCiAgY29uc3QgbWFya0ludm9pY2VPdmVyZHVlTXV0YXRpb24gPSB1c2VNdXRhdGlvbih7CiAgICBtdXRhdGlvbkZuOiAoaWQ6IHN0cmluZykgPT4gdHJlYXN1cmVyU2VydmljZS5tYXJrSW52b2ljZU92ZXJkdWUoaWQpLAogICAgb25TdWNjZXNzOiAoZGF0YSkgPT4gewogICAgICB0b2FzdC5zdWNjZXNzKGBJbnZvaWNlICR7ZGF0YS5pbnZvaWNlTnVtYmVyfSBtYXJrZWQgYXMgb3ZlcmR1ZWApOwogICAgICBxdWVyeUNsaWVudC5pbnZhbGlkYXRlUXVlcmllcyh7IHF1ZXJ5S2V5OiB0cmVhc3VyZXJLZXlzLmludm9pY2VzKCkgfSk7CiAgICB9LAogICAgb25FcnJvcjogKGVycm9yOiBhbnkpID0+IHsKICAgICAgdG9hc3QuZXJyb3IoZXJyb3IubWVzc2FnZSB8fCAiRmFpbGVkIHRvIG1hcmsgaW52b2ljZSBhcyBvdmVyZHVlIik7CiAgICB9LAogIH0pOwoKICByZXR1cm4gewogICAgdXNlR2V0QWxsSW52b2ljZXMsCiAgICB1c2VHZXRJbnZvaWNlLAogICAgbWFya0ludm9pY2VPdmVyZHVlOiBtYXJrSW52b2ljZU92ZXJkdWVNdXRhdGlvbi5tdXRhdGUsCiAgICBtYXJrSW52b2ljZU92ZXJkdWVBc3luYzogbWFya0ludm9pY2VPdmVyZHVlTXV0YXRpb24ubXV0YXRlQXN5bmMsCiAgICBpc01hcmtpbmdPdmVyZHVlOiBtYXJrSW52b2ljZU92ZXJkdWVNdXRhdGlvbi5pc1BlbmRpbmcsCiAgfTsKfQoKLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09Ci8vIEVYSVNUSU5HOiBGaWVsZCBPZmZpY2VycyBIb29rIChrZXB0IGZvciBiYWNrd2FyZCBjb21wYXRpYmlsaXR5KQovLyA9PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0KCmV4cG9ydCB0eXBlIFRyZWFzdXJlclJvbGUgPSAidHJlYXN1cmVyIiB8ICJsZ2FfYWRtaW4iIHwgInN1Yl9hZG1pbiIgfCAic3VwZXJfYWRtaW4iIHwgImNvbnRyYWN0b3IiIHwgImNoYWlybWFuIjsKCmV4cG9ydCBmdW5jdGlvbiB1c2VUcmVhc3VyZXJPZmZpY2VyKHJvbGU/OiBUcmVhc3VyZXJSb2xlKSB7CiAgcmV0dXJuIHVzZVF1ZXJ5KHsKICAgIHF1ZXJ5S2V5OiBbImZpZWxkLW9mZmljZXJzIiwgcm9sZV0sCiAgICBxdWVyeUZuOiAoKSA9PiB0cmVhc3VyZXJTZXJ2aWNlLmdldEZpZWxkT2ZmaWNlcnMoKSwKICAgIC8vIE9ubHkgcnVuIHF1ZXJ5IGlmIHRoZSB1c2VyIGlzIGF1dGhlbnRpY2F0ZWQgYW5kIGhhcyB2aWV3aW5nIGNsZWFyYW5jZQogICAgZW5hYmxlZDoKICAgICAgISFyb2xlICYmCiAgICAgIChyb2xlID09PSAibGdhX2FkbWluIiB8fAogICAgICAgIHJvbGUgPT09ICJzdWJfYWRtaW4iIHx8CiAgICAgICAgcm9sZSA9PT0gInN1cGVyX2FkbWluIiB8fAogICAgICAgIHJvbGUgPT09ICJjb250cmFjdG9yIiB8fAogICAgICAgIHJvbGUgPT09ICJ0cmVhc3VyZXIiIHx8CiAgICAgICAgcm9sZSA9PT0gImNoYWlybWFuIiksCiAgICBzdGFsZVRpbWU6IDEwMDAgKiA2MCAqIDUsIC8vIENhY2hlIGVudHJpZXMgY2xlYW5seSBmb3IgNSBtaW51dGVzCiAgfSk7Cn0KCi8vID09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQovLyBDb21iaW5lZCBUcmVhc3VyZXIgSG9vayAoa2VwdCBhcy1pcykKLy8gPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09CgpleHBvcnQgZnVuY3Rpb24gdXNlVHJlYXN1cmVyKCkgewogIGNvbnN0IHJldmVudWVBbmFseXRpY3MgPSB1c2VSZXZlbnVlQW5hbHl0aWNzKCk7CiAgY29uc3QgcmVjb25jaWxpYXRpb24gPSB1c2VSZWNvbmNpbGlhdGlvbigpOwogIGNvbnN0IGludm9pY2VzID0gdXNlVHJlYXN1cmVySW52b2ljZXMoKTsKICBjb25zdCBzZXJ2aWNlRmVlcyA9IHVzZVNlcnZpY2VGZWVzKCk7CiAgY29uc3QgdHJlYXN1cnlPdmVydmlldyA9IHVzZVRyZWFzdXJ5T3ZlcnZpZXcoKTsKICBjb25zdCBmaWVsZE9mZmljZXJzID0gdXNlRmllbGRPZmZpY2VycygpOwogIGNvbnN0IGdwYXlIdWIgPSB1c2VHUGF5SHViKCk7CgogIHJldHVybiB7CiAgICByZXZlbnVlQW5hbHl0aWNzLAogICAgcmVjb25jaWxpYXRpb24sCiAgICBpbnZvaWNlcywKICAgIHNlcnZpY2VGZWVzLAogICAgdHJlYXN1cnlPdmVydmlldywKICAgIGZpZWxkT2ZmaWNlcnMsCiAgICBncGF5SHViLAogIH07Cn0KCmV4cG9ydCBmdW5jdGlvbiB1c2VHUGF5SHViKCkgewogIGNvbnN0IHF1ZXJ5Q2xpZW50ID0gdXNlUXVlcnlDbGllbnQoKTsKCiAgY29uc3QgdXNlR2V0VHJhbnNhY3Rpb25zID0gKHBhcmFtcz86IHsKICAgIGNoYW5uZWw/OiBzdHJpbmc7CiAgICBzdGF0dXM/OiBzdHJpbmc7CiAgICBwYWdlPzogbnVtYmVyOwogICAgbGltaXQ/OiBudW1iZXI7CiAgICBzZWFyY2g/OiBzdHJpbmc7CiAgICBmcm9tRGF0ZT86IHN0cmluZzsKICAgIHRvRGF0ZT86IHN0cmluZzsKICB9KSA9PiB7CiAgICByZXR1cm4gdXNlUXVlcnkoewogICAgICBxdWVyeUtleTogWy4uLnRyZWFzdXJlcktleXMuYWxsLCAiZ3BheS10cmFuc2FjdGlvbnMiLCBwYXJhbXNdLAogICAgICBxdWVyeUZuOiAoKSA9PiB0cmVhc3VyZXJTZXJ2aWNlLmdldEdQYXlUcmFuc2FjdGlvbnMocGFyYW1zKSwKICAgICAgcmVmZXRjaEludGVydmFsOiAyMCAqIDEwMDAsIC8vIGF1dG8tcmVmcmVzaCBsaXZlIGZlZWQgZXZlcnkgMjBzCiAgICAgIHN0YWxlVGltZTogMTAgKiAxMDAwLAogICAgfSk7CiAgfTsKCiAgY29uc3Qgc2V0dGxlVHJhbnNhY3Rpb25NdXRhdGlvbiA9IHVzZU11dGF0aW9uKHsKICAgIG11dGF0aW9uRm46IChwYXlsb2FkOiB7CiAgICAgIGdwYXlSZWZlcmVuY2U6IHN0cmluZzsKICAgICAgYXBwbGljYXRpb25JZD86IHN0cmluZzsKICAgICAgYXBwbGljYXRpb25OdW1iZXI/OiBzdHJpbmc7CiAgICAgIG92ZXJyaWRlVW5kZXJwYXltZW50PzogYm9vbGVhbjsKICAgICAgcmVtYXJrcz86IHN0cmluZzsKICAgIH0pID0+IHRyZWFzdXJlclNlcnZpY2Uuc2V0dGxlR1BheVRyYW5zYWN0aW9uKHBheWxvYWQpLAogICAgb25TdWNjZXNzOiAocmVzOiBhbnkpID0+IHsKICAgICAgcXVlcnlDbGllbnQuaW52YWxpZGF0ZVF1ZXJpZXMoeyBxdWVyeUtleTogWy4uLnRyZWFzdXJlcktleXMuYWxsLCAiZ3BheS10cmFuc2FjdGlvbnMiXSB9KTsKICAgICAgcXVlcnlDbGllbnQuaW52YWxpZGF0ZVF1ZXJpZXMoeyBxdWVyeUtleTogdHJlYXN1cmVyS2V5cy5hd2FpdGluZ0NvbmZpcm1hdGlvbigpIH0pOwogICAgICB0b2FzdC5zdWNjZXNzKAogICAgICAgIHJlcz8ubWVzc2FnZSB8fCAiVHJhbnNhY3Rpb24gc3VjY2Vzc2Z1bGx5IHNldHRsZWQgYW5kIGxpbmtlZCB0byBhcHBsaWNhdGlvbiEiLAogICAgICApOwogICAgfSwKICAgIG9uRXJyb3I6IChlcnI6IGFueSkgPT4gewogICAgICB0b2FzdC5lcnJvcihlcnI/Lm1lc3NhZ2UgfHwgIkZhaWxlZCB0byBzZXR0bGUgdHJhbnNhY3Rpb24iKTsKICAgIH0sCiAgfSk7CgogIHJldHVybiB7CiAgICB1c2VHZXRUcmFuc2FjdGlvbnMsCiAgICBzZXR0bGVUcmFuc2FjdGlvbjogc2V0dGxlVHJhbnNhY3Rpb25NdXRhdGlvbi5tdXRhdGUsCiAgICBzZXR0bGVUcmFuc2FjdGlvbkFzeW5jOiBzZXR0bGVUcmFuc2FjdGlvbk11dGF0aW9uLm11dGF0ZUFzeW5jLAogICAgaXNTZXR0bGluZzogc2V0dGxlVHJhbnNhY3Rpb25NdXRhdGlvbi5pc1BlbmRpbmcsCiAgfTsKfQo=
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import {
+  treasurerService,
+  RevenueCategory,
+  InvoiceStatus,
+  UpsertServiceFeeData,
+  ServiceFeeConfig,
+} from "@/services/apiTreasurer";
+import { serviceKey } from "./useServices";
+
+export const treasurerKeys = {
+  all: ["treasurer"] as const,
+  revenue: () => [...treasurerKeys.all, "revenue"] as const,
+  revenueOverview: (params?: any) => [...treasurerKeys.revenue(), "overview", params] as const,
+  revenueByOfficer: (params?: any) => [...treasurerKeys.revenue(), "by-officer", params] as const,
+  revenueByWard: (params?: any) => [...treasurerKeys.revenue(), "by-ward", params] as const,
+  reconciliation: (params?: any) => [...treasurerKeys.all, "reconciliation", params] as const,
+  invoices: () => [...treasurerKeys.all, "invoices"] as const,
+  invoicesList: (params?: any) => [...treasurerKeys.invoices(), params] as const,
+  invoice: (id: string) => [...treasurerKeys.invoices(), id] as const,
+  
+  // NEW: Service Fee Management Keys
+  serviceFees: () => [...treasurerKeys.all, "service-fees"] as const,
+  serviceFeesList: () => [...treasurerKeys.serviceFees(), "list"] as const,
+  serviceFee: (serviceId: string) => [...treasurerKeys.serviceFees(), serviceId] as const,
+  
+  // NEW: Treasury Overview Keys
+  treasuryOverview: (params?: any) => [...treasurerKeys.all, "treasury-overview", params] as const,
+  
+  // NEW: Field Officers Keys
+  fieldOfficers: (params?: any) => [...treasurerKeys.all, "field-officers", params] as const,
+
+  // Field-officer static-account payment confirmation
+  awaitingConfirmation: (params?: any) =>
+    [...treasurerKeys.all, "awaiting-confirmation", params] as const,
+};
+
+// ============================================================
+// Field-officer static-account payment confirmation hooks
+// ============================================================
+
+export function useAwaitingConfirmation() {
+  const queryClient = useQueryClient();
+
+  const useGetAwaitingConfirmation = (params?: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  }) => {
+    return useQuery({
+      queryKey: treasurerKeys.awaitingConfirmation(params),
+      queryFn: () => treasurerService.listAwaitingConfirmation(params),
+      staleTime: 15 * 1000, // worklist moves fast — 15s
+    });
+  };
+
+  const confirmPaymentMutation = useMutation({
+    mutationFn: (
+      args:
+        | string
+        | {
+            paymentId: string;
+            overrideUnderpayment?: boolean;
+            underpaymentReason?: string;
+          },
+    ) => {
+      const pid = typeof args === "string" ? args : args.paymentId;
+      const payload =
+        typeof args === "object"
+          ? {
+              overrideUnderpayment: args.overrideUnderpayment,
+              underpaymentReason: args.underpaymentReason,
+            }
+          : undefined;
+      return treasurerService.confirmStaticAccountPayment(pid, payload);
+    },
+    onSuccess: (data) => {
+      toast.success(
+        `Payment confirmed — receipt ${data.receipt.receiptNumber} issued`,
+      );
+      queryClient.invalidateQueries({
+        queryKey: treasurerKeys.awaitingConfirmation(),
+      });
+      queryClient.invalidateQueries({ queryKey: treasurerKeys.treasuryOverview() });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to confirm payment");
+    },
+  });
+
+  const declinePaymentMutation = useMutation({
+    mutationFn: ({
+      paymentId,
+      reason,
+    }: {
+      paymentId: string;
+      reason: string;
+    }) => treasurerService.declineStaticAccountPayment(paymentId, reason),
+    onSuccess: () => {
+      toast.success("Payment proof declined — application declined");
+      queryClient.invalidateQueries({
+        queryKey: treasurerKeys.awaitingConfirmation(),
+      });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to decline payment");
+    },
+  });
+
+  const subAdminReviewPaymentMutation = useMutation({
+    mutationFn: ({
+      paymentId,
+      action,
+      comment,
+    }: {
+      paymentId: string;
+      action: "approve" | "request_correction";
+      comment?: string;
+    }) =>
+      treasurerService.subAdminReviewStaticAccountPayment(paymentId, {
+        action,
+        comment,
+      }),
+    onSuccess: (_data, variables) => {
+      if (variables.action === "approve") {
+        toast.success(
+          "Payment evidence verified by Sub-Admin and forwarded to Treasurer for final approval",
+        );
+      } else {
+        toast.info(
+          "Correction requested on payment evidence — applicant notified",
+        );
+      }
+      queryClient.invalidateQueries({
+        queryKey: treasurerKeys.awaitingConfirmation(),
+      });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to review payment evidence");
+    },
+  });
+
+  return {
+    useGetAwaitingConfirmation,
+    confirmPayment: confirmPaymentMutation.mutate,
+    confirmPaymentAsync: confirmPaymentMutation.mutateAsync,
+    isConfirming: confirmPaymentMutation.isPending,
+    declinePayment: declinePaymentMutation.mutate,
+    declinePaymentAsync: declinePaymentMutation.mutateAsync,
+    isDeclining: declinePaymentMutation.isPending,
+    subAdminReviewPayment: subAdminReviewPaymentMutation.mutate,
+    subAdminReviewPaymentAsync: subAdminReviewPaymentMutation.mutateAsync,
+    isSubAdminReviewing: subAdminReviewPaymentMutation.isPending,
+  };
+}
+
+// ============================================================
+// NEW: Service Fee Management Hooks
+// ============================================================
+
+export function useServiceFees() {
+  const queryClient = useQueryClient();
+
+  const useGetServiceFees = () => {
+    return useQuery({
+      queryKey: treasurerKeys.serviceFeesList(),
+      queryFn: () => treasurerService.listServiceFees(),
+    });
+  };
+
+  const useGetServiceFee = (serviceId: string) => {
+    return useQuery({
+      queryKey: treasurerKeys.serviceFee(serviceId),
+      queryFn: () => treasurerService.getServiceFee(serviceId),
+      enabled: !!serviceId,
+    });
+  };
+
+  const upsertServiceFeeMutation = useMutation({
+    mutationFn: ({ serviceId, data }: { serviceId: string; data: UpsertServiceFeeData }) =>
+      treasurerService.upsertServiceFee(serviceId, data),
+    onSuccess: (_data: ServiceFeeConfig) => {
+      queryClient.invalidateQueries({ queryKey: treasurerKeys.serviceFees() });
+      queryClient.invalidateQueries({ queryKey: treasurerKeys.treasuryOverview() });
+      queryClient.invalidateQueries({ queryKey: serviceKey.all });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to configure service fee");
+    },
+  });
+
+  return {
+    useGetServiceFees,
+    useGetServiceFee,
+    upsertServiceFee: upsertServiceFeeMutation.mutate,
+    upsertServiceFeeAsync: upsertServiceFeeMutation.mutateAsync,
+    isUpserting: upsertServiceFeeMutation.isPending,
+  };
+}
+
+// ============================================================
+// NEW: Treasury Overview Hooks
+// ============================================================
+
+export function useTreasuryOverview() {
+  const useGetTreasuryOverview = (params?: { from?: string; to?: string }) => {
+    return useQuery({
+      queryKey: treasurerKeys.treasuryOverview(params),
+      queryFn: () => treasurerService.getTreasuryOverview(params),
+    });
+  };
+
+  return { useGetTreasuryOverview };
+}
+
+// ============================================================
+// NEW: Field Officers Hooks
+// ============================================================
+
+export function useFieldOfficers() {
+  const useGetFieldOfficers = (params?: {
+    from?: string;
+    to?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    return useQuery({
+      queryKey: treasurerKeys.fieldOfficers(params),
+      queryFn: () => treasurerService.getFieldOfficers(params),
+    });
+  };
+
+  return { useGetFieldOfficers };
+}
+
+// ============================================================
+// EXISTING: Revenue Analytics Hooks (kept as-is)
+// ============================================================
+
+export function useRevenueAnalytics() {
+  const useGetRevenueOverview = (params?: { from?: string; to?: string }) => {
+    return useQuery({
+      queryKey: treasurerKeys.revenueOverview(params),
+      queryFn: () => treasurerService.getRevenueOverview(params),
+    });
+  };
+
+  const useGetRevenueByOfficer = (params?: {
+    from?: string;
+    to?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    return useQuery({
+      queryKey: treasurerKeys.revenueByOfficer(params),
+      queryFn: () => treasurerService.getRevenueByOfficer(params),
+    });
+  };
+
+  const useGetRevenueByWard = (params?: { from?: string; to?: string }) => {
+    return useQuery({
+      queryKey: treasurerKeys.revenueByWard(params),
+      queryFn: () => treasurerService.getRevenueByWard(params),
+    });
+  };
+
+  return {
+    useGetRevenueOverview,
+    useGetRevenueByOfficer,
+    useGetRevenueByWard,
+  };
+}
+
+// ============================================================
+// EXISTING: Reconciliation Hook (kept as-is)
+// ============================================================
+
+export function useReconciliation() {
+  const useGetReconciliation = (params?: {
+    from?: string;
+    to?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    return useQuery({
+      queryKey: treasurerKeys.reconciliation(params),
+      queryFn: () => treasurerService.getReconciliation(params),
+    });
+  };
+
+  return { useGetReconciliation };
+}
+
+// ============================================================
+// EXISTING: Invoice Management Hooks (kept as-is)
+// ============================================================
+
+export function useTreasurerInvoices() {
+  const queryClient = useQueryClient();
+
+  const useGetAllInvoices = (params?: {
+    from?: string;
+    to?: string;
+    status?: InvoiceStatus;
+    category?: RevenueCategory;
+    officerId?: string;
+    businessId?: string;
+    page?: number;
+    limit?: number;
+  }) => {
+    return useQuery({
+      queryKey: treasurerKeys.invoicesList(params),
+      queryFn: () => treasurerService.getAllInvoices(params),
+    });
+  };
+
+  const useGetInvoice = (id: string) => {
+    return useQuery({
+      queryKey: treasurerKeys.invoice(id),
+      queryFn: () => treasurerService.getInvoiceById(id),
+      enabled: !!id,
+    });
+  };
+
+  const markInvoiceOverdueMutation = useMutation({
+    mutationFn: (id: string) => treasurerService.markInvoiceOverdue(id),
+    onSuccess: (data) => {
+      toast.success(`Invoice ${data.invoiceNumber} marked as overdue`);
+      queryClient.invalidateQueries({ queryKey: treasurerKeys.invoices() });
+    },
+    onError: (error: any) => {
+      toast.error(error.message || "Failed to mark invoice as overdue");
+    },
+  });
+
+  return {
+    useGetAllInvoices,
+    useGetInvoice,
+    markInvoiceOverdue: markInvoiceOverdueMutation.mutate,
+    markInvoiceOverdueAsync: markInvoiceOverdueMutation.mutateAsync,
+    isMarkingOverdue: markInvoiceOverdueMutation.isPending,
+  };
+}
+
+// ============================================================
+// EXISTING: Field Officers Hook (kept for backward compatibility)
+// ============================================================
+
+export type TreasurerRole = "treasurer" | "lga_admin" | "sub_admin" | "super_admin" | "contractor" | "chairman";
+
+export function useTreasurerOfficer(role?: TreasurerRole) {
+  return useQuery({
+    queryKey: ["field-officers", role],
+    queryFn: () => treasurerService.getFieldOfficers(),
+    // Only run query if the user is authenticated and has viewing clearance
+    enabled:
+      !!role &&
+      (role === "lga_admin" ||
+        role === "sub_admin" ||
+        role === "super_admin" ||
+        role === "contractor" ||
+        role === "treasurer" ||
+        role === "chairman"),
+    staleTime: 1000 * 60 * 5, // Cache entries cleanly for 5 minutes
+  });
+}
+
+// ============================================================
+// Combined Treasurer Hook (kept as-is)
+// ============================================================
+
+export function useTreasurer() {
+  const revenueAnalytics = useRevenueAnalytics();
+  const reconciliation = useReconciliation();
+  const invoices = useTreasurerInvoices();
+  const serviceFees = useServiceFees();
+  const treasuryOverview = useTreasuryOverview();
+  const fieldOfficers = useFieldOfficers();
+  const gpayHub = useGPayHub();
+
+  return {
+    revenueAnalytics,
+    reconciliation,
+    invoices,
+    serviceFees,
+    treasuryOverview,
+    fieldOfficers,
+    gpayHub,
+  };
+}
+
+export function useGPayHub() {
+  const queryClient = useQueryClient();
+
+  const useGetTransactions = (params?: {
+    channel?: string;
+    status?: string;
+    page?: number;
+    limit?: number;
+    search?: string;
+    fromDate?: string;
+    toDate?: string;
+  }) => {
+    return useQuery({
+      queryKey: [...treasurerKeys.all, "gpay-transactions", params],
+      queryFn: () => treasurerService.getGPayTransactions(params),
+      refetchInterval: 20 * 1000, // auto-refresh live feed every 20s
+      staleTime: 10 * 1000,
+    });
+  };
+
+  const settleTransactionMutation = useMutation({
+    mutationFn: (payload: {
+      gpayReference: string;
+      applicationId?: string;
+      applicationNumber?: string;
+      overrideUnderpayment?: boolean;
+      remarks?: string;
+    }) => treasurerService.settleGPayTransaction(payload),
+    onSuccess: (res: any) => {
+      queryClient.invalidateQueries({ queryKey: [...treasurerKeys.all, "gpay-transactions"] });
+      queryClient.invalidateQueries({ queryKey: treasurerKeys.awaitingConfirmation() });
+      toast.success(
+        res?.message || "Transaction successfully settled and linked to application!",
+      );
+    },
+    onError: (err: any) => {
+      toast.error(err?.message || "Failed to settle transaction");
+    },
+  });
+
+  return {
+    useGetTransactions,
+    settleTransaction: settleTransactionMutation.mutate,
+    settleTransactionAsync: settleTransactionMutation.mutateAsync,
+    isSettling: settleTransactionMutation.isPending,
+  };
+}
