@@ -32,9 +32,9 @@ import {
   ShieldCheck,
   Beer,
   Tv,
-} from "lucide-react";
   QrCode,
   HelpCircle,
+} from "lucide-react";
 import * as Icons from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";

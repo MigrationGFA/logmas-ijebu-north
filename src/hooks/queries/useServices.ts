@@ -10,6 +10,16 @@ export const serviceKey = {
 };
 
 // Hook for citizen operations
+// Get a single service by its slug (standalone export, as in the Ifo implementation).
+export function useGetServiceBySlug(slug: string) {
+  return useQuery({
+    queryKey: serviceKey.getBySlug(slug),
+    queryFn: () => services.getServiceBySlug(slug),
+    enabled: !!slug,
+    staleTime: 5 * 60 * 1000,
+  });
+}
+
 export function useServices() {
   const queryClient = useQueryClient();
 

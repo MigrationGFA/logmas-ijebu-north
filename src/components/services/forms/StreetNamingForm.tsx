@@ -946,3 +946,18 @@ export default function StreetNamingForm({
     </FormWizard>
   );
 }
+
+// Default street naming rates (ported from the Ifo implementation).
+// Defaults only; each LGA can change these figures.
+export const DEFAULT_STREET_NAMING_RATES: Record<string, { naming: number; renewal: number; objection: number; unit: string }> = {
+  "Road":      { naming: 200000,  renewal: 200000,  objection: 600000,  unit: "Per road / application" },
+  "Street":    { naming: 150000,  renewal: 150000,  objection: 450000,  unit: "Per street / application" },
+  "Avenue":    { naming: 150000,  renewal: 150000,  objection: 450000,  unit: "Per avenue / application" },
+  "Close":     { naming: 150000,  renewal: 150000,  objection: 450000,  unit: "Per close / application" },
+  "Crescent":  { naming: 150000,  renewal: 150000,  objection: 450000,  unit: "Per crescent / application" },
+  "Drive":     { naming: 150000,  renewal: 150000,  objection: 450000,  unit: "Per drive / application" },
+  "Lane":      { naming: 150000,  renewal: 150000,  objection: 450000,  unit: "Per lane / application" },
+  "Way":       { naming: 200000,  renewal: 200000,  objection: 600000,  unit: "Per way / application" },
+  "Boulevard": { naming: 150000,  renewal: 150000,  objection: 450000,  unit: "Per boulevard / application" },
+  "Bus Stop":  { naming: 1500000, renewal: 1500000, objection: 4500000, unit: "Per bus stop / application" },
+};

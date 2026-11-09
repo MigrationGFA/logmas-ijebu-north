@@ -170,7 +170,7 @@ export default function DemandNoticesPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs text-muted-foreground mb-1">
-            <span>{${LGA_CONFIG.identity.name}} Revenue Administration</span>
+            <span>{LGA_CONFIG.identity.name} Revenue Administration</span>
             <span>/</span>
             <span className="text-foreground font-medium">Demand Notices</span>
           </div>
