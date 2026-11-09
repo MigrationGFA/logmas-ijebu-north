@@ -519,7 +519,23 @@ export const LGA_CONFIG: LgaConfiguration = {
         bankName: "Providus Bank Plc",
         bankCode: "000023",
       },
-      services: {},
+      // Dedicated Providus virtual accounts issued for this LGA (received Nov 9, 2026).
+      // Mirrors the backend DEDICATED_VIRTUAL_ACCOUNTS table for the services the
+      // frontend resolver knows. Haulage is resolved backend-only.
+      services: {
+        community_development_levy: {
+          accountName: "GFA-LG TRUST AC(INE/COMDEVLEV)",
+          accountNumber: "9655091579",
+          bankName: "Providus Bank Plc",
+          bankCode: "000023",
+        },
+        state_of_origin: {
+          accountName: "GFA-LG TRUST AC(INE/ORIGINCER)",
+          accountNumber: "9641690324",
+          bankName: "Providus Bank Plc",
+          bankCode: "000023",
+        },
+      },
     },
 
     wards: [
