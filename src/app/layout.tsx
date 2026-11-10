@@ -24,6 +24,14 @@ export const metadata: Metadata = {
     template: `%s | ${LGA_CONFIG.identity.name} Local Government Official Website`,
   },
   description: `${LGA_CONFIG.platform.fullName} for ${LGA_CONFIG.identity.fullName}`,
+  // Browser and home-screen icons use the council crest, the same approach
+  // as Ifo. The generic template favicon that used to sit in src/app was
+  // removed: Next.js always listed it ahead of these metadata icons.
+  icons: {
+    icon: [{ url: "/logo.png", type: "image/png" }],
+    apple: "/logo.png",
+    shortcut: "/logo.png",
+  },
 };
 
 export default function RootLayout({
