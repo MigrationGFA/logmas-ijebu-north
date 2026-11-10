@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { LEADERSHIP } from "@/config/lgaContent.config";
 import { LGA_CONFIG } from "@/config/lga.config";
-import { Mail, Phone, Crown, Quote } from "lucide-react";
+import { Mail, Phone, Crown, Quote, GraduationCap, Briefcase } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -152,10 +152,42 @@ export default function LeadershipPage() {
                                     <div className="flex items-center gap-1.5">
                                         <Phone className="h-3 w-3" /> {c.phone}
                                     </div>
+                                    {c.altPhone && (
+                                        <div className="flex items-center gap-1.5">
+                                            <Phone className="h-3 w-3" /> {c.altPhone}
+                                        </div>
+                                    )}
                                     <div className="flex items-center gap-1.5 break-all">
                                         <Mail className="h-3 w-3 shrink-0" /> {c.email}
                                     </div>
                                 </div>
+                                {c.qualifications && c.qualifications.length > 0 && (
+                                    <div className="mt-3 text-xs text-muted-foreground">
+                                        <div className="flex items-center gap-1.5 font-medium text-foreground">
+                                            <GraduationCap className="h-3.5 w-3.5" /> Qualifications
+                                        </div>
+                                        <ul className="mt-1 list-disc space-y-0.5 pl-5">
+                                            {c.qualifications.map((q) => (
+                                                <li key={q}>{q}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                                {(c.occupation || c.hobby) && (
+                                    <div className="mt-3 space-y-1 text-xs text-muted-foreground">
+                                        {c.occupation && (
+                                            <div className="flex items-center gap-1.5">
+                                                <Briefcase className="h-3 w-3 shrink-0" /> {c.occupation}
+                                            </div>
+                                        )}
+                                        {c.hobby && <div>Hobby: {c.hobby}</div>}
+                                    </div>
+                                )}
+                                {c.quote && (
+                                    <p className="mt-3 flex gap-1.5 text-xs italic text-muted-foreground">
+                                        <Quote className="h-3 w-3 shrink-0" /> {c.quote}
+                                    </p>
+                                )}
                             </Card>
                         ))}
                     </div>

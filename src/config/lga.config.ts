@@ -58,6 +58,16 @@ export interface LgaCouncillor {
    * e.g. "Ward Councillor" (default) or "Majority Leader".
    */
   role?: string;
+  /** Optional second public contact phone */
+  altPhone?: string;
+  /** Optional educational qualifications, in the order they should display */
+  qualifications?: string[];
+  /** Optional personal quote shown on the leadership page */
+  quote?: string;
+  /** Optional occupation outside council duties */
+  occupation?: string;
+  /** Optional hobby or personal interest */
+  hobby?: string;
 }
 
 export interface LgaExecutiveLeadership {
@@ -378,15 +388,28 @@ export const LGA_CONFIG: LgaConfiguration = {
         ward: "Igede/Itamarun",
         name: "Hon. Okulaja Emmanuel Abiodun",
         phone: "07033726911",
+        altPhone: "08052155624",
         email: "okulajaabiodun85@gmail.com",
         role: "Ward Councillor",
+        qualifications: [
+          "National Certificate in Education (Political Science/Social Studies)",
+          "B.Sc. (Ed.) in Political Science",
+        ],
+        quote: "Calm and easygoing. Ready to face the challenges ahead.",
       },
       {
         ward: "Oju Ona",
         name: "Hon. Odufuwa Tosin Victor",
         phone: "08080217611",
         email: "emtosproperties@gmail.com",
-        role: "Majority Leader",
+        role: "Majority Leader, Ijebu North East Legislative Council",
+        qualifications: [
+          "B.Ed. in Educational Management/Economics",
+          "Postgraduate Diploma in Information Technology",
+          "Cybersecurity (in view)",
+        ],
+        occupation: "Farming and Real Estate",
+        hobby: "Hunting",
       },
       {
         ward: "Isonyin/Apunren",
