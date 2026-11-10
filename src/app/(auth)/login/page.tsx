@@ -157,7 +157,7 @@ function LoginPage() {
 
           <div className="grid grid-cols-3 gap-3 max-w-md">
             {[
-              { k: "150K+", v: "Population" },
+              { k: "320K+", v: "Population" },
               { k: "1976", v: "Established" },
               { k: "10", v: "Wards" },
             ].map((s) => (
