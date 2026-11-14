@@ -96,6 +96,7 @@ export function CreateServiceModal({
   const [certificateType, setCertificateType] = useState("CERTIFICATE_OF_REGISTRATION");
   const [supportsRenewal, setSupportsRenewal] = useState(false);
   const [isActive, setIsActive] = useState(true);
+  const [foOnly, setFoOnly] = useState(false);
 
   // Requirements Dynamic List
   const [requirements, setRequirements] = useState<string[]>([
@@ -162,6 +163,7 @@ export function CreateServiceModal({
     setCertificateType("CERTIFICATE_OF_REGISTRATION");
     setSupportsRenewal(false);
     setIsActive(true);
+    setFoOnly(false);
     setRequirements(["passport_photo", "nin_slip", "proof_of_residency"]);
     setNewReqInput("");
     setFeeAmount("");
@@ -188,37 +190,45 @@ export function CreateServiceModal({
       return;
     }
 
+    // FO-only services have no fixed fee and no document checklist: the
+    // collecting officer records the amount actually paid per collection.
     const numAmount = parseFloat(feeAmount);
-    if (isNaN(numAmount) || numAmount <= 0) {
-      setValidationError("Statutory Fee Amount is required and must be greater than ₦0.");
-      return;
-    }
+    if (!foOnly) {
+      if (isNaN(numAmount) || numAmount <= 0) {
+        setValidationError("Statutory Fee Amount is required and must be greater than ₦0.");
+        return;
+      }
 
-    if (requirements.length === 0) {
-      setValidationError("At least one document requirement must be defined.");
-      return;
+      if (requirements.length === 0) {
+        setValidationError("At least one document requirement must be defined.");
+        return;
+      }
     }
 
     const finalCategory =
       category === "custom" ? customCategory.trim() || "General Services" : category;
 
-    const payload = {
+    const payload: any = {
       code: code.trim(),
       name: name.trim(),
-      category: finalCategory,
+      category: foOnly ? "OTHERS" : finalCategory,
       revenueHead: revenueHead.trim().toUpperCase(),
       description: description.trim() || `${name} statutory local government service.`,
       requirements,
       estimatedDays: Math.max(1, parseInt(estimatedDays) || 3),
-      certificateType,
+      certificateType: foOnly ? "NONE" : certificateType,
       supportsRenewal,
       isActive,
-      feeConfig: {
+      foOnly,
+    };
+
+    if (!foOnly) {
+      payload.feeConfig = {
         amount: numAmount,
         expiryDate: feeExpiryDate ? new Date(feeExpiryDate).toISOString() : undefined,
         notes: feeNotes.trim() || undefined,
-      },
-    };
+      };
+    }
 
     try {
       await createServiceMutation.mutateAsync(payload);
@@ -329,6 +339,11 @@ export function CreateServiceModal({
                         {cat}
                       </SelectItem>
                     ))}
+                    {foOnly && (
+                      <SelectItem value="OTHERS" className="text-xs">
+                        Others
+                      </SelectItem>
+                    )}
                     <SelectItem value="custom" className="text-xs italic text-primary">
                       + Custom Category...
                     </SelectItem>
@@ -518,10 +533,38 @@ export function CreateServiceModal({
                   onCheckedChange={setIsActive}
                 />
               </div>
+
+              <div className="flex items-center justify-between space-x-2">
+                <div className="space-y-0.5">
+                  <Label htmlFor="fo-only" className="text-xs font-semibold cursor-pointer">
+                    Field Officer Only
+                  </Label>
+                  <p className="text-[11px] text-muted-foreground">
+                    Never shown to the public. The collecting officer records the amount paid, so no fixed fee is set.
+                  </p>
+                </div>
+                <Switch
+                  id="fo-only"
+                  checked={foOnly}
+                  onCheckedChange={(v) => {
+                    setFoOnly(v);
+                    if (v) {
+                      setCertificateType("NONE");
+                      setCategory("OTHERS");
+                    }
+                  }}
+                />
+              </div>
             </div>
           </div>
 
           {/* Section 4: Statutory Fee Configuration (Visually Separated) */}
+          {foOnly ? (
+            <div className="p-4 rounded-xl border bg-muted/20 text-xs text-muted-foreground">
+              FO-only service: no fixed fee is set. The collecting officer records the
+              amount actually paid on each collection, and the treasurer confirms it.
+            </div>
+          ) : (
           <div className="p-4 rounded-xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-background to-primary/5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between pb-1 border-b border-primary/20">
               <div className="flex items-center gap-2">
@@ -618,6 +661,7 @@ export function CreateServiceModal({
               </div>
             </div>
           </div>
+          )}
 
           <DialogFooter className="pt-2 border-t flex flex-col sm:flex-row gap-2">
             <Button

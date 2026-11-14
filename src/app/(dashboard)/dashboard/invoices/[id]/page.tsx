@@ -42,6 +42,7 @@ import {
   useInvoicePayment,
   useInvoiceVirtualAccount,
   useUploadInvoicePaymentProof,
+  useRecordFoInvoicePayment,
 } from "@/hooks/queries/useInvoices";
 
 import { tokenManager } from "@/services/apiAuth";
@@ -96,6 +97,13 @@ export default function InvoiceDetail({
   // proof on the pending bank_transfer Payment and parks the application for
   // the treasurer's Payment Confirmations worklist. Never confirms payment.
   const { uploadProofAsync, isUploadingProof } = useUploadInvoicePaymentProof(
+    invoiceId,
+    invoice?.invoiceNumber,
+  );
+
+  // FO-only service invoices: the officer records how the payer paid
+  // (cash or bank transfer); the treasurer confirms afterwards.
+  const { recordFoPayment, isRecordingFoPayment } = useRecordFoInvoicePayment(
     invoiceId,
     invoice?.invoiceNumber,
   );
@@ -200,6 +208,15 @@ export default function InvoiceDetail({
   // Format status for display
   const status = invoice.paymentStatus || "pending";
 
+  // FO-only services never show bank details or public payment options:
+  // the officer records cash or transfer, the treasurer confirms.
+  const isFoOnlyInvoice = Boolean(
+    (invoice as any)?.service?.foOnly ??
+      (invoice as any)?.application?.service?.foOnly,
+  );
+  const foPendingPayment =
+    invoice.payments?.find((p) => p.status === "pending") || null;
+
   const handlePaymentConfirm = (
     method: "transfer" | "pos" | "cash",
     reference?: string,
@@ -293,7 +310,67 @@ export default function InvoiceDetail({
             )}
           </Card>
 
-          {isPayable ? (
+          {isFoOnlyInvoice ? (
+            <Card className="p-6 bg-gradient-card border-border/40">
+              <h3 className="font-semibold mb-2">Officer Collection</h3>
+              <p className="text-sm text-muted-foreground mb-4">
+                This is a field-officer-only service, so no bank details
+                apply to it.
+                {status !== "confirmed" &&
+                  " Record how the payer paid you below. The treasurer confirms the collection, and you will be notified once it is confirmed."}
+              </p>
+              {status === "confirmed" ? (
+                <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
+                  <CheckCircle2 className="h-4 w-4" /> Confirmed by the
+                  treasurer
+                </div>
+              ) : foPendingPayment ? (
+                <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 text-sm">
+                  Recorded as{" "}
+                  <span className="font-semibold">
+                    {foPendingPayment.method === "cash"
+                      ? "Cash"
+                      : "Bank Transfer"}
+                  </span>
+                  . Awaiting treasurer confirmation. You will be notified
+                  when it is confirmed.
+                </div>
+              ) : isOfficer ? (
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <Button
+                    onClick={() => recordFoPayment("cash")}
+                    disabled={isRecordingFoPayment}
+                    className="w-full"
+                  >
+                    {isRecordingFoPayment ? (
+                      <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                    ) : (
+                      <Wallet className="h-4 w-4 mr-1.5" />
+                    )}
+                    Cash
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => recordFoPayment("bank_transfer")}
+                    disabled={isRecordingFoPayment}
+                    className="w-full"
+                  >
+                    {isRecordingFoPayment ? (
+                      <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                    ) : (
+                      <Landmark className="h-4 w-4 mr-1.5" />
+                    )}
+                    Bank Transfer
+                  </Button>
+                </div>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  Awaiting the collecting officer&apos;s payment record,
+                  then treasurer confirmation.
+                </p>
+              )}
+            </Card>
+          ) : isPayable ? (
             <Card className="p-6 bg-gradient-card border-border/40">
               <h3 className="font-semibold mb-4">Payment Options</h3>
               <Tabs defaultValue={isPayer ? "online" : isOfficer ? "pos" : "transfer"}>
@@ -564,7 +641,7 @@ export default function InvoiceDetail({
         </div>
 
         <div className="space-y-4">
-          {status !== "confirmed" && (
+          {status !== "confirmed" && !isFoOnlyInvoice && (
             <Card className="p-5 bg-gradient-card border-border/40 text-center">
               <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
                 Scan to Pay
@@ -580,7 +657,7 @@ export default function InvoiceDetail({
             </Card>
           )}
 
-          {isOfficer && status !== "confirmed" && (
+          {isOfficer && status !== "confirmed" && !isFoOnlyInvoice && (
             <Card className="p-5 bg-gradient-card border-border/40 space-y-2">
               <h4 className="font-semibold text-sm mb-1">Send payment link</h4>
               <p className="text-xs text-muted-foreground mb-2">

@@ -63,6 +63,7 @@ import ViewingCentreLicenceForm from "@/components/services/forms/ViewingCentreL
 import QuarryPermitForm from "@/components/services/forms/QuarryPermitForm";
 import StreetNamingForm from "@/components/services/forms/StreetNamingForm";
 import KioskLicenceForm from "@/components/services/forms/KioskLicenceForm";
+import FoCollectionForm from "@/components/services/forms/FoCollectionForm";
 import { useServices } from "@/hooks/queries/useServices";
 
 interface PageProps {
@@ -316,6 +317,13 @@ export default function ServiceDetailPage({ params }: PageProps) {
       initialApplicant,
     };
 
+    // FO-only services use the simple collection form: the service was
+    // already selected in the catalogue, and the officer records who
+    // paid and how much. No fixed fee, no wizard.
+    if (service.foOnly) {
+      return <FoCollectionForm service={service} />;
+    }
+
     // Map service code to appropriate form component
     switch (service.code) {
       case "certificate_of_origin":
@@ -361,7 +369,7 @@ export default function ServiceDetailPage({ params }: PageProps) {
             </Link>
             <span>/</span>
             <span className="text-foreground font-medium">
-              {service.category}
+              {service.category === "OTHERS" ? "Others" : service.category}
             </span>
           </div>
           <h1 className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
@@ -375,10 +383,12 @@ export default function ServiceDetailPage({ params }: PageProps) {
         <div className="flex items-center gap-3 shrink-0">
           <div className="text-right">
             <span className="text-[10px] uppercase font-bold tracking-wider text-muted-foreground block">
-              Statutory Fee
+              {service.foOnly ? "Fee" : "Statutory Fee"}
             </span>
             <span className="text-base sm:text-lg font-black text-primary">
-              ₦{currentFee.toLocaleString()}
+              {service.foOnly
+                ? "Officer recorded"
+                : `₦${currentFee.toLocaleString()}`}
             </span>
           </div>
           <Badge

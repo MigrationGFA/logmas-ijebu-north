@@ -391,6 +391,22 @@ export const invoicesService = {
    * POST /invoices/:invoiceNumber/payment-proof (multipart, field "proof").
    * Never confirms the payment — the treasurer does that from the worklist.
    */
+  /**
+   * FO-only services: the officer records how the payer paid (cash or
+   * bank transfer). POST /invoices/:invoiceNumber/fo-payment.
+   * Never confirms the payment: it parks the collection for the
+   * treasurer, whose confirmation notifies the officer.
+   */
+  recordFoPayment: async (
+    invoiceNumber: string,
+    method: "cash" | "bank_transfer",
+  ): Promise<{ payment: Payment }> => {
+    return await api.post<{ payment: Payment }>(
+      `/invoices/${encodeURIComponent(invoiceNumber)}/fo-payment`,
+      { method },
+    );
+  },
+
   uploadPaymentProof: async (
     invoiceNumber: string,
     file: File,

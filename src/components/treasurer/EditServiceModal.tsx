@@ -96,6 +96,7 @@ export function EditServiceModal({
   const [certificateType, setCertificateType] = useState("CERTIFICATE_OF_REGISTRATION");
   const [supportsRenewal, setSupportsRenewal] = useState(false);
   const [isActive, setIsActive] = useState(true);
+  const [foOnly, setFoOnly] = useState(false);
 
   // Requirements Dynamic List
   const [requirements, setRequirements] = useState<string[]>([]);
@@ -133,6 +134,11 @@ export function EditServiceModal({
     setCertificateType(service.certificateType || "CERTIFICATE_OF_REGISTRATION");
     setSupportsRenewal(Boolean(service.supportsRenewal));
     setIsActive(service.isActive !== false);
+    setFoOnly(Boolean(service.foOnly));
+    if (service.category === "OTHERS") {
+      setCategory("OTHERS");
+      setCustomCategory("");
+    }
 
     // Requirements
     if (Array.isArray(service.requirements)) {
@@ -202,17 +208,18 @@ export function EditServiceModal({
     const payload: any = {
       code: code.trim(),
       name: name.trim(),
-      category: finalCategory,
+      category: foOnly ? "OTHERS" : finalCategory,
       revenueHead: revenueHead.trim().toUpperCase(),
       description: description.trim(),
       requirements,
       estimatedDays: Math.max(1, parseInt(estimatedDays) || 3),
-      certificateType,
+      certificateType: foOnly ? "NONE" : certificateType,
       supportsRenewal,
       isActive,
+      foOnly,
     };
 
-    if (feeAmount && !isNaN(numAmount)) {
+    if (!foOnly && feeAmount && !isNaN(numAmount)) {
       payload.feeConfig = {
         amount: numAmount,
         expiryDate: feeExpiryDate ? new Date(feeExpiryDate).toISOString() : null,
@@ -323,6 +330,11 @@ export function EditServiceModal({
                         {cat}
                       </SelectItem>
                     ))}
+                    {(foOnly || category === "OTHERS") && (
+                      <SelectItem value="OTHERS" className="text-xs">
+                        Others
+                      </SelectItem>
+                    )}
                     <SelectItem value="custom" className="text-xs italic text-primary">
                       + Custom Category...
                     </SelectItem>
@@ -508,6 +520,28 @@ export function EditServiceModal({
                   id="edit-is-active"
                   checked={isActive}
                   onCheckedChange={setIsActive}
+                />
+              </div>
+
+              <div className="flex items-center justify-between space-x-2">
+                <div className="space-y-0.5">
+                  <Label htmlFor="edit-fo-only" className="text-xs font-semibold cursor-pointer">
+                    Field Officer Only
+                  </Label>
+                  <p className="text-[11px] text-muted-foreground">
+                    Never shown to the public. The collecting officer records the amount paid, so no fixed fee applies.
+                  </p>
+                </div>
+                <Switch
+                  id="edit-fo-only"
+                  checked={foOnly}
+                  onCheckedChange={(v) => {
+                    setFoOnly(v);
+                    if (v) {
+                      setCertificateType("NONE");
+                      setCategory("OTHERS");
+                    }
+                  }}
                 />
               </div>
             </div>

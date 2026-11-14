@@ -79,6 +79,7 @@ export default function ServicesPage() {
     "Rates & Levies",
     "Licences & Permits",
     "Urban Development",
+    "Others",
   ];
 
   const { services, isLoading, error, refetch } = useServices();
@@ -107,7 +108,9 @@ export default function ServicesPage() {
         service.description.toLowerCase().includes(search.toLowerCase()) ||
         service.revenueHead.toLowerCase().includes(search.toLowerCase());
       const matchesCategory =
-        selectedCategory === "All" || service.category === selectedCategory;
+        selectedCategory === "All" ||
+        service.category === selectedCategory ||
+        (selectedCategory === "Others" && service.category === "OTHERS");
       return matchesSearch && matchesCategory;
     })
     .sort((a: any, b: any) => {
@@ -229,12 +232,24 @@ export default function ServicesPage() {
                       <div className="p-2.5 rounded-xl bg-primary/10 text-primary border border-primary/20">
                         <IconComponent className="h-6 w-6" />
                       </div>
-                      <Badge
-                        variant="secondary"
-                        className="text-[10px] font-semibold"
-                      >
-                        {service.category}
-                      </Badge>
+                      <div className="flex flex-col items-end gap-1">
+                        <Badge
+                          variant="secondary"
+                          className="text-[10px] font-semibold"
+                        >
+                          {service.category === "OTHERS"
+                            ? "Others"
+                            : service.category}
+                        </Badge>
+                        {service.foOnly && (
+                          <Badge
+                            variant="outline"
+                            className="text-[10px] font-semibold border-primary/40 text-primary"
+                          >
+                            FO Only
+                          </Badge>
+                        )}
+                      </div>
                     </div>
 
                     <CardTitle className="text-lg font-bold leading-tight pt-1">
@@ -255,9 +270,11 @@ export default function ServicesPage() {
                         </span>
                       </div>
                       <div className="flex justify-between text-muted-foreground font-medium">
-                        <span>Configured Fee:</span>
+                        <span>{service.foOnly ? "Fee:" : "Configured Fee:"}</span>
                         <span className="text-foreground font-bold">
-                          ₦{service?.feeConfig?.amount?.toLocaleString() ?? 0}
+                          {service.foOnly
+                            ? "Officer records amount"
+                            : `₦${service?.feeConfig?.amount?.toLocaleString() ?? 0}`}
                         </span>
                       </div>
                       <div className="flex justify-between text-muted-foreground items-center pt-1">

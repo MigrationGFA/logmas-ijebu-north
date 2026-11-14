@@ -159,6 +159,41 @@ export function useUploadInvoicePaymentProof(
   };
 }
 
+/**
+ * FO-only services: record how the payer paid (cash or bank transfer) on
+ * the invoice page. Parks the collection for treasurer confirmation; the
+ * officer is notified when the treasurer confirms.
+ */
+export function useRecordFoInvoicePayment(
+  detailId: string,
+  invoiceNumber?: string,
+) {
+  const queryClient = useQueryClient();
+
+  const recordFoPaymentMutation = useMutation({
+    mutationFn: (method: "cash" | "bank_transfer") => {
+      if (!invoiceNumber) {
+        throw new Error("Invoice not loaded yet.");
+      }
+      return invoicesService.recordFoPayment(invoiceNumber, method);
+    },
+    onSuccess: () => {
+      toast.success("Payment recorded. Awaiting treasurer confirmation.");
+      queryClient.invalidateQueries({ queryKey: invoicesKeys.detail(detailId) });
+      queryClient.invalidateQueries({ queryKey: invoicesKeys.hub() });
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Could not record the payment method");
+    },
+  });
+
+  return {
+    recordFoPayment: recordFoPaymentMutation.mutate,
+    recordFoPaymentAsync: recordFoPaymentMutation.mutateAsync,
+    isRecordingFoPayment: recordFoPaymentMutation.isPending,
+  };
+}
+
 // Hook for invoice payments
 export function useInvoicePayment(
   invoiceId: string,

@@ -28,6 +28,7 @@ export interface ServiceType {
   estimatedDays?: string | number;
   certificateType?: string;
   isActive?: boolean;
+  foOnly?: boolean;
   createdAt?: string;
   updatedAt?: string;
   feeType?: "fixed" | "tiered" | "variable";

@@ -19,7 +19,8 @@ export interface CreateServicePayload {
   certificateType: string;
   supportsRenewal: boolean;
   isActive: boolean;
-  feeConfig: CreateServiceFeeConfig;
+  foOnly?: boolean;
+  feeConfig?: CreateServiceFeeConfig;
 }
 
 export interface UpdateServiceFeeConfig {
@@ -40,6 +41,7 @@ export interface UpdateServicePayload {
   certificateType?: string;
   supportsRenewal?: boolean;
   isActive?: boolean;
+  foOnly?: boolean;
   feeConfig?: UpdateServiceFeeConfig;
 }
 
@@ -55,5 +57,19 @@ export const services = {
 
   updateService: (serviceId: string, payload: UpdateServicePayload) =>
     api.patch<any>(`/services/${serviceId}`, payload),
+
+  deleteService: (serviceId: string) =>
+    api.delete<any>(`/services/${serviceId}`),
+
+  // FO-only service collection: creates the application and its invoice.
+  createFoCollection: (payload: {
+    serviceCode: string;
+    payerName: string;
+    phone: string;
+    email?: string;
+    merchantName?: string;
+    location: string;
+    amount: number;
+  }) => api.post<any>("/services/fo-collections", payload),
 };
 
