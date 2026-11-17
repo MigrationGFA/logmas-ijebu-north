@@ -161,7 +161,7 @@ export default function FoBankTransferPanel({
       <div className="border-t pt-4">
         <Button variant="outline" onClick={onReset}>
           <Banknote className="h-4 w-4 mr-1.5" />
-          Create another assisted application
+          Create another application
         </Button>
       </div>
     </Card>

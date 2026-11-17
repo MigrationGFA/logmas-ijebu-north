@@ -109,6 +109,17 @@ export default function InvoiceDetail({
   );
   const [proofFile, setProofFile] = React.useState<File | null>(null);
 
+  // Are-you-sure gate for the payment-method actions that commit the moment
+  // they are clicked: recording an officer collection (cash or bank
+  // transfer) and starting the online gateway payment. Clicking a method
+  // only opens this confirmation; nothing is recorded or started until the
+  // user confirms, so a wrong method is never picked by mistake.
+  const [pendingMethodConfirm, setPendingMethodConfirm] = React.useState<
+    | { kind: "fo"; method: "cash" | "bank_transfer" }
+    | { kind: "online" }
+    | null
+  >(null);
+
   // Auto-verify if we're landing back from a gateway redirect. The provider was
   React.useEffect(() => {
     const pending = readPendingPayment();
@@ -248,6 +259,74 @@ export default function InvoiceDetail({
         }
       />
 
+      {/* Are-you-sure modal for payment-method actions (see
+          pendingMethodConfirm above). Cancel records nothing. */}
+      <Dialog
+        open={pendingMethodConfirm !== null}
+        onOpenChange={(open) => {
+          if (!open) setPendingMethodConfirm(null);
+        }}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {pendingMethodConfirm?.kind === "online"
+                ? "Pay online?"
+                : pendingMethodConfirm?.method === "cash"
+                  ? "Record payment as Cash?"
+                  : "Record payment as Bank Transfer?"}
+            </DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            {pendingMethodConfirm?.kind === "online" ? (
+              <>
+                You will be redirected to Gpay to complete payment of ₦
+                {totalAmount.toLocaleString()} for this invoice. Make sure
+                online payment is the method you want before you continue.
+              </>
+            ) : (
+              <>
+                This records that the payer paid ₦{balanceDue.toLocaleString()}{" "}
+                by{" "}
+                {pendingMethodConfirm?.method === "cash"
+                  ? "cash"
+                  : "bank transfer"}
+                . The treasurer will be asked to confirm it, and the recorded
+                method cannot be changed from this page. Make sure it is the
+                right method before you confirm.
+              </>
+            )}
+          </p>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setPendingMethodConfirm(null)}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                const pending = pendingMethodConfirm;
+                setPendingMethodConfirm(null);
+                if (!pending) return;
+                if (pending.kind === "online") {
+                  initializeOnlinePayment();
+                } else {
+                  recordFoPayment(pending.method);
+                }
+              }}
+              disabled={isRecordingFoPayment || isInitializingPayment}
+            >
+              {pendingMethodConfirm?.kind === "online"
+                ? "Yes, continue to payment"
+                : pendingMethodConfirm?.method === "cash"
+                  ? "Yes, record as Cash"
+                  : "Yes, record as Bank Transfer"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
           <Card className="p-6 bg-gradient-card border-border/40">
@@ -338,7 +417,9 @@ export default function InvoiceDetail({
               ) : isOfficer ? (
                 <div className="grid sm:grid-cols-2 gap-3">
                   <Button
-                    onClick={() => recordFoPayment("cash")}
+                    onClick={() =>
+                      setPendingMethodConfirm({ kind: "fo", method: "cash" })
+                    }
                     disabled={isRecordingFoPayment}
                     className="w-full"
                   >
@@ -351,7 +432,12 @@ export default function InvoiceDetail({
                   </Button>
                   <Button
                     variant="outline"
-                    onClick={() => recordFoPayment("bank_transfer")}
+                    onClick={() =>
+                      setPendingMethodConfirm({
+                        kind: "fo",
+                        method: "bank_transfer",
+                      })
+                    }
                     disabled={isRecordingFoPayment}
                     className="w-full"
                   >
@@ -409,7 +495,7 @@ export default function InvoiceDetail({
                     </p>
                     <Button
                       className="w-full bg-gradient-hero"
-                      onClick={() => initializeOnlinePayment()}
+                      onClick={() => setPendingMethodConfirm({ kind: "online" })}
                       disabled={isInitializingPayment}
                     >
                       {isInitializingPayment ? (

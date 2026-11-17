@@ -645,7 +645,7 @@ export default function ServiceDetailPage({ params }: PageProps) {
                   size="sm"
                   onClick={() => setPayMethod("bank_transfer")}
                 >
-                  Bank transfer (assisted)
+                  Bank transfer
                 </Button>
               </div>
               {payMethod === "bank_transfer" && (
