@@ -220,7 +220,7 @@ export default function ServicesPage() {
               </Card>
             ))
           : filteredServices.map((service: ServiceType) => {
-              const IconComponent = ICON_MAP[service.icon] || FileBadge;
+              const IconComponent = (service.icon && ICON_MAP[service.icon]) || FileBadge;
 
               return (
                 <Card
@@ -281,7 +281,7 @@ export default function ServicesPage() {
                         <span className="flex items-center gap-1 text-[11px]">
                           <Clock className="h-3 w-3 text-primary" />{" "}
                           {service.estimatedDays} day
-                          {service?.estimatedDays > 1 ? "s" : ""} processing
+                          {Number(service?.estimatedDays) > 1 ? "s" : ""} processing
                         </span>
                         {service.requiresInspection && (
                           <Badge
@@ -296,10 +296,10 @@ export default function ServicesPage() {
 
                     <div className="text-[11px] text-muted-foreground">
                       <span className="font-semibold text-foreground">
-                        Required Documents ({service?.requirements.length}):
+                        Required Documents ({(service?.requirements ?? []).length}):
                       </span>{" "}
-                      {service?.requirements.slice(0, 2).join(", ")}
-                      {service?.requirements.length > 2 && "..."}
+                      {(service?.requirements ?? []).slice(0, 2).join(", ")}
+                      {(service?.requirements ?? []).length > 2 && "..."}
                     </div>
                   </CardContent>
 

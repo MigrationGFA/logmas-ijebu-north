@@ -49,6 +49,7 @@ import { syncAllForOfficer } from "@/lib/offline/syncEngine";
 import FoBankTransferPanel from "@/components/services/FoBankTransferPanel";
 import { ApplicantSnapshot } from "@/components/services/ApplicantSelectionStep";
 import { Application } from "@/types/application";
+import type { SubmitApplicationResponse } from "@/services/apiApplications";
 
 // Form Imports
 import CertificateOfOriginForm from "@/components/services/forms/CertificateOfOriginForm";
@@ -113,7 +114,8 @@ export default function ServiceDetailPage({ params }: PageProps) {
     createStaticAccountApplicationAsync,
     isCreatingStaticAccountApplication,
   } = useStaticAccountApplications();
-  const [submittedApp, setSubmittedApp] = useState<Application | null>(null);
+  const [submittedApp, setSubmittedApp] =
+    useState<SubmitApplicationResponse | null>(null);
   // Field-officer assisted payment: "online" (citizen gateway) or
   // "bank_transfer" (FO-only static account + treasurer confirmation).
   const [payMethod, setPayMethod] = useState<"online" | "bank_transfer">(
@@ -273,7 +275,9 @@ export default function ServiceDetailPage({ params }: PageProps) {
       console.log("Submission response:", res);
 
       if (res.application.applicationNumber) {
-        router.push(`/dashboard/invoices/${res.invoice.invoiceNumber}`);
+        if (res.invoice?.invoiceNumber) {
+          router.push(`/dashboard/invoices/${res.invoice.invoiceNumber}`);
+        }
 
         setSubmittedApp(res);
       }
@@ -500,8 +504,9 @@ export default function ServiceDetailPage({ params }: PageProps) {
                 <span className="flex items-center gap-1.5">
                   <Calendar className="h-3.5 w-3.5" />
                   {new Date(
-                    submittedApp.application?.createdAt ||
-                      submittedApp.createdAt,
+                    submittedApp.application?.createdAt ??
+                      submittedApp.createdAt ??
+                      "",
                   ).toLocaleDateString("en-NG", {
                     day: "numeric",
                     month: "short",

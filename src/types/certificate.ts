@@ -15,6 +15,7 @@ export interface CertificateApplicant {
   name: string;
   email?: string | null;
   phone?: string | null;
+  nin?: string | null;
 }
 
 export interface CertificateCreatedBy {

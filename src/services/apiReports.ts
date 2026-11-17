@@ -80,9 +80,19 @@ export interface ReportReceipt {
   date_of_application?: string | null;
 }
 
+export interface ByServiceItem {
+  id: string;
+  code: string;
+  name: string;
+  revenueHead: string;
+  transactions: number;
+  revenue: number;
+}
+
 export interface ReportsOverviewResponse {
   period: ReportsPeriod;
   stats: ReportsStats;
+  byService: ByServiceItem[];
   byLevy: ByLevyItem[];
   byServiceType: ByServiceType[];
   byOfficer: ByOfficerItem[];
@@ -123,7 +133,7 @@ export interface ExportReceipt {
 // Service functions
 export const reportsService = {
   // Get reports overview (all data in one call)
-  getReportsOverview: (params?: { from?: string; to?: string }) =>
+  getReportsOverview: (params?: { from?: string; to?: string; serviceId?: string }) =>
     api.get<ReportsOverviewResponse>("/reports/overview", { params }),
   
   // Export invoices to CSV

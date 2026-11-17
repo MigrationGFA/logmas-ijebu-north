@@ -43,7 +43,7 @@ type BusinessFormData = z.infer<typeof businessSchema>;
 
 function AddCustomerDialog() {
   const [open, setOpen] = useState(false);
-  const { registerBusinessAsync, isRegistering } = useFieldOfficerBusinesses();
+  const { registerBusinessAsync, isRegistering } = useFieldOfficerBusinesses(false);
   const { wards } = useWards();
 
   const {

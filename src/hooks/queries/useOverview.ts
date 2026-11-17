@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import {
   overviewService,
   Role,
+  CitizenMetrics,
   DashboardMetrics,
   FieldOfficerMetrics,
   AuditorMetrics,
@@ -36,7 +37,7 @@ export function useOverview(userRole: Role) {
   const getCitizenMetrics = () => {
     if (userRole === "citizen" && overviewData?.metrics) {
       return {
-        metrics: overviewData.metrics,
+        metrics: overviewData.metrics as unknown as CitizenMetrics,
         recentApplications: overviewData.recentApplications,
       };
     }

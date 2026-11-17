@@ -314,7 +314,49 @@ export interface VerifyPaymentResponse {
 //   application?: any;
 // }
 
+export interface PublicStaticTransferResponse {
+  status: string;
+  applicationId: string;
+  applicationNumber: string;
+  invoiceId: string;
+  invoiceNumber: string;
+  reference: string;
+  receiptNumber?: string | null;
+  proofUrl?: string | null;
+  bankName: string;
+  accountNumber: string;
+  accountName: string;
+  amount: number;
+  isNewUser: boolean;
+  email: string;
+}
+
 export const invoicesService = {
+  // Public "I have paid" static transfer notice (dedicated Providus account).
+  // Mirrors POST /payments/gpay/static-transfer/public on the backend.
+  submitPublicStaticTransfer: async (payload: {
+    serviceId: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    reference?: string;
+    amount?: number;
+    proof?: File | null;
+  }): Promise<PublicStaticTransferResponse> => {
+    const formData = new FormData();
+    formData.append("serviceId", payload.serviceId);
+    formData.append("fullName", payload.fullName);
+    formData.append("email", payload.email);
+    formData.append("phone", payload.phone);
+    if (payload.reference) formData.append("reference", payload.reference);
+    if (payload.amount !== undefined) formData.append("amount", String(payload.amount));
+    if (payload.proof) formData.append("proof", payload.proof);
+    return api.upload<PublicStaticTransferResponse>(
+      "/payments/gpay/static-transfer/public",
+      formData,
+    );
+  },
+
   // Get unified invoices hub data (stats + ledger)
   getInvoicesHub: async (params?: GetInvoicesParams): Promise<InvoicesHubResponse> => {
     let statusParam: string | undefined;

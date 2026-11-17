@@ -20,7 +20,8 @@ export type Role =
   | "lga_admin"
   | "ward_councillor"
   | "treasurer"
-  // | "agent"
+  | "sub_admin"
+  | "agent"
   | "auditor"
   | "contractor"
   | "field_officer"
@@ -41,6 +42,8 @@ export const ROLE_LABELS: Record<Role, string> = {
   lga_admin: "LGA Admin",
   ward_councillor: "Ward Councillor",
   treasurer: "Treasurer",
+  sub_admin: "Sub Admin",
+  agent: "Agent",
   auditor: "Auditor",
   contractor: "Contractor / Agent",
   field_officer: "Field Officer",

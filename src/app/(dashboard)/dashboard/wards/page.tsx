@@ -76,7 +76,7 @@ export default function WardsPage() {
     return wards.filter((w) => w.name.toLowerCase().includes(query));
   }, [wards, searchQuery]);
   
-  const assignedCount = wards?.filter((w) => w?.councillors?.length > 0).length;
+  const assignedCount = wards?.filter((w) => (w?.councillors?.length ?? 0) > 0).length ?? 0;
   const unassignedCount = wards.length - assignedCount;
 
   const handleCreateWard = async (data: WardFormData) => {

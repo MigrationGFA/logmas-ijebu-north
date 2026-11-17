@@ -3,7 +3,7 @@ import { reportsService } from "@/services/apiReports";
 
 export const reportsKeys = {
   all: ["reports"] as const,
-  overview: (params?: { from?: string; to?: string }) => 
+  overview: (params?: { from?: string; to?: string; serviceId?: string }) => 
     [...reportsKeys.all, "overview", params] as const,
   exportInvoices: (params?: { from?: string; to?: string }) => 
     [...reportsKeys.all, "export", "invoices", params] as const,
@@ -12,7 +12,7 @@ export const reportsKeys = {
 };
 
 // Hook for reports overview
-export function useReportsOverview(params?: { from?: string; to?: string }) {
+export function useReportsOverview(params?: { from?: string; to?: string; serviceId?: string }) {
   const {
     data: response,
     isLoading,

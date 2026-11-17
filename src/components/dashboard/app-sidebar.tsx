@@ -113,6 +113,20 @@ const NAV: Record<Role, { label: string; items: Item[] }[]> = {
       ],
     },
   ],
+  agent: [
+    {
+      label: "Workspace",
+      items: [
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "All Invoices", url: "/dashboard/invoices", icon: FileText },
+        { title: "Field Officers", url: "/dashboard/field-officers", icon: UserCog },
+        { title: "Receipts", url: "/dashboard/receipts", icon: Receipt },
+        { title: "Reports", url: "/dashboard/reports", icon: BarChart3 },
+        { title: "Notifications", url: "/dashboard/notifications", icon: Bell },
+        { title: "Settings", url: "/dashboard/settings", icon: Settings },
+      ],
+    },
+  ],
   citizen: [
     {
       label: "My Account",
@@ -164,6 +178,21 @@ const NAV: Record<Role, { label: string; items: Item[] }[]> = {
         // { title: "Issued Certificates", url: "/dashboard/certificates", icon: FileBadge },
         { title: "Financial Reports", url: "/dashboard/reports", icon: FileText },
         { title: "Contractors Billing", url: "/dashboard/field-officers", icon: Briefcase },
+        { title: "Notifications", url: "/dashboard/notifications", icon: Bell },
+        { title: "Settings", url: "/dashboard/settings", icon: Settings },
+      ],
+    },
+  ],
+  sub_admin: [
+    {
+      label: "Review & Oversight",
+      items: [
+        { title: "Dashboard", url: "/dashboard", icon: LayoutDashboard },
+        { title: "Payment Confirmations", url: "/dashboard/payment-confirmations", icon: Wallet },
+        { title: "Applications Registry", url: "/dashboard/applications", icon: Stamp },
+        { title: "Service Catalogue", url: "/dashboard/services", icon: FilePlus2 },
+        { title: "All Invoices", url: "/dashboard/invoices", icon: Receipt },
+        { title: "Demand Notices", url: "/dashboard/demand-notices", icon: Landmark },
         { title: "Notifications", url: "/dashboard/notifications", icon: Bell },
         { title: "Settings", url: "/dashboard/settings", icon: Settings },
       ],

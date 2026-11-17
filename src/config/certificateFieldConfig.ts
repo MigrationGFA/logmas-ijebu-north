@@ -564,7 +564,7 @@ export const OFFICIAL_CHAIRMAN = {
  * ============================================================================
  */
 export const LANDSCAPE_TEMPLATE_CONFIG: MasterCertificateConfig = {
-  id: LGA_CONFIG.certificates.templates.landscape.id,
+  id: LGA_CONFIG.certificates.templates.landscape.id as MasterTemplateType,
   name: LGA_CONFIG.certificates.templates.landscape.name,
   orientation: "landscape",
   aspectRatio: "1.5 / 1",

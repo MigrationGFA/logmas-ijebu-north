@@ -276,7 +276,9 @@ export default function EnvironmentalSanitationForm({ service, onSubmit, isSubmi
     setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  const currentFee = service.feeConfig.amount;
+  const currentFee = service.feeConfig?.amount
+    ? parseFloat(service.feeConfig.amount)
+    : 0;
 
   const onValidSubmit = (data: EnvironmentalSanitationFormData) => {
     if (!declaration) return;

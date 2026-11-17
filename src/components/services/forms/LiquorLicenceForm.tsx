@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import type { Resolver } from "react-hook-form";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -180,7 +181,7 @@ export default function LiquorLicenceForm({
     setValue,
     formState: { errors },
   } = useForm<LiquorLicenceFormValues>({
-    resolver: zodResolver(liquorLicenceSchema),
+    resolver: zodResolver(liquorLicenceSchema) as Resolver<LiquorLicenceFormValues>,
     defaultValues: {
       licenseeName: initialApplicant?.name || "",
       tradingName: initialApplicant?.companyName || "",
@@ -324,7 +325,9 @@ export default function LiquorLicenceForm({
     setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  const currentFee = service.feeConfig.amount;
+  const currentFee = service.feeConfig?.amount
+    ? parseFloat(service.feeConfig.amount)
+    : 0;
 
   const onFormSubmit = (data: LiquorLicenceFormValues) => {
     if (!declaration) return;

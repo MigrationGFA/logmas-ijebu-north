@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import type { Resolver } from "react-hook-form";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -157,7 +158,7 @@ export default function QuarryPermitForm({ service, onSubmit, isSubmitting, init
     setValue,
     formState: { errors },
   } = useForm<QuarryPermitFormValues>({
-    resolver: zodResolver(quarryPermitSchema),
+    resolver: zodResolver(quarryPermitSchema) as Resolver<QuarryPermitFormValues>,
     defaultValues: {
       companyName: initialApplicant?.companyName || initialApplicant?.name || "",
       rcNumber: "",
@@ -280,7 +281,9 @@ export default function QuarryPermitForm({ service, onSubmit, isSubmitting, init
     setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  const currentFee = service.feeConfig.amount;
+  const currentFee = service.feeConfig?.amount
+    ? parseFloat(service.feeConfig.amount)
+    : 0;
 
   const onFormSubmit = (data: QuarryPermitFormValues) => {
     if (!declaration) return;

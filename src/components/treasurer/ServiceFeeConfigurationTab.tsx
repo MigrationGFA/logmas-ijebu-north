@@ -111,7 +111,7 @@ export default function ServiceFeeConfigurationTab() {
 
   // Services with their fee configs
   const services = useMemo(() => {
-    return servicesData || servicesData?.data || [];
+    return servicesData ?? [];
   }, [servicesData]);
 
   // Set first service as default when data loads

@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useMemo, useEffect } from "react";
+import type { Resolver } from "react-hook-form";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -31,7 +32,7 @@ const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
 interface Props {
   service: ServiceType;
   onSubmit: (payload: {
-    applicant: ApplicantSnapshot;
+    applicant: ApplicantSnapshot | null;
     formData: Record<string, any>;
     files: Record<string, any>;
   }) => void;
@@ -168,7 +169,7 @@ export default function TenementRateForm({
     setValue,
     formState: { errors },
   } = useForm<TenementRateFormValues>({
-    resolver: zodResolver(tenementRateSchema),
+    resolver: zodResolver(tenementRateSchema) as Resolver<TenementRateFormValues>,
     defaultValues: {
       ownerName: initialApplicant?.name || "",
       isCorporate: "No",
@@ -291,7 +292,9 @@ export default function TenementRateForm({
     setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  const currentFee = service.feeConfig.amount;
+  const currentFee = service.feeConfig?.amount
+    ? parseFloat(service.feeConfig.amount)
+    : 0;
 
   const onFormSubmit = (data: TenementRateFormValues) => {
     if (!declaration) return;

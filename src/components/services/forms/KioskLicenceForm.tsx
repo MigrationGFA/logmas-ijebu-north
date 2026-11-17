@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import type { Resolver } from "react-hook-form";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -176,7 +177,7 @@ export default function KioskLicenceForm({
     watch,
     formState: { errors },
   } = useForm<KioskLicenceFormData>({
-    resolver: zodResolver(kioskLicenceSchema),
+    resolver: zodResolver(kioskLicenceSchema) as Resolver<KioskLicenceFormData>,
     mode: "onBlur",
     defaultValues: {
       operatorName: initialApplicant?.name || "",
@@ -295,7 +296,9 @@ export default function KioskLicenceForm({
     setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  const currentFee = service.feeConfig.amount;
+  const currentFee = service.feeConfig?.amount
+    ? parseFloat(service.feeConfig.amount)
+    : 0;
 
   const onValidSubmit = (data: KioskLicenceFormData) => {
     if (!declaration) return;

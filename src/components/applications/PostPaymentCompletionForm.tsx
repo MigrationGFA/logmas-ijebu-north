@@ -307,10 +307,10 @@ export function PostPaymentCompletionForm({
     fullName:
       currentUser?.firstName
         ? `${currentUser.firstName} ${currentUser.lastName || ""}`.trim()
-        : application?.formData?.fullName || undefined,
-    phone: currentUser?.phone || application?.applicant?.phone || undefined,
+        : application?.formData?.fullName || "",
+    phone: currentUser?.phone || application?.applicant?.phone || "",
     email: currentUser?.email || application?.applicant?.email || undefined,
-    address: currentUser?.address || application?.applicant?.address || undefined,
+    address: currentUser?.address || application?.applicant?.address || "",
     nin: currentUser?.nin || application?.applicant?.nin || undefined,
   };
 

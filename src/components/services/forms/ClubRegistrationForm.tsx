@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import type { Resolver } from "react-hook-form";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -206,7 +207,7 @@ export default function ClubRegistrationForm({
     trigger,
     formState: { errors },
   } = useForm<ClubRegistrationFormData>({
-    resolver: zodResolver(clubRegistrationSchema),
+    resolver: zodResolver(clubRegistrationSchema) as Resolver<ClubRegistrationFormData>,
     defaultValues: {
       clubName: "",
       clubAcronym: "",
@@ -383,7 +384,9 @@ export default function ClubRegistrationForm({
     });
   };
 
-  const currentFee = service.feeConfig.amount;
+  const currentFee = service.feeConfig?.amount
+    ? parseFloat(service.feeConfig.amount)
+    : 0;
 
   const reviewSections: ReviewSection[] = [
     {

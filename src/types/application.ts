@@ -56,6 +56,7 @@ export interface Services {
 export interface Application {
   id: string;
   applicationNumber: string;
+  applicationNo?: string;
   serviceId: string;
   serviceName?: string;
   category?: string;
@@ -70,6 +71,7 @@ export interface Application {
     firstName?: string;
     lastName?: string;
     name?: string;
+    fullName?: string;
     email?: string;
     phone?: string;
     role?: string;

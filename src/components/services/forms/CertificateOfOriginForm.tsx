@@ -292,6 +292,13 @@ export default function CertificateOfOriginForm({
         applicant: {
           applicantId: initialApplicant?.applicantId || null,
           isRegistered: !!initialApplicant?.applicantId,
+          fullName: initialApplicant?.fullName || "",
+          phone: initialApplicant?.phone || "",
+          email: initialApplicant?.email,
+          address: initialApplicant?.address || "",
+          ward: initialApplicant?.ward,
+          nin: initialApplicant?.nin,
+          cacNumber: initialApplicant?.cacNumber,
         },
         // Everything the schema doesn't give its own column for  -  including
         // applicant identity fields  -  belongs in formData, since Application

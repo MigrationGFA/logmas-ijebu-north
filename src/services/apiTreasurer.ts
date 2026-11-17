@@ -533,6 +533,7 @@ export interface AwaitingConfirmationPayment {
   status: string;
   matchStatus: string | null;
   reference: string | null;
+  gatewayRef: string | null;
   proofUrl: string | null;
   proofUploadedAt: string | null;
   proofUploadedBy: { id: string; firstName: string; lastName: string } | null;

@@ -4,18 +4,17 @@ import { useEffect, useState } from "react";
 
 // ============== Types ==============
 export type LevyCategory =
+  | "Certificate Fees"
+  | "Tenement Rate"
+  | "Haulage Fees"
+  | "Liquor Licence Fees"
+  | "Viewing Centre Licence"
+  | "Quarry Fees & Permits"
+  | "Street Naming & Property Numbering"
+  | "Kiosk Licence"
+  | "Environmental Sanitation"
   | "Trade Permit Fees"
   | "Market Levy"
-  | "Environmental Levy"
-  | "Signage Permit"
-  | "Shop Permit"
-  | "Parking Levy"
-  | "Haulage Levy"
-  | "Lockup Store Levy"
-  | "Business Levy"
-  | "Mobile Trader Levy"
-  | "Event Permit Fees"
-  | "State of Origin Fee"
   | "Other";
 
 export type Frequency = "daily" | "weekly" | "monthly" | "yearly" | "one-off";

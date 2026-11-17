@@ -36,6 +36,7 @@ interface DocumentUploadStepProps {
   onFileUpload: (docId: string, fileNameOrMeta: string | UploadedFileMeta, actualFile?: File) => void;
   onFileRemove: (docId: string) => void;
   serviceName: string;
+  disabled?: boolean;
 }
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5 MB
@@ -47,6 +48,7 @@ export function DocumentUploadStep({
   onFileUpload,
   onFileRemove,
   serviceName,
+  disabled = false,
 }: DocumentUploadStepProps) {
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -64,6 +66,7 @@ export function DocumentUploadStep({
   };
 
   const handleNativeFileChange = (docId: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    if (disabled) return;
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       if (!validateFile(file)) {
@@ -87,6 +90,7 @@ export function DocumentUploadStep({
   const handleDrop = (docId: string, e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
+    if (disabled) return;
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
       if (!validateFile(file)) return;

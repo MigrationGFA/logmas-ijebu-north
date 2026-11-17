@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
+import type { Resolver } from "react-hook-form";
 import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -172,7 +173,7 @@ export default function HaulageFeesForm({
     watch,
     formState: { errors },
   } = useForm<HaulageFeesFormData>({
-    resolver: zodResolver(haulageFeesSchema),
+    resolver: zodResolver(haulageFeesSchema) as Resolver<HaulageFeesFormData>,
     mode: "onBlur",
     defaultValues: {
       companyName: initialApplicant?.name || "",
@@ -267,7 +268,9 @@ export default function HaulageFeesForm({
     setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  const currentFee = service.feeConfig.amount;
+  const currentFee = service.feeConfig?.amount
+    ? parseFloat(service.feeConfig.amount)
+    : 0;
 
   const onValidSubmit = (data: HaulageFeesFormData) => {
     if (!declaration) return;

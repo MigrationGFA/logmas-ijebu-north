@@ -211,7 +211,7 @@ export function EditServiceModal({
       category: foOnly ? "OTHERS" : finalCategory,
       revenueHead: revenueHead.trim().toUpperCase(),
       description: description.trim(),
-      requirements,
+      requirements: foOnly ? [] : requirements,
       estimatedDays: Math.max(1, parseInt(estimatedDays) || 3),
       certificateType: foOnly ? "NONE" : certificateType,
       supportsRenewal,
@@ -300,6 +300,7 @@ export function EditServiceModal({
                   id="edit-service-code"
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
+                  disabled={foOnly}
                   className="h-9 text-xs font-mono bg-background"
                 />
               </div>
@@ -312,6 +313,7 @@ export function EditServiceModal({
                   id="edit-revenue-head"
                   value={revenueHead}
                   onChange={(e) => setRevenueHead(e.target.value)}
+                  disabled={foOnly}
                   className="h-9 text-xs font-mono uppercase bg-background"
                 />
               </div>
@@ -320,7 +322,7 @@ export function EditServiceModal({
                 <Label htmlFor="edit-category-select" className="text-xs font-semibold">
                   Category
                 </Label>
-                <Select value={category} onValueChange={setCategory}>
+                <Select value={category} onValueChange={setCategory} disabled={foOnly}>
                   <SelectTrigger id="edit-category-select" className="h-9 text-xs bg-background">
                     <SelectValue placeholder="Select Category" />
                   </SelectTrigger>
@@ -354,7 +356,7 @@ export function EditServiceModal({
                 <Label htmlFor="edit-certificate-type" className="text-xs font-semibold">
                   Certificate / Document Type
                 </Label>
-                <Select value={certificateType} onValueChange={setCertificateType}>
+                <Select value={certificateType} onValueChange={setCertificateType} disabled={foOnly}>
                   <SelectTrigger id="edit-certificate-type" className="h-9 text-xs bg-background">
                     <SelectValue placeholder="Select Type" />
                   </SelectTrigger>
@@ -370,7 +372,7 @@ export function EditServiceModal({
 
               <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="edit-service-desc" className="text-xs font-semibold">
-                  Public Description & Overview
+                  {foOnly ? "Description" : "Public Description & Overview"}
                 </Label>
                 <Textarea
                   id="edit-service-desc"
@@ -391,13 +393,15 @@ export function EditServiceModal({
                   max="60"
                   value={estimatedDays}
                   onChange={(e) => setEstimatedDays(e.target.value)}
+                  disabled={foOnly}
                   className="h-9 text-xs bg-background"
                 />
               </div>
             </div>
           </div>
 
-          {/* Section 2: Dynamic Requirements */}
+          {/* Section 2: Dynamic Requirements (hidden for FO-only services) */}
+          {!foOnly && (
           <div className="space-y-3">
             <div className="flex items-center justify-between pb-1 border-b">
               <span className="text-xs font-bold uppercase tracking-wider text-primary">
@@ -481,6 +485,7 @@ export function EditServiceModal({
               </div>
             </div>
           </div>
+          )}
 
           {/* Section 3: Service Settings */}
           <div className="space-y-3">
@@ -504,6 +509,7 @@ export function EditServiceModal({
                   id="edit-supports-renewal"
                   checked={supportsRenewal}
                   onCheckedChange={setSupportsRenewal}
+                  disabled={foOnly}
                 />
               </div>
 
@@ -585,6 +591,7 @@ export function EditServiceModal({
                     placeholder="e.g. 15000"
                     value={feeAmount}
                     onChange={(e) => setFeeAmount(e.target.value)}
+                    disabled={foOnly}
                     className="pl-8 h-10 font-bold text-sm bg-background border-primary/30 focus-visible:ring-primary"
                   />
                 </div>
@@ -599,6 +606,7 @@ export function EditServiceModal({
                       key={preset}
                       type="button"
                       onClick={() => setFeeAmount(String(preset))}
+                      disabled={foOnly}
                       className={`text-[10px] px-2 py-0.5 rounded border transition-colors ${
                         Number(feeAmount) === preset
                           ? "bg-primary text-primary-foreground border-primary font-bold"
@@ -620,6 +628,7 @@ export function EditServiceModal({
                   type="date"
                   value={feeExpiryDate}
                   onChange={(e) => setFeeExpiryDate(e.target.value)}
+                  disabled={foOnly}
                   className="h-9 text-xs bg-background"
                 />
               </div>
@@ -631,6 +640,7 @@ export function EditServiceModal({
                 <Select
                   value={feeStatus}
                   onValueChange={(val: "ACTIVE" | "INACTIVE") => setFeeStatus(val)}
+                  disabled={foOnly}
                 >
                   <SelectTrigger id="edit-fee-status" className="h-9 text-xs bg-background">
                     <SelectValue />
@@ -655,6 +665,7 @@ export function EditServiceModal({
                   placeholder="e.g. Revised statutory schedule ratified by Legislative Council"
                   value={feeNotes}
                   onChange={(e) => setFeeNotes(e.target.value)}
+                  disabled={foOnly}
                   className="h-9 text-xs bg-background"
                 />
               </div>

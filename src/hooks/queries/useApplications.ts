@@ -34,7 +34,7 @@ export function useSubmitApplication() {
     mutationFn: (payload: CreateApplicationData) => apiApplications.submitApplication(payload),
     onSuccess: (data) => {
       qc.invalidateQueries({ queryKey: applicationsKeys.all });
-      toast.success(`Application ${data.applicationNumber} submitted successfully!`);
+      toast.success(`Application ${data.application.applicationNumber} submitted successfully!`);
     },
     onError: (err: Error) => {
       toast.error(err.message || "Failed to submit statutory application");

@@ -11,12 +11,7 @@ export type ComplaintStatus =
 export interface ComplaintResponse {
   id: string;
   message: string;
-  respondedBy: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    role: string;
-  };
+  responderId: string;
   createdAt: string;
 }
 

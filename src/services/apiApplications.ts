@@ -174,6 +174,27 @@ const appendFilesToFormData = (
   });
 };
 
+export interface SubmitApplicationResponse {
+  application: Application;
+  invoice?: {
+    id?: string;
+    invoiceNumber: string;
+    amount: number;
+    paymentStatus: string;
+    virtualBankName?: string;
+    virtualAccountNumber?: string;
+    virtualAccountRef?: string;
+  };
+  // Flat fallbacks tolerated by the submission success view
+  id?: string;
+  status?: Application["status"];
+  fullName?: string;
+  ward?: string | null;
+  revenueHead?: string;
+  amount?: number;
+  createdAt?: string;
+}
+
 export const apiApplications = {
   /**
    * Submit an application with multipart/form-data.
@@ -182,7 +203,7 @@ export const apiApplications = {
    */
   submitApplication: async (
     payload: CreateApplicationData,
-  ): Promise<Application> => {
+  ): Promise<SubmitApplicationResponse> => {
     const formData = new FormData();
 
     formData.append("serviceId", payload.serviceId);
@@ -207,7 +228,7 @@ export const apiApplications = {
         })),
     );
 
-    return api.upload<Application>("/applications", formData);
+    return api.upload<SubmitApplicationResponse>("/applications", formData);
   },
 
   completeApplication: async (

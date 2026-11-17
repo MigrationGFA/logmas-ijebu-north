@@ -2,7 +2,7 @@
 import { api } from "@/lib/api";
 import { apiCertificates } from "./apiCertificates";
 import { apiPublicCertificate } from "./apiPublicCertificate";
-import { BackendCertificate } from "@/types/certificate";
+import { BackendCertificate, CertificateApplicant } from "@/types/certificate";
 import { PublicCertificate } from "@/types/publicCertificate";
 import { LGA_CONFIG } from "@/config/lga.config";
 
@@ -71,7 +71,7 @@ function transformBackendCertToVerify(cert: BackendCertificate, inputQuery: stri
   const service = cert.service || ({} as any);
   const app = cert.application || ({} as any);
   const formData = app.formData || {};
-  const applicant = app.applicant || {};
+  const applicant: Partial<CertificateApplicant> = app.applicant ?? {};
 
   const type = deriveDocType(service.code, service.name, service.category);
   const holder =

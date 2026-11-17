@@ -194,9 +194,9 @@ function PaymentConfirmationsContent() {
         >
           <ShieldCheck className="h-4 w-4 text-primary" />
           Citizen Payment Claims
-          {data?.meta?.totalCount !== undefined && (
+          {data?.meta?.total !== undefined && (
             <Badge variant="secondary" className="text-[10px] ml-1">
-              {data.meta.totalCount}
+              {data.meta.total}
             </Badge>
           )}
         </button>

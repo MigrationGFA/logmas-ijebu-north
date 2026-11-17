@@ -69,7 +69,7 @@ export default function NewPermitPage() {
 
   const { user: loggedUser } = useAuth();
 
-  const userWardId = loggedUser ? loggedUser.wardId : "";
+  const userWardId = loggedUser?.wardId ?? "";
   const userWardName = loggedUser?.ward?.name;
   const navigate = useRouter();
   const [businessSearch, setBusinessSearch] = useState("");

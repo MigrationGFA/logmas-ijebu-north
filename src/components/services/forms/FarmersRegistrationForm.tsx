@@ -297,7 +297,9 @@ export default function FarmersRegistrationForm({
     setCurrentStepIndex((prev) => Math.max(prev - 1, 0));
   };
 
-  const currentFee = service.feeConfig.amount;
+  const currentFee = service.feeConfig?.amount
+    ? parseFloat(service.feeConfig.amount)
+    : 0;
 
   const onValidSubmit = (data: FarmersRegistrationFormData) => {
     if (!declaration) return;

@@ -17,6 +17,8 @@ const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
 export interface ApplicantSnapshot {
   applicantId?: string | null;
   fullName: string;
+  name?: string;
+  companyName?: string;
   phone: string;
   email?: string;
   address: string;

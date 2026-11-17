@@ -3,6 +3,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState, useMemo } from "react";
+import type { Resolver } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -46,7 +47,7 @@ const createAccountSchema = z
     email: z.string().email("Invalid email address"),
     phone: z.string().optional(),
     role: z.string().min(1, "Role is required"),
-    // wardId: z.string().optional(),
+    wardId: z.string().optional(),
   })
   // .refine(
   //   (data) => {
@@ -77,7 +78,7 @@ export function CreateAccountDialog({ onSuccess }: { onSuccess: () => void }) {
     reset,
     formState: { errors },
   } = useForm<CreateAccountFormData>({
-    resolver: zodResolver(createAccountSchema),
+    resolver: zodResolver(createAccountSchema) as Resolver<CreateAccountFormData>,
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -457,7 +458,7 @@ export function ResendVerificationDialog({ account }: { account: Account }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button size="sm" variant="outline" disabled={!isNOtCitizenOrBo || account.emailVerified }>
+        <Button size="sm" variant="outline" disabled={!isNOtCitizenOrBo || !!account.emailVerified}>
           <MailCheck className="h-3.5 w-3.5 mr-1" />
         </Button>
       </DialogTrigger>

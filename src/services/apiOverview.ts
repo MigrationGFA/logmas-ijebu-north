@@ -12,6 +12,7 @@ export type Role =
   | "contractor"
   | "field_officer"
   | "super_admin"
+  | "sub_admin"
   | "auditor";
 
 export type InvoiceStatus = "pending" | "paid" | "overdue" | "cancelled";
@@ -26,6 +27,8 @@ export type ComplaintStatus = "open" | "in_progress" | "closed";
 // Citizen Metrics
 export interface CitizenMetrics {
   pendingPayments: number;
+  awaitingForm: number;
+  submitted?: number;
   approvedApplications: number;
   openComplaints: number;
   recentApplications: Array<{
@@ -191,7 +194,10 @@ export type DashboardMetrics =
       metrics: CitizenMetrics;
       recentApplications?: Array<{
         id: string;
+        applicationNumber?: string;
+        service?: string;
         status: ApplicationStatus;
+        feeAmount?: number;
         createdAt: string;
       }>;
     }
@@ -244,7 +250,10 @@ export interface DashboardOverviewResponse {
   categoryBreakdown: Array<{ category: string; amount: number }>;
   recentApplications?: Array<{
     id: string;
+    applicationNumber?: string;
+    service?: string;
     status: ApplicationStatus;
+    feeAmount?: number;
     createdAt: string;
   }>;
   anomalies?: Anomaly[];
