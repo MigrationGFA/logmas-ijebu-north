@@ -292,6 +292,7 @@ export function EditServiceModal({
                 />
               </div>
 
+{!foOnly && (
               <div className="space-y-1.5">
                 <Label htmlFor="edit-service-code" className="text-xs font-semibold">
                   Service Code (Slug)
@@ -304,7 +305,9 @@ export function EditServiceModal({
                   className="h-9 text-xs font-mono bg-background"
                 />
               </div>
+              )}
 
+{!foOnly && (
               <div className="space-y-1.5">
                 <Label htmlFor="edit-revenue-head" className="text-xs font-semibold">
                   Revenue Head Code
@@ -317,7 +320,9 @@ export function EditServiceModal({
                   className="h-9 text-xs font-mono uppercase bg-background"
                 />
               </div>
+              )}
 
+{!foOnly && (
               <div className="space-y-1.5">
                 <Label htmlFor="edit-category-select" className="text-xs font-semibold">
                   Category
@@ -351,7 +356,9 @@ export function EditServiceModal({
                   />
                 )}
               </div>
+              )}
 
+{!foOnly && (
               <div className="space-y-1.5">
                 <Label htmlFor="edit-certificate-type" className="text-xs font-semibold">
                   Certificate / Document Type
@@ -369,6 +376,7 @@ export function EditServiceModal({
                   </SelectContent>
                 </Select>
               </div>
+              )}
 
               <div className="space-y-1.5 sm:col-span-2">
                 <Label htmlFor="edit-service-desc" className="text-xs font-semibold">
@@ -382,6 +390,7 @@ export function EditServiceModal({
                 />
               </div>
 
+{!foOnly && (
               <div className="space-y-1.5">
                 <Label htmlFor="edit-estimated-days" className="text-xs font-semibold flex items-center gap-1">
                   <Clock className="h-3 w-3" /> Estimated Processing Days
@@ -397,6 +406,7 @@ export function EditServiceModal({
                   className="h-9 text-xs bg-background"
                 />
               </div>
+              )}
             </div>
           </div>
 
@@ -496,6 +506,7 @@ export function EditServiceModal({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-3 rounded-lg bg-muted/20 border">
+{!foOnly && (
               <div className="flex items-center justify-between space-x-2">
                 <div className="space-y-0.5">
                   <Label htmlFor="edit-supports-renewal" className="text-xs font-semibold cursor-pointer">
@@ -512,6 +523,7 @@ export function EditServiceModal({
                   disabled={foOnly}
                 />
               </div>
+              )}
 
               <div className="flex items-center justify-between space-x-2">
                 <div className="space-y-0.5">
@@ -553,7 +565,8 @@ export function EditServiceModal({
             </div>
           </div>
 
-          {/* Section 4: Visually Separated Fee Configuration Section */}
+          {/* Section 4: Fee Configuration (hidden for FO-only services) */}
+          {!foOnly && (
           <div className="p-4 rounded-xl border-2 border-primary/30 bg-gradient-to-br from-primary/5 via-background to-primary/5 space-y-4 shadow-sm">
             <div className="flex items-center justify-between pb-1 border-b border-primary/20">
               <div className="flex items-center gap-2">
@@ -671,6 +684,7 @@ export function EditServiceModal({
               </div>
             </div>
           </div>
+          )}
 
           <DialogFooter className="pt-2 border-t flex flex-col sm:flex-row gap-2">
             <Button
