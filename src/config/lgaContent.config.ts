@@ -149,12 +149,13 @@ export const LEADERSHIP = [
     email: `vicechairman@${LGA_CONFIG.contact.email.split("@")[1] || "lga.gov.ng"}`,
   },
   {
-    name: "Secretary to Local Government",
+    name: LGA_CONFIG.leadership.secretary?.name || "Secretary to the Local Government",
     role: "Secretary to Local Government",
     bio: "Coordinates council administration and inter-departmental policy implementation.",
-    initials: "SLG",
+    initials: "OY",
     accent: "info",
-    email: `secretary@${LGA_CONFIG.contact.email.split("@")[1] || "lga.gov.ng"}`,
+    email: "",
+    phone: "09039165467",
   },
   {
     name: LGA_CONFIG.leadership.headOfLocalGovAdmin?.name || "Head of Local Government Administration",

@@ -344,7 +344,7 @@ export const LGA_CONFIG: LgaConfiguration = {
       title: "Vice Chairman",
     },
     secretary: {
-      name: "Council Secretary",
+      name: "Comrade Omelaja Abidemi Yekeen",
       title: "Secretary to the Local Government",
     },
     treasurer: {

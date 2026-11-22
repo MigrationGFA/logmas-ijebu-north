@@ -120,9 +120,20 @@ export default function LeadershipPage() {
                             </div>
                             <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{m.bio}</p>
                             <div className="mt-4 pt-4 border-t border-border/40 flex gap-4 text-xs text-muted-foreground">
-                                <span className="flex items-center gap-1.5">
-                                    <Mail className="h-3 w-3" /> {m.email || "Not available"}
-                                </span>
+                                {"phone" in m && m.phone && (
+                                    <span className="flex items-center gap-1.5">
+                                        <Phone className="h-3 w-3" /> {m.phone}
+                                    </span>
+                                )}
+                                {m.email ? (
+                                    <span className="flex items-center gap-1.5">
+                                        <Mail className="h-3 w-3" /> {m.email}
+                                    </span>
+                                ) : !("phone" in m && m.phone) && (
+                                    <span className="flex items-center gap-1.5">
+                                        <Mail className="h-3 w-3" /> Not available
+                                    </span>
+                                )}
                             </div>
                         </Card>
                     ))}
