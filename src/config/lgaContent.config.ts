@@ -141,12 +141,12 @@ export const LEADERSHIP = [
     email: LGA_CONFIG.contact.email,
   },
   {
-    name: "Hon. Vice Chairman",
+    name: LGA_CONFIG.leadership.viceChairman?.name || "Vice Chairman",
     role: "Vice Chairman",
     bio: `Overseeing social development, health, and women empowerment initiatives in ${LGA_CONFIG.identity.formalTitle}.`,
-    initials: "VC",
+    initials: "AA",
     accent: "gold",
-    email: `vicechairman@${LGA_CONFIG.contact.email.split("@")[1] || "lga.gov.ng"}`,
+    email: "",
   },
   {
     name: LGA_CONFIG.leadership.secretary?.name || "Secretary to the Local Government",

@@ -60,8 +60,6 @@ export interface LgaCouncillor {
   role?: string;
   /** Optional second public contact phone */
   altPhone?: string;
-  /** Optional educational qualifications, in the order they should display */
-  qualifications?: string[];
   /** Optional personal quote shown on the leadership page */
   quote?: string;
   /** Optional occupation outside council duties */
@@ -340,7 +338,7 @@ export const LGA_CONFIG: LgaConfiguration = {
       tenureNote: "Executive Chairman, Ijebu North East Local Government Area · Ogun State",
     },
     viceChairman: {
-      name: "Hon. Vice Chairman",
+      name: "Hon. Deacon Adegbesan Adegbuyi",
       title: "Vice Chairman",
     },
     secretary: {
@@ -391,10 +389,6 @@ export const LGA_CONFIG: LgaConfiguration = {
         altPhone: "08052155624",
         email: "okulajaabiodun85@gmail.com",
         role: "Ward Councillor",
-        qualifications: [
-          "National Certificate in Education (Political Science/Social Studies)",
-          "B.Sc. (Ed.) in Political Science",
-        ],
         quote: "Calm and easygoing. Ready to face the challenges ahead.",
       },
       {
@@ -403,11 +397,6 @@ export const LGA_CONFIG: LgaConfiguration = {
         phone: "08080217611",
         email: "emtosproperties@gmail.com",
         role: "Majority Leader, Ijebu North East Legislative Council",
-        qualifications: [
-          "B.Ed. in Educational Management/Economics",
-          "Postgraduate Diploma in Information Technology",
-          "Cybersecurity (in view)",
-        ],
         occupation: "Farming and Real Estate",
         hobby: "Hunting",
       },
