@@ -44,6 +44,7 @@ import {
   useUploadInvoicePaymentProof,
   useRecordFoInvoicePayment,
 } from "@/hooks/queries/useInvoices";
+import { useBankAccount } from "@/hooks/queries/useBankAccount";
 
 import { tokenManager } from "@/services/apiAuth";
 import { useRouter } from "next/navigation";
@@ -101,12 +102,21 @@ export default function InvoiceDetail({
     invoice?.invoiceNumber,
   );
 
-  // FO-only service invoices: the officer records how the payer paid
-  // (cash or bank transfer); the treasurer confirms afterwards.
+  // FO-only service invoices: the payer transfers to the LGA collection
+  // account (from the database, managed in Settings); the officer records
+  // the transfer here with the payer's receipt as proof, and the treasurer
+  // confirms afterwards.
   const { recordFoPayment, isRecordingFoPayment } = useRecordFoInvoicePayment(
     invoiceId,
     invoice?.invoiceNumber,
   );
+  const { bankAccount } = useBankAccount(
+    Boolean(
+      (invoice as any)?.service?.foOnly ??
+        (invoice as any)?.application?.service?.foOnly,
+    ),
+  );
+  const [foProofFile, setFoProofFile] = React.useState<File | null>(null);
   const [proofFile, setProofFile] = React.useState<File | null>(null);
 
   // Are-you-sure gate for the payment-method actions that commit the moment
@@ -219,8 +229,9 @@ export default function InvoiceDetail({
   // Format status for display
   const status = invoice.paymentStatus || "pending";
 
-  // FO-only services never show bank details or public payment options:
-  // the officer records cash or transfer, the treasurer confirms.
+  // FO-only services show the LGA collection account (from the database)
+  // in their own panel instead of the public payment options: the officer
+  // records the transfer with proof, the treasurer confirms.
   const isFoOnlyInvoice = Boolean(
     (invoice as any)?.service?.foOnly ??
       (invoice as any)?.application?.service?.foOnly,
@@ -287,13 +298,10 @@ export default function InvoiceDetail({
             ) : (
               <>
                 This records that the payer paid ₦{balanceDue.toLocaleString()}{" "}
-                by{" "}
-                {pendingMethodConfirm?.method === "cash"
-                  ? "cash"
-                  : "bank transfer"}
-                . The treasurer will be asked to confirm it, and the recorded
-                method cannot be changed from this page. Make sure it is the
-                right method before you confirm.
+                by bank transfer, with the receipt you selected attached as
+                proof. The treasurer will be asked to confirm it, and the
+                record cannot be changed from this page. Make sure the
+                receipt is the right one before you confirm.
               </>
             )}
           </p>
@@ -311,17 +319,15 @@ export default function InvoiceDetail({
                 if (!pending) return;
                 if (pending.kind === "online") {
                   initializeOnlinePayment();
-                } else {
-                  recordFoPayment(pending.method);
+                } else if (foProofFile) {
+                  recordFoPayment(foProofFile);
                 }
               }}
               disabled={isRecordingFoPayment || isInitializingPayment}
             >
               {pendingMethodConfirm?.kind === "online"
                 ? "Yes, continue to payment"
-                : pendingMethodConfirm?.method === "cash"
-                  ? "Yes, record as Cash"
-                  : "Yes, record as Bank Transfer"}
+                : "Yes, record transfer"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -393,11 +399,38 @@ export default function InvoiceDetail({
             <Card className="p-6 bg-gradient-card border-border/40">
               <h3 className="font-semibold mb-2">Officer Collection</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                This is a field-officer-only service, so no bank details
-                apply to it.
+                This is a field-officer-only service. The payer transfers
+                to the LGA collection account below, then sends you the
+                receipt.
                 {status !== "confirmed" &&
-                  " Record how the payer paid you below. The treasurer confirms the collection, and you will be notified once it is confirmed."}
+                  " Record the transfer with the receipt attached, and the treasurer will confirm it. You will be notified once it is confirmed."}
               </p>
+              {status !== "confirmed" &&
+                (bankAccount ? (
+                  <div className="rounded-lg border border-border/60 bg-background p-4 mb-4">
+                    <div className="text-xs uppercase tracking-wider text-muted-foreground">
+                      Pay into
+                    </div>
+                    <div className="font-semibold mt-1">
+                      {bankAccount.bankName}
+                    </div>
+                    <div className="text-xl font-bold tracking-wide">
+                      {bankAccount.accountNumber}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
+                      {bankAccount.accountName}
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-1">
+                      Amount: ₦{totalAmount.toLocaleString()}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 text-sm mb-4">
+                    No collection account has been set yet. The treasurer or
+                    an admin can add it in Settings, under Bank Account,
+                    before payers can be given transfer details.
+                  </div>
+                ))}
               {status === "confirmed" ? (
                 <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                   <CheckCircle2 className="h-4 w-4" /> Confirmed by the
@@ -405,40 +438,55 @@ export default function InvoiceDetail({
                 </div>
               ) : foPendingPayment ? (
                 <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 text-sm">
-                  Recorded as{" "}
-                  <span className="font-semibold">
-                    {foPendingPayment.method === "cash"
-                      ? "Cash"
-                      : "Bank Transfer"}
-                  </span>
+                  Transfer recorded
+                  {foPendingPayment.proofUrl && (
+                    <>
+                      {" "}
+                      with proof (
+                      <a
+                        href={foPendingPayment.proofUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-medium underline"
+                      >
+                        view receipt
+                      </a>
+                      )
+                    </>
+                  )}
                   . Awaiting treasurer confirmation. You will be notified
                   when it is confirmed.
                 </div>
               ) : isOfficer ? (
-                <div className="grid sm:grid-cols-2 gap-3">
-                  <Button
-                    onClick={() =>
-                      setPendingMethodConfirm({ kind: "fo", method: "cash" })
-                    }
-                    disabled={isRecordingFoPayment}
-                    className="w-full"
-                  >
-                    {isRecordingFoPayment ? (
-                      <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
-                    ) : (
-                      <Wallet className="h-4 w-4 mr-1.5" />
+                <div className="space-y-3">
+                  <div>
+                    <Label htmlFor="fo-proof">
+                      Payer&apos;s transfer receipt
+                    </Label>
+                    <Input
+                      id="fo-proof"
+                      type="file"
+                      accept="image/*,.pdf"
+                      className="mt-1.5"
+                      onChange={(e) =>
+                        setFoProofFile(e.target.files?.[0] || null)
+                      }
+                    />
+                    {!foProofFile && (
+                      <p className="text-xs text-muted-foreground mt-1.5">
+                        Upload the receipt the payer sent you. The treasurer
+                        uses it to match the payment in the LGA account.
+                      </p>
                     )}
-                    Cash
-                  </Button>
+                  </div>
                   <Button
-                    variant="outline"
                     onClick={() =>
                       setPendingMethodConfirm({
                         kind: "fo",
                         method: "bank_transfer",
                       })
                     }
-                    disabled={isRecordingFoPayment}
+                    disabled={isRecordingFoPayment || !foProofFile}
                     className="w-full"
                   >
                     {isRecordingFoPayment ? (
@@ -446,12 +494,12 @@ export default function InvoiceDetail({
                     ) : (
                       <Landmark className="h-4 w-4 mr-1.5" />
                     )}
-                    Bank Transfer
+                    Record Transfer
                   </Button>
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Awaiting the collecting officer&apos;s payment record,
+                  Awaiting the collecting officer&apos;s transfer record,
                   then treasurer confirmation.
                 </p>
               )}

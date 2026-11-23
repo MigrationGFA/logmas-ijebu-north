@@ -441,11 +441,14 @@ export const invoicesService = {
    */
   recordFoPayment: async (
     invoiceNumber: string,
-    method: "cash" | "bank_transfer",
+    proof: File,
   ): Promise<{ payment: Payment }> => {
-    return await api.post<{ payment: Payment }>(
+    const formData = new FormData();
+    formData.append("method", "bank_transfer");
+    formData.append("proof", proof);
+    return await api.upload<{ payment: Payment }>(
       `/invoices/${encodeURIComponent(invoiceNumber)}/fo-payment`,
-      { method },
+      formData,
     );
   },
 

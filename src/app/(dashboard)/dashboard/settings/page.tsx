@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,6 +17,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 // Your existing imports (adjust paths)
 import { useAuth } from "@/hooks/queries/useAuth";
+import {
+  useBankAccount,
+  useSaveBankAccount,
+} from "@/hooks/queries/useBankAccount";
 import { ROLE_LABELS } from "@/lib/auth";
 import { PageHeader } from "@/components/dashboard/shared";
 
@@ -73,6 +77,31 @@ export default function SettingsPage() {
     },
   });
 
+  // ---------- LGA collection bank account (treasurer / admin only) ----
+  const canManageBankAccount = ["treasurer", "lga_admin", "super_admin"].includes(
+    user?.role ?? "",
+  );
+  const { bankAccount } = useBankAccount();
+  const { saveBankAccount, isSavingBankAccount } = useSaveBankAccount();
+  const [bankForm, setBankForm] = useState({
+    bankName: "",
+    accountName: "",
+    accountNumber: "",
+  });
+  useEffect(() => {
+    if (bankAccount) {
+      setBankForm({
+        bankName: bankAccount.bankName,
+        accountName: bankAccount.accountName,
+        accountNumber: bankAccount.accountNumber,
+      });
+    }
+  }, [bankAccount]);
+  const onBankAccountSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    saveBankAccount(bankForm);
+  };
+
   const notifyByEmail = watch("notifyByEmail");
   const notifyBySms = watch("notifyBySms");
   const notifyByInApp = watch("notifyByInApp");
@@ -128,6 +157,9 @@ export default function SettingsPage() {
         <TabsList>
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
+          {canManageBankAccount && (
+            <TabsTrigger value="bank-account">Bank Account</TabsTrigger>
+          )}
         </TabsList>
 
         {/* ---------- PROFILE TAB ---------- */}
@@ -334,6 +366,71 @@ export default function SettingsPage() {
             </form>
           </Card>
         </TabsContent>
+
+        {/* ---------- BANK ACCOUNT TAB (treasurer / admin only) ---------- */}
+        {canManageBankAccount && (
+          <TabsContent value="bank-account" className="mt-6">
+            <Card className="p-6 bg-gradient-card border-border/40 space-y-5 max-w-2xl">
+              <div>
+                <h3 className="font-semibold">LGA Collection Account</h3>
+                <p className="text-sm text-muted-foreground mt-1">
+                  The account field-officer collections are paid into. It is
+                  shown on FO service invoices and sent to payers by SMS with
+                  the amount and the officer&apos;s phone number. Keep it
+                  current: whatever is saved here is what payers will use.
+                </p>
+              </div>
+              <form onSubmit={onBankAccountSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="bankName">Bank Name</Label>
+                  <Input
+                    id="bankName"
+                    value={bankForm.bankName}
+                    onChange={(e) =>
+                      setBankForm({ ...bankForm, bankName: e.target.value })
+                    }
+                    placeholder="e.g. Providus Bank"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="accountName">Account Name</Label>
+                  <Input
+                    id="accountName"
+                    value={bankForm.accountName}
+                    onChange={(e) =>
+                      setBankForm({ ...bankForm, accountName: e.target.value })
+                    }
+                    placeholder="e.g. Ijebu North East Local Government"
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="accountNumber">Account Number</Label>
+                  <Input
+                    id="accountNumber"
+                    value={bankForm.accountNumber}
+                    onChange={(e) =>
+                      setBankForm({
+                        ...bankForm,
+                        accountNumber: e.target.value,
+                      })
+                    }
+                    placeholder="e.g. 0123456789"
+                    inputMode="numeric"
+                    required
+                  />
+                </div>
+                <Button type="submit" disabled={isSavingBankAccount}>
+                  {isSavingBankAccount ? (
+                    <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                  ) : null}
+                  Save Account
+                </Button>
+              </form>
+            </Card>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

@@ -160,9 +160,9 @@ export function useUploadInvoicePaymentProof(
 }
 
 /**
- * FO-only services: record how the payer paid (cash or bank transfer) on
- * the invoice page. Parks the collection for treasurer confirmation; the
- * officer is notified when the treasurer confirms.
+ * FO-only services: record the payer's bank transfer on the invoice page,
+ * with their receipt uploaded as proof. Parks the collection for treasurer
+ * confirmation; the officer is notified when the treasurer confirms.
  */
 export function useRecordFoInvoicePayment(
   detailId: string,
@@ -171,19 +171,19 @@ export function useRecordFoInvoicePayment(
   const queryClient = useQueryClient();
 
   const recordFoPaymentMutation = useMutation({
-    mutationFn: (method: "cash" | "bank_transfer") => {
+    mutationFn: (proof: File) => {
       if (!invoiceNumber) {
         throw new Error("Invoice not loaded yet.");
       }
-      return invoicesService.recordFoPayment(invoiceNumber, method);
+      return invoicesService.recordFoPayment(invoiceNumber, proof);
     },
     onSuccess: () => {
-      toast.success("Payment recorded. Awaiting treasurer confirmation.");
+      toast.success("Transfer recorded with proof. Awaiting treasurer confirmation.");
       queryClient.invalidateQueries({ queryKey: invoicesKeys.detail(detailId) });
       queryClient.invalidateQueries({ queryKey: invoicesKeys.hub() });
     },
     onError: (error: any) => {
-      toast.error(error?.message || "Could not record the payment method");
+      toast.error(error?.message || "Could not record the transfer");
     },
   });
 
