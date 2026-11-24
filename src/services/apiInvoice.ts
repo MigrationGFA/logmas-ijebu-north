@@ -206,6 +206,10 @@ export interface OnlinePaymentInitResponse {
   // `gateway` is only ever set by the GPay controller, so its absence means Paystack.
   gateway?: string;
   amount?: number;
+  /** Official invoice amount before the card processing fee. */
+  baseAmount?: number;
+  /** 1.5% card processing fee included in `amount`. */
+  processingFee?: number;
   invoiceNumber?: string;
   flow?: string;
   isFullPayment?: boolean;
@@ -227,6 +231,10 @@ export interface PublicPaymentInitResponse {
   // ── GPay additions (POST /payments/gpay/public/initialize) ──
   gateway?: string;
   amount?: number;
+  /** Official service fee before the card processing fee. */
+  baseAmount?: number;
+  /** 1.5% card processing fee included in `amount`. */
+  processingFee?: number;
   invoiceNumber?: string;
   serviceId?: string;
   flow?: string;

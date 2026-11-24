@@ -40,6 +40,7 @@ import {
   invoicesService,
   type PublicStaticTransferResponse,
 } from "@/services/apiInvoice";
+import { cardProcessingFee, cardChargeTotal } from "@/lib/paymentFees";
 
 export interface PaymentReviewDetails {
   serviceId?: string;
@@ -124,6 +125,23 @@ export function PaymentReviewDialog({
   })}`;
 
   const [paymentChannel, setPaymentChannel] = useState<"card" | "static">("card");
+
+  // The card channel carries the 1.5% processing fee on top of the official
+  // fee; the bank transfer channel does not. The header total follows the
+  // selected channel so the payer always sees the exact amount for the
+  // channel they are about to use.
+  const baseFee = Number(resolvedDetails.feeAmount || 0);
+  const processingFee = cardProcessingFee(baseFee);
+  const cardTotal = cardChargeTotal(baseFee);
+  const formatNaira = (n: number) =>
+    `\u20a6${n.toLocaleString("en-NG", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  const formattedProcessingFee = formatNaira(processingFee);
+  const formattedCardTotal = formatNaira(cardTotal);
+  const formattedTotalPayable =
+    paymentChannel === "card" ? formattedCardTotal : formattedFee;
   const [staticAccount, setStaticAccount] = useState<StaticVirtualAccountInfo | null>(null);
   const [loadingStatic, setLoadingStatic] = useState(false);
   const [proofFile, setProofFile] = useState<File | null>(null);
@@ -251,7 +269,7 @@ export function PaymentReviewDialog({
                 Total Payable
               </span>
               <span className="text-2xl font-extrabold text-[#0B2545] tracking-tight">
-                {formattedFee}
+                {formattedTotalPayable}
               </span>
             </div>
           </div>
@@ -327,6 +345,20 @@ export function PaymentReviewDialog({
                   via our official government payment gateway. When you complete checkout, the system automatically verifies your payment and issues your
                   Official Receipt and portal login credentials immediately.
                 </p>
+                <div className="rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 space-y-1.5 text-xs">
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Service fee</span>
+                    <span className="font-medium text-slate-800">{formattedFee}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-500">Card processing fee (1.5%)</span>
+                    <span className="font-medium text-slate-800">{formattedProcessingFee}</span>
+                  </div>
+                  <div className="flex items-center justify-between border-t border-slate-200/70 pt-1.5">
+                    <span className="font-semibold text-slate-800">Total</span>
+                    <span className="font-bold text-[#0B2545]">{formattedCardTotal}</span>
+                  </div>
+                </div>
                 <Button
                   type="button"
                   onClick={handleConfirmCheckout}
@@ -341,7 +373,7 @@ export function PaymentReviewDialog({
                   ) : (
                     <>
                       <CreditCard className="h-4 w-4 mr-2" />
-                      Pay {formattedFee} Online by Card
+                      Pay {formattedCardTotal} Online by Card
                     </>
                   )}
                 </Button>

@@ -18,6 +18,7 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { QRCodeSVG } from "@/components/dashboard/qr-code";
+import { cardProcessingFee, cardChargeTotal } from "@/lib/paymentFees";
 import {
   ArrowLeft,
   Copy,
@@ -195,6 +196,16 @@ export default function InvoiceDetail({
     ) || 0;
   const balanceDue = totalAmount - amountPaid;
 
+  // Pay Online (card) carries the 1.5% processing fee on top of the invoice
+  // amount; bank transfer does not. The backend charges exactly these figures.
+  const onlineProcessingFee = cardProcessingFee(totalAmount);
+  const onlineTotal = cardChargeTotal(totalAmount);
+  const formatMoney = (n: number) =>
+    n.toLocaleString("en-NG", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+
   // Proof already attached to any payment on this invoice (uploaded by the
   // citizen or staff) — drives the Bank Transfer tab's status block.
   const transferProof = invoice.payments?.find((p) => p.proofUrl) || null;
@@ -292,8 +303,10 @@ export default function InvoiceDetail({
             {pendingMethodConfirm?.kind === "online" ? (
               <>
                 You will be redirected to Gpay to complete payment of ₦
-                {totalAmount.toLocaleString()} for this invoice. Make sure
-                online payment is the method you want before you continue.
+                {formatMoney(onlineTotal)} for this invoice (₦
+                {formatMoney(totalAmount)} plus the 1.5% card processing fee
+                of ₦{formatMoney(onlineProcessingFee)}). Make sure online
+                payment is the method you want before you continue.
               </>
             ) : (
               <>
@@ -537,9 +550,23 @@ export default function InvoiceDetail({
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">
                       Pay now
                     </div>
+                    <div className="space-y-1.5 text-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Invoice amount</span>
+                        <span className="font-medium">₦{formatMoney(totalAmount)}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-muted-foreground">Card processing fee (1.5%)</span>
+                        <span className="font-medium">₦{formatMoney(onlineProcessingFee)}</span>
+                      </div>
+                      <div className="flex items-center justify-between border-t border-border/60 pt-1.5">
+                        <span className="font-semibold">Total to pay</span>
+                        <span className="font-bold">₦{formatMoney(onlineTotal)}</span>
+                      </div>
+                    </div>
                     <p className="text-sm text-muted-foreground">
-                      You&apos;ll be redirected to Gpay to complete payment
-                      of ₦{totalAmount.toLocaleString()}.
+                      You&apos;ll be redirected to Gpay to complete this
+                      payment.
                     </p>
                     <Button
                       className="w-full bg-gradient-hero"
