@@ -346,11 +346,11 @@ export const LGA_CONFIG: LgaConfiguration = {
       title: "Secretary to the Local Government",
     },
     treasurer: {
-      name: "Head of Local Government Treasury",
+      name: "Mr. Ogungbe Kolawole",
       title: "Council Treasurer",
     },
     headOfLocalGovAdmin: {
-      name: "Head of Local Government Administration",
+      name: "Mr. Ogunyanwo Olasupo Ayotunde",
       title: "Head of Local Government Administration (HOLGA)",
     },
     councillors: [

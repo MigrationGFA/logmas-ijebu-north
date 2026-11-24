@@ -146,7 +146,7 @@ export const LEADERSHIP = [
     bio: `Overseeing social development, health, and women empowerment initiatives in ${LGA_CONFIG.identity.formalTitle}.`,
     initials: "AA",
     accent: "gold",
-    image: "/images/leadership/vice-chairman.jpg",
+    image: "/images/leadership/vice-chairman.jpeg",
     email: "",
   },
   {
@@ -155,8 +155,8 @@ export const LEADERSHIP = [
     bio: "Coordinates council administration and inter-departmental policy implementation.",
     initials: "OY",
     accent: "info",
-    image: "/images/leadership/secretary.jpg",
-    email: "",
+    image: "/images/leadership/secretary.jpeg",
+    email: " omelajaabidemi@gmail.com ",
     phone: "09039165467",
   },
   {
@@ -169,7 +169,7 @@ export const LEADERSHIP = [
     email: `holga@${LGA_CONFIG.contact.email.split("@")[1] || "lga.gov.ng"}`,
   },
   {
-    name: "Council Treasurer",
+    name: LGA_CONFIG.leadership.treasurer?.name || "Council Treasurer",
     role: "Treasurer",
     bio: "Manages public finance, revenue heads, and fiscal compliance.",
     initials: "CT",
