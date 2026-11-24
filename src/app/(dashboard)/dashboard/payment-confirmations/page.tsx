@@ -279,17 +279,17 @@ function PaymentConfirmationsContent() {
         </Card>
       ) : (
         <Card className="overflow-x-auto bg-gradient-card border-border/40">
-          <Table>
+          <Table className="min-w-[1220px]">
             <TableHeader>
               <TableRow>
-                <TableHead>Application / Service</TableHead>
-                <TableHead>Applicant / Payer</TableHead>
-                <TableHead>Destination Account</TableHead>
-                <TableHead>Expected vs. Received</TableHead>
-                <TableHead>Transaction Ref / Date</TableHead>
-                <TableHead>Payment Evidence</TableHead>
-                <TableHead>Verification Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-[200px]">Application / Service</TableHead>
+                <TableHead className="w-[180px]">Applicant / Payer</TableHead>
+                <TableHead className="w-[180px]">Destination Account</TableHead>
+                <TableHead className="w-[190px]">Expected vs. Received</TableHead>
+                <TableHead className="w-[170px]">Transaction Ref / Date</TableHead>
+                <TableHead className="w-[140px]">Payment Evidence</TableHead>
+                <TableHead className="w-[170px]">Verification Status</TableHead>
+                <TableHead className="text-right w-[190px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -332,7 +332,7 @@ function PaymentConfirmationsContent() {
                   return (
                     <TableRow key={app.id}>
                       {/* 1. Application & Service */}
-                      <TableCell>
+                      <TableCell className="align-top">
                         <div className="font-mono font-bold text-primary text-xs">
                           {app.applicationNumber}
                         </div>
@@ -345,7 +345,7 @@ function PaymentConfirmationsContent() {
                       </TableCell>
 
                       {/* 2. Applicant / Contact */}
-                      <TableCell>
+                      <TableCell className="align-top">
                         <div className="font-medium text-xs text-foreground">
                           {app.applicant
                             ? `${app.applicant.firstName} ${app.applicant.lastName}`
@@ -362,18 +362,18 @@ function PaymentConfirmationsContent() {
                       </TableCell>
 
                       {/* 3. Destination Account */}
-                      <TableCell>
+                      <TableCell className="align-top">
                         <div className="text-xs font-semibold text-foreground">
                           {app.invoice?.virtualBankName || "Official LGA Collection Bank"}
                         </div>
-                        <div className="font-mono text-xs text-muted-foreground">
+                        <div className="font-mono text-xs text-muted-foreground whitespace-nowrap">
                           {app.invoice?.virtualAccountNumber || "—"}
                         </div>
                       </TableCell>
 
                       {/* 4. Expected vs Received (Underpayment Flagging) */}
-                      <TableCell>
-                        <div className="text-xs">
+                      <TableCell className="align-top">
+                        <div className="text-xs whitespace-nowrap">
                           <span className="text-muted-foreground text-[10px] uppercase font-bold block">
                             Expected: {money(expectedFee)}
                           </span>
@@ -407,7 +407,7 @@ function PaymentConfirmationsContent() {
                       </TableCell>
 
                       {/* 5. Transaction Ref */}
-                      <TableCell>
+                      <TableCell className="align-top">
                         <div className="text-xs font-mono font-medium text-foreground truncate max-w-[150px]">
                           {p?.reference || "—"}
                         </div>
@@ -417,7 +417,7 @@ function PaymentConfirmationsContent() {
                       </TableCell>
 
                       {/* 6. Payment Evidence */}
-                      <TableCell>
+                      <TableCell className="align-top">
                         {p?.proofUrl ? (
                           <a
                             href={p.proofUrl}
@@ -438,7 +438,7 @@ function PaymentConfirmationsContent() {
                       </TableCell>
 
                       {/* 7. Verification Status */}
-                      <TableCell>
+                      <TableCell className="align-top">
                         <div className="space-y-1">
                           {confirmed ? (
                             <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 gap-1 text-[11px] font-semibold">
@@ -470,7 +470,7 @@ function PaymentConfirmationsContent() {
                       </TableCell>
 
                       {/* 8. Actions */}
-                      <TableCell className="text-right">
+                      <TableCell className="text-right align-top">
                         <div className="flex flex-wrap items-center justify-end gap-1.5">
                           {/* Live GPay / Bank Audit Button */}
                           {p && (

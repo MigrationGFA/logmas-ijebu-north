@@ -84,16 +84,28 @@ export default function InvoiceDetail({
     isVerifyingPayment,
   } = useInvoicePayment(invoiceId, invoice?.invoiceNumber);
 
+  // ON HOLD (Nov 24, 2026): the Bank Transfer tab on public-service
+  // invoices is off for now. The tab block carries its own JSX comments,
+  // so it is switched off here instead of commented out; flip this back
+  // to true to restore it.
+  const SHOW_BANK_TRANSFER_TAB = false;
+
   // Reserved (static) bank-transfer account for this invoice. The one-shot
   // dynamic minting routes are disabled server-side, so the reserved account
   // carries the bank-transfer flow: display details, citizen transfers,
-  // webhook/treasurer confirmation.
+  // webhook/treasurer confirmation. The lookup only runs while the
+  // transfer tab is in play: resolving the account also mints the
+  // placeholder transfer record, and a citizen merely viewing their
+  // invoice must not create one.
   const {
     virtualAccount: invoiceVa,
     isLoading: isVaLoading,
     error: vaError,
     refetch: refetchVa,
-  } = useInvoiceVirtualAccount(invoice?.invoiceNumber, isPayable);
+  } = useInvoiceVirtualAccount(
+    invoice?.invoiceNumber,
+    isPayable && SHOW_BANK_TRANSFER_TAB,
+  );
 
   // Citizen/staff upload of transfer evidence for THIS invoice — records the
   // proof on the pending bank_transfer Payment and parks the application for
@@ -253,11 +265,6 @@ export default function InvoiceDetail({
       (invoice as any)?.application?.formData?._foCollection,
   );
 
-  // ON HOLD (Nov 24, 2026): the Bank Transfer tab on public-service
-  // invoices is off for now. The tab block carries its own JSX comments,
-  // so it is switched off here instead of commented out; flip this back
-  // to true to restore it.
-  const SHOW_BANK_TRANSFER_TAB = false;
   const foPendingPayment =
     invoice.payments?.find((p) => p.status === "pending") || null;
 
