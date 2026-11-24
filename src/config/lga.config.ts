@@ -766,6 +766,17 @@ export const LGA_CONFIG: LgaConfiguration = {
       { id: "1", title: "Ijebu North East Local Government Secretariat Complex", category: "Infrastructure", image: "/assets/banner5.png" },
       { id: "2", title: "Atan Modern Market Opening", category: "Commerce", image: "/assets/banner2.png" },
       { id: "3", title: "Road Infrastructure & Public Facilities", category: "Infrastructure", image: "/assets/banner1.png" },
+      { id: "4", title: "New Classroom Block, St. Michael's Primary School, Ododeyo", category: "Education", image: "/images/stewardship/st-michaels-classroom-block.jpeg" },
+      { id: "5", title: "Commissioning Plaque, St. Michael's Primary School, Ododeyo", category: "Education", image: "/images/stewardship/st-michaels-commissioning-plaque.jpeg" },
+      { id: "6", title: "New Health Centres at Imomo and Odomolasa", category: "Stewardship Report", image: "/images/stewardship/health-centres-imomo-odomolasa.jpeg" },
+      { id: "7", title: "Boreholes Across the Wards", category: "Stewardship Report", image: "/images/stewardship/boreholes-across-wards.jpeg" },
+      { id: "8", title: "Clean Water Projects Across the Wards", category: "Stewardship Report", image: "/images/stewardship/water-projects.jpeg" },
+      { id: "9", title: "110 Solar Street Lights Across All Wards", category: "Stewardship Report", image: "/images/stewardship/solar-street-lights.jpeg" },
+      { id: "10", title: "Rehabilitation of Women Development Centre Hall, Erunwon", category: "Stewardship Report", image: "/images/stewardship/women-development-centre-erunwon.jpeg" },
+      { id: "11", title: "Renovation of the Local Government Finance Building", category: "Stewardship Report", image: "/images/stewardship/finance-building-renovation.jpeg" },
+      { id: "12", title: "Rehabilitation of Council Offices and Inverter Installation", category: "Stewardship Report", image: "/images/stewardship/office-rehabilitation.jpeg" },
+      { id: "13", title: "Chairman's Project Highlights", category: "Stewardship Report", image: "/images/stewardship/project-highlights.jpeg" },
+      { id: "14", title: "The IREDE Mantra", category: "Stewardship Report", image: "/images/stewardship/irede-mantra.jpeg" },
     ],
 
     investOpps: [
