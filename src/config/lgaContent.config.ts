@@ -147,7 +147,8 @@ export const LEADERSHIP = [
     initials: "AA",
     accent: "gold",
     image: "/images/leadership/vice-chairman.jpeg",
-    email: "",
+    email: "g.adegbesan@gmail.com",
+    phone: "08038852010",
   },
   {
     name: LGA_CONFIG.leadership.secretary?.name || "Secretary to the Local Government",
