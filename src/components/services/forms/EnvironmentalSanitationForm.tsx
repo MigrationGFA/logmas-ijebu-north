@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { LGA_CONFIG } from "@/config/lga.config";
+import { useWards } from "@/hooks/queries/useWards";
 import { ServiceType, getConfiguredFeeForService } from "@/config/lgaServices";
 import { FormWizard, FormStep } from "./FormWizard";
 import { DocumentUploadStep, DocumentSpec } from "./DocumentUploadStep";
@@ -18,7 +19,6 @@ import { Plus, Trash2, Building, ShieldCheck, Trash } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { ApplicantSnapshot } from "../ApplicantSelectionStep";
 
-const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
 
 const facilityUnitSchema = z.object({
   unitName: z.string().min(1, "Unit name is required"),
@@ -162,6 +162,7 @@ const DOCUMENTS: DocumentSpec[] = [
 ];
 
 export default function EnvironmentalSanitationForm({ service, onSubmit, isSubmitting, initialApplicant }: Props) {
+  const { wards } = useWards();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>({});
   const [declaration, setDeclaration] = useState(false);
@@ -182,7 +183,7 @@ export default function EnvironmentalSanitationForm({ service, onSubmit, isSubmi
       phone: "",
       email: "",
       physicalAddress: "",
-      ward: WARDS[0] || "Atan-Imuku",
+      ward: wards[0]?.name || "Atan-Imuku",
       cacNumber: "",
       operatingHours: "",
       totalDailyStaff: "",
@@ -505,9 +506,9 @@ export default function EnvironmentalSanitationForm({ service, onSubmit, isSubmi
                       <SelectValue placeholder="Select Ward" />
                     </SelectTrigger>
                     <SelectContent>
-                      {WARDS.map((w) => (
-                        <SelectItem key={w} value={w}>
-                          {w} Ward
+                      {wards.map((w) => (
+                        <SelectItem key={w.id} value={w.name}>
+                          {w.name} Ward
                         </SelectItem>
                       ))}
                     </SelectContent>

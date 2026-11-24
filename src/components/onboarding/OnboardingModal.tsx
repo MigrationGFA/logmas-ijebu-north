@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/queries/useAuth";
+import { useWards } from "@/hooks/queries/useWards";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -58,8 +59,10 @@ const onboardingSchema = z.object({
   email: z.string().email("Invalid email address"),
   phone: z.string().min(10, "Valid phone number is required"),
   address: z.string().min(1, "Residential address is required"),
-  // town: z.string().min(1, "Town or community is required"),
-  // ward: z.string().min(1, "Ward selection is required"),
+  // Ward and town are optional but advised: the ward routes the
+  // resident's applications to the right councillor and office.
+  town: z.string().optional(),
+  ward: z.string().optional(),
   emergencyContact: z.string().optional(),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   gender: z.string().min(1, "Gender selection is required"),
@@ -86,6 +89,7 @@ interface OnboardingModalProps {
 
 export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModalProps) {
   const { user, updateProfileAsync: updateProfile } = useAuth();
+  const { wards } = useWards();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -107,8 +111,8 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
       email: "",
       phone: "",
       address: "",
-      // town: "",
-      // ward: "",
+      town: "",
+      ward: "",
       emergencyContact: "",
       dateOfBirth: "",
       gender: "",
@@ -133,8 +137,8 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
       setValue("email", u.email || "");
       setValue("phone", u.phone || "");
       setValue("address", u.address || "");
-      // setValue("town", u.town || "");
-      // setValue("ward", u.ward || "");
+      setValue("town", u.town || "");
+      setValue("ward", u.ward?.name || u.ward || "");
       setValue("emergencyContact", u.emergencyContact || "");
       setValue(
         "dateOfBirth",
@@ -196,8 +200,8 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
         lastName: data.lastName,
         phone: data.phone,
         address: data.address,
-        // town: data.town,
-        // ward: data.ward,
+        town: data.town || undefined,
+        ward: data.ward || undefined,
         emergencyContact: data.emergencyContact,
         dateOfBirth: data.dateOfBirth ? new Date(data.dateOfBirth).toISOString() : undefined,
         gender: data.gender,
@@ -247,7 +251,12 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          onSubmit={handleSubmit(onSubmit, () =>
+            toast.error("Please fill in all required fields correctly"),
+          )}
+          className="space-y-6"
+        >
           {/* Passport Photo / Avatar Section */}
           <div className="p-4 rounded-xl border border-border/60 bg-muted/30 flex flex-col sm:flex-row items-center gap-4">
             <div className="relative h-20 w-20 rounded-full overflow-hidden border-2 border-primary/20 bg-muted flex items-center justify-center shrink-0">
@@ -366,10 +375,10 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
           </div>
 
           {/* Location & Ward */}
-          {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border/40">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border/40">
             <div>
               <Label htmlFor="ward" className="text-xs font-semibold">
-                {LGA_CONFIG.identity.name} Ward <span className="text-destructive">*</span>
+                {LGA_CONFIG.identity.name} Ward
               </Label>
               <Controller
                 name="ward"
@@ -380,15 +389,18 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
                       <SelectValue placeholder="Select your political ward" />
                     </SelectTrigger>
                     <SelectContent>
-                      {LGA_WARD_NAMES.map((w) => (
-                        <SelectItem key={w} value={w}>
-                          {w}
+                      {wards.map((w) => (
+                        <SelectItem key={w.id} value={w.name}>
+                          {w.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 )}
               />
+              <p className="text-[11px] text-muted-foreground mt-1">
+                Recommended: your ward helps us route your applications and certificates.
+              </p>
               {errors.ward && (
                 <p className="text-xs text-destructive mt-1">{errors.ward.message}</p>
               )}
@@ -396,7 +408,7 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
 
             <div>
               <Label htmlFor="town" className="text-xs font-semibold">
-                Town / Community <span className="text-destructive">*</span>
+                Town / Community
               </Label>
               <Controller
                 name="town"
@@ -430,7 +442,7 @@ export function OnboardingModal({ isOpen, onClose, onCompleted }: OnboardingModa
                 <p className="text-xs text-destructive mt-1">{errors.address.message}</p>
               )}
             </div>
-          </div> */}
+          </div>
 
           {/* Demographic Details */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-border/40">

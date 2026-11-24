@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { LGA_CONFIG } from "@/config/lga.config";
+import { useWards } from "@/hooks/queries/useWards";
 import { ServiceType, getConfiguredFeeForService } from "@/config/lgaServices";
 import { FormWizard, FormStep } from "./FormWizard";
 import { DocumentUploadStep, DocumentSpec, UploadedFileMeta } from "./DocumentUploadStep";
@@ -20,7 +21,6 @@ import { ApplicantSelectionStep, ApplicantSnapshot } from "../ApplicantSelection
 import { Plus, Trash2, User, Users, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
 
 const officerSchema = z.object({
   role: z.string().min(1, "Role is required"),
@@ -181,6 +181,7 @@ export default function ClubRegistrationForm({
   mode = "citizen",
   initialApplicant,
 }: Props) {
+  const { wards } = useWards();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, UploadedFileMeta>>({});
   const [declaration, setDeclaration] = useState(false);
@@ -214,7 +215,7 @@ export default function ClubRegistrationForm({
       category: "Social & Cultural Club",
       dateFounded: "",
       secretariatAddress: "",
-      ward: WARDS[0] || "the LGA",
+      ward: wards[0]?.name || "the LGA",
       phone: "",
       email: "",
       patronName: "",
@@ -554,9 +555,9 @@ export default function ClubRegistrationForm({
                       <SelectValue placeholder="Select Ward" />
                     </SelectTrigger>
                     <SelectContent>
-                      {WARDS.map((w) => (
-                        <SelectItem key={w} value={w}>
-                          {w} Ward
+                      {wards.map((w) => (
+                        <SelectItem key={w.id} value={w.name}>
+                          {w.name} Ward
                         </SelectItem>
                       ))}
                     </SelectContent>

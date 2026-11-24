@@ -132,7 +132,7 @@ export default function CertificatesDashboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-serif font-bold tracking-tight text-slate-900 dark:text-slate-100">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-slate-100">
               Issued Certificates & Licences
             </h1>
             <Badge variant="outline" className="text-[11px] border-emerald-600/30 text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 font-semibold gap-1">
@@ -456,7 +456,7 @@ export default function CertificatesDashboardPage() {
           <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
             <DialogHeader>
               <div className="flex items-center gap-2">
-                <DialogTitle className="text-lg font-serif font-bold text-slate-900 dark:text-slate-100">
+                <DialogTitle className="text-lg font-bold text-slate-900 dark:text-slate-100">
                   Certificate Record Details
                 </DialogTitle>
                 <Badge className="bg-emerald-700 text-white text-[10px]">Active Record</Badge>

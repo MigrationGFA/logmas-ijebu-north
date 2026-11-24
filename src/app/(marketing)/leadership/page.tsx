@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { LEADERSHIP } from "@/config/lgaContent.config";
 import { LGA_CONFIG } from "@/config/lga.config";
+import { useWards } from "@/hooks/queries/useWards";
 import { Mail, Phone, Crown, Quote, Briefcase } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -44,6 +45,7 @@ function ExecutiveAvatar({ src, alt, initials }: { src: string; alt: string; ini
 }
 
 export default function LeadershipPage() {
+    const { count: wardCount } = useWards();
     const chairman = LEADERSHIP[0];
     return (
         <PageShell>
@@ -94,7 +96,7 @@ export default function LeadershipPage() {
                                     It is with profound humility and gratitude to Almighty God that I welcome you to the official digital home of {LGA_CONFIG.identity.fullName}, {LGA_CONFIG.identity.state}.
                                 </p>
                                 <p>
-                                    Our administration is committed to building an {LGA_CONFIG.identity.name} where every community across our {LGA_CONFIG.wards.length} wards feels the impact of purposeful, people-centred governance. We remain focused on improving infrastructure, supporting our farmers, traders and youths, strengthening grassroots development and making government more accessible to all.
+                                    Our administration is committed to building an {LGA_CONFIG.identity.name} where every community across our {wardCount} wards feels the impact of purposeful, people-centred governance. We remain focused on improving infrastructure, supporting our farmers, traders and youths, strengthening grassroots development and making government more accessible to all.
                                 </p>
                                 <p>
                                     This platform is part of our commitment to open, transparent and accessible governance. Here, you can learn about who we are, what we do, our leadership, communities, programmes and projects, while also accessing essential Local Government services such as Certificate of Origin, Business Permit, Haulage Pass, Building-related services, Demand Notices, payments, official receipts, complaints and other services.

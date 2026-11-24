@@ -80,6 +80,7 @@ export default function ServicesPage() {
     "Licences & Permits",
     "Urban Development",
     "Others",
+    "FO Only",
   ];
 
   const { services, isLoading, error, refetch } = useServices();
@@ -110,7 +111,8 @@ export default function ServicesPage() {
       const matchesCategory =
         selectedCategory === "All" ||
         service.category === selectedCategory ||
-        (selectedCategory === "Others" && service.category === "OTHERS");
+        (selectedCategory === "Others" && service.category === "OTHERS") ||
+        (selectedCategory === "FO Only" && service.foOnly);
       return matchesSearch && matchesCategory;
     })
     .sort((a: any, b: any) => {
@@ -242,11 +244,8 @@ export default function ServicesPage() {
                             : service.category}
                         </Badge>
                         {service.foOnly && (
-                          <Badge
-                            variant="outline"
-                            className="text-[10px] font-semibold border-primary/40 text-primary"
-                          >
-                            FO Only
+                          <Badge className="text-[11px] font-bold bg-amber-500 text-white border-amber-500 hover:bg-amber-500 px-2 py-0.5 shadow-sm">
+                            FO ONLY
                           </Badge>
                         )}
                       </div>

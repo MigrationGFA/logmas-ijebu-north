@@ -222,13 +222,6 @@ export interface LgaBrandingConfig {
   appDescription: string;
 }
 
-export interface LgaWardConfig {
-  id: string;
-  name: string;
-  code: string;
-  description?: string;
-}
-
 export interface LgaContentConfig {
   /** Homepage "at a glance" statistics */
   stats: {
@@ -295,7 +288,6 @@ export interface LgaConfiguration {
   certificates: LgaCertificateConfig;
   branding: LgaBrandingConfig;
   banking: LgaBankingConfig;
-  wards: LgaWardConfig[];
   content: LgaContentConfig;
 }
 
@@ -554,68 +546,6 @@ export const LGA_CONFIG: LgaConfiguration = {
       },
     },
 
-    wards: [
-    {
-      id: "1dd25f41-d76c-46d6-bf8a-cf47d4981cd9",
-      name: "Atan-Imuku",
-      code: "INE-01",
-      description: "LGA headquarters & civic-secretariat axis",
-    },
-    {
-      id: "3a4cbbdc-6a9a-420e-a405-ac80febe2425",
-      name: "Odosimadegun/Odosenbora",
-      code: "INE-02",
-      description: "Mixed residential and trading ward",
-    },
-    {
-      id: "3b612f5c-3c05-4332-a46a-92fc8f830519",
-      name: "Imomo/Ododeyo/Imewuro",
-      code: "INE-03",
-      description: "Agricultural corridor ward",
-    },
-    {
-      id: "652b0a54-5382-499f-a7d0-c552b012216c",
-      name: "Odosenlu/Okeolowu/Alaro",
-      code: "INE-04",
-      description: "Mixed residential ward belt",
-    },
-    {
-      id: "5e304bbb-cf9b-49c6-a9a6-1bd934f4f54c",
-      name: "Igede/Itamarun",
-      code: "INE-05",
-      description: "Rural farming settlements",
-    },
-    {
-      id: "ad9d983b-376e-48e9-8409-1fc00c87bac9",
-      name: "Oju Ona",
-      code: "INE-06",
-      description: "Urban commercial ward",
-    },
-    {
-      id: "4d093ac0-7e02-47bd-915b-0fe85d2c0f0e",
-      name: "Isonyin/Apunren",
-      code: "INE-07",
-      description: "Renewable-energy and trading corridor",
-    },
-    {
-      id: "5aab4f90-023a-41f3-9bc7-9027d7f006ae",
-      name: "Ilese Ijebu",
-      code: "INE-08",
-      description: "Township residential ward",
-    },
-    {
-      id: "2f04bc56-6d90-4dbf-8e3e-a89cfa4fd217",
-      name: "Ogbogbo Oke Eri",
-      code: "INE-09",
-      description: "Coastal/rural administrative ward",
-    },
-    {
-      id: "da2bd6f7-c823-44e7-9ffa-577044d5c232",
-      name: "Erunwon",
-      code: "INE-10",
-      description: "Historic township perimeter",
-    },
-  ],
 
   content: {
     stats: {
@@ -877,10 +807,6 @@ export function getLgaCertificateUrl(certificateNumberOrToken: string): string {
   return `${baseUrl.replace(/\/$/, "")}/certificate/${encodeURIComponent(certificateNumberOrToken)}`;
 }
 
-/**
- * List of ward names for dropdowns and select components
- */
-export const LGA_WARD_NAMES = LGA_CONFIG.wards.map((w) => w.name);
 
 
 /**

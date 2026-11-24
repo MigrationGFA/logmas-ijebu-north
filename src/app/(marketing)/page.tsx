@@ -47,6 +47,7 @@ import {
 } from "@/components/ui/carousel";
 import { SiteHeader, SiteFooter, NAVBAR_SERVICES } from "@/components/site-chrome";
 import { useServices } from "@/hooks/queries/useServices";
+import { useWards } from "@/hooks/queries/useWards";
 import { usePublicNews } from "@/hooks/queries/useNews";
 import { LGA_SERVICES } from "@/config/lgaServices";
 import { SITE_CONTACT } from "@/config/siteContact";
@@ -832,6 +833,7 @@ function ContactSection() {
 }
 
 function ChairmanSection() {
+  const { count: wardCount } = useWards();
   const c = LEADERSHIP[0];
   return (
     <section className="container mx-auto px-4 py-16 md:py-20">
@@ -885,7 +887,7 @@ function ChairmanSection() {
               </p>
               <p>
                 Our administration is committed to building an {LGA_CONFIG.identity.name} where every
-                community across our {LGA_CONFIG.wards.length} wards feels the impact of purposeful,
+                community across our {wardCount} wards feels the impact of purposeful,
                 people-centred governance. We remain focused on improving
                 infrastructure, supporting our farmers, traders and youths,
                 strengthening grassroots development and making government more
@@ -1080,6 +1082,7 @@ function LeadershipPreview() {
 }
 
 function WardsMap() {
+  const { count: wardCount } = useWards();
   const [active, setActive] = useState(0);
   const ward = WARDS_INFO[active];
   return (
@@ -1087,13 +1090,13 @@ function WardsMap() {
       <div className="container mx-auto px-4">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <Badge variant="outline" className="mb-3">
-            Our {LGA_CONFIG.wards.length} Wards
+            Our {wardCount} Wards
           </Badge>
           <h2 className="text-3xl md:text-4xl font-bold tracking-tight">
             Explore {LGA_CONFIG.identity.fullName}
           </h2>
           <p className="mt-3 text-muted-foreground">
-            A council of {LGA_CONFIG.wards.length} unique wards  -  each with its own agricultural,
+            A council of {wardCount} unique wards  -  each with its own agricultural,
             mineral, educational and cultural assets. Tap a ward to learn more.
           </p>
         </div>

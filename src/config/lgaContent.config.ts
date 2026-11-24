@@ -128,7 +128,7 @@ export const LEADERSHIP = [
   {
     name: LGA_CONFIG.leadership.chairman.name,
     role: LGA_CONFIG.leadership.chairman.title,
-    bio: `Leading ${LGA_CONFIG.identity.fullName} with a vision for purposeful, people-centred governance, digital transformation, agricultural empowerment, and infrastructure growth across all ${LGA_CONFIG.wards.length} wards.`,
+    bio: `Leading ${LGA_CONFIG.identity.fullName} with a vision for purposeful, people-centred governance, digital transformation, agricultural empowerment, and infrastructure growth across all our wards.`,
     initials: LGA_CONFIG.leadership.chairman.name
       .split(" ")
       .map((n) => n[0])

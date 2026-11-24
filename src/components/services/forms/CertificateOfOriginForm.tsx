@@ -11,6 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LGA_CONFIG } from "@/config/lga.config";
+import { useWards } from "@/hooks/queries/useWards";
 import {
   ServiceType,
   getConfiguredFeeForService,
@@ -30,7 +31,6 @@ import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
 
 export const certificateOfOriginSchema = z.object({
   fullName: z.string().min(2, "Full legal name is required"),
@@ -131,6 +131,7 @@ export default function CertificateOfOriginForm({
   mode = "citizen",
   initialApplicant,
 }: Props) {
+  const { wards } = useWards();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<
     Record<string, UploadedFileMeta>
@@ -153,7 +154,7 @@ export default function CertificateOfOriginForm({
       phone: initialApplicant?.phone || "",
       email: initialApplicant?.email || "",
       address: initialApplicant?.address || "",
-      ward: initialApplicant?.ward ?? WARDS[0] ?? "the LGA",
+      ward: initialApplicant?.ward ?? wards[0]?.name ?? "the LGA",
       nin: initialApplicant?.nin ?? "",
       cacNumber: initialApplicant?.cacNumber ?? "",
       dob: "",
@@ -510,9 +511,9 @@ export default function CertificateOfOriginForm({
                         <SelectValue placeholder="Select Ward" />
                       </SelectTrigger>
                       <SelectContent>
-                  {    WARDS.map((ward) => (
-                        <SelectItem key={ward} value={ward}>
-                          {ward}
+                  {    wards.map((ward) => (
+                        <SelectItem key={ward.id} value={ward.name}>
+                          {ward.name}
                         </SelectItem>
                       ))}
                       

@@ -9,10 +9,10 @@ import { Card } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, UserCheck, UserPlus, ShieldCheck, CheckCircle2, User, Phone, MapPin, Building2, AlertCircle } from "lucide-react";
 import { LGA_CONFIG } from "@/config/lga.config";
+import { useWards } from "@/hooks/queries/useWards";
 import { ApplicantSearchResult } from "@/types/application";
 import { useSearchApplicants } from "@/hooks/queries/useApplications";
 
-const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
 
 export interface ApplicantSnapshot {
   applicantId?: string | null;
@@ -43,6 +43,7 @@ export function ApplicantSelectionStep({
   serviceCategory,
   serviceName,
 }: ApplicantSelectionStepProps) {
+  const { wards } = useWards();
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isCreatingNew, setIsCreatingNew] = useState(false);
@@ -324,9 +325,9 @@ export function ApplicantSelectionStep({
                   <SelectValue placeholder="Select Ward" />
                 </SelectTrigger>
                 <SelectContent>
-                  {WARDS.map((w) => (
-                    <SelectItem key={w} value={w}>
-                      {w} Ward
+                  {wards.map((w) => (
+                    <SelectItem key={w.id} value={w.name}>
+                      {w.name} Ward
                     </SelectItem>
                   ))}
                 </SelectContent>

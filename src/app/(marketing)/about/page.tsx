@@ -5,10 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { PageShell, PageHero } from "@/components/page-shell";
 import { LGA_CONFIG } from "@/config/lga.config";
+import { useWards } from "@/hooks/queries/useWards";
 import { Building2, Users, Target, Award, MapPin, Calendar, Crown, ScrollText } from "lucide-react";
 import Link from "next/link";
 
-const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
+
 
 
 const TIMELINE = [
@@ -40,6 +41,7 @@ const TIMELINE = [
 ];
 
 export default function AboutPage() {
+  const { wards, count: wardCount } = useWards();
   return (
     <PageShell>
       <PageHero
@@ -62,7 +64,7 @@ export default function AboutPage() {
           {[
             {
               icon: Building2,
-              title: `${LGA_CONFIG.wards.length} Wards`,
+              title: `${wardCount} Wards`,
               desc: "Politically organized for grassroots impact",
             },
             { icon: Users, title: "320K+ Citizens", desc: "Vibrant and industrious community" },
@@ -91,7 +93,7 @@ export default function AboutPage() {
           </h2>
           <div className="mt-4 space-y-4 text-sm md:text-base text-muted-foreground leading-relaxed">
             <p>
-              {LGA_CONFIG.identity.fullName} was created in <b>{LGA_CONFIG.identity.establishedYear}</b> with its administrative headquarters in <b>{LGA_CONFIG.identity.headquarters}</b>. The LGA spans <b>{LGA_CONFIG.wards.length} political wards</b> and is home to a warm, industrious population.
+              {LGA_CONFIG.identity.fullName} was created in <b>{LGA_CONFIG.identity.establishedYear}</b> with its administrative headquarters in <b>{LGA_CONFIG.identity.headquarters}</b>. The LGA spans <b>{wardCount} political wards</b> and is home to a warm, industrious population.
             </p>
             <p>
               The LGA's economy is anchored by vast agricultural production (cassava, maize, poultry, cocoa), extensive granite quarrying and solid mineral processing, haulage corridors, tertiary education institutions, and a fast-growing digital SME ecosystem.
@@ -160,16 +162,16 @@ export default function AboutPage() {
 
       <section className="container mx-auto px-4 py-14">
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-6">
-          The {LGA_CONFIG.wards.length} political wards of {LGA_CONFIG.identity.name} LGA
+          The {wardCount} political wards of {LGA_CONFIG.identity.name} LGA
         </h2>
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
-          {WARDS.map((w) => (
+          {wards.map((w) => (
             <Card
-              key={w}
+              key={w.id}
               className="p-4 bg-gradient-card border-border/40 hover:shadow-elegant transition-smooth flex items-center gap-3"
             >
               <MapPin className="h-4 w-4 text-primary" />{" "}
-              <span className="font-medium text-sm">{w}</span>
+              <span className="font-medium text-sm">{w.name}</span>
             </Card>
           ))}
         </div>

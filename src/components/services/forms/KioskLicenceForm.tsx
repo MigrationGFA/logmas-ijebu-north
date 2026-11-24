@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LGA_CONFIG } from "@/config/lga.config";
+import { useWards } from "@/hooks/queries/useWards";
 import { ServiceType } from "@/config/lgaServices";
 import { FormWizard, FormStep } from "./FormWizard";
 import { DocumentUploadStep, DocumentSpec } from "./DocumentUploadStep";
@@ -27,7 +28,6 @@ import {
 import { Plus, Trash2, Store, ShoppingBag, ShieldCheck } from "lucide-react";
 import { ApplicantSnapshot } from "../ApplicantSelectionStep";
 
-const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
 
 const productLineSchema = z.object({
   itemCategory: z.string().min(1, "Merchandise category is required"),
@@ -163,6 +163,7 @@ export default function KioskLicenceForm({
   isSubmitting,
   initialApplicant,
 }: Props) {
+  const { wards } = useWards();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>(
     {},
@@ -188,7 +189,7 @@ export default function KioskLicenceForm({
       phone: initialApplicant?.phone || "",
       email: initialApplicant?.email || "",
       residentialAddress: initialApplicant?.address || "",
-      ward: initialApplicant?.ward || WARDS[0] || "the LGA",
+      ward: initialApplicant?.ward || wards[0]?.name || "the LGA",
       nin: initialApplicant?.nin || "",
       proposedLocation: "",
       structureType: "Fabricated Metal Container (8ft x 10ft)",
@@ -557,9 +558,9 @@ export default function KioskLicenceForm({
                       <SelectValue placeholder="Select Ward" />
                     </SelectTrigger>
                     <SelectContent>
-                      {WARDS.map((w) => (
-                        <SelectItem key={w} value={w}>
-                          {w} Ward
+                      {wards.map((w) => (
+                        <SelectItem key={w.id} value={w.name}>
+                          {w.name} Ward
                         </SelectItem>
                       ))}
                     </SelectContent>

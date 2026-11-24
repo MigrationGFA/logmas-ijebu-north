@@ -15,6 +15,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LGA_CONFIG } from "@/config/lga.config";
+import { useWards } from "@/hooks/queries/useWards";
 import { ServiceType } from "@/config/lgaServices";
 import { FormWizard, FormStep } from "./FormWizard";
 import { DocumentUploadStep, DocumentSpec } from "./DocumentUploadStep";
@@ -27,7 +28,6 @@ import { Plus, Trash2, Tv, ShieldCheck, Radio } from "lucide-react";
 import { ApplicantSnapshot } from "../ApplicantSelectionStep";
 import { formatAndValidateNigerianPhoneNumber } from "@/lib/helper";
 
-const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
 
 interface Props {
   service: ServiceType;
@@ -170,6 +170,7 @@ export default function ViewingCentreLicenceForm({
   isSubmitting,
   initialApplicant,
 }: Props) {
+  const { wards } = useWards();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>(
     {},
@@ -192,7 +193,7 @@ export default function ViewingCentreLicenceForm({
       phone: initialApplicant?.phone || "",
       email: initialApplicant?.email || "",
       physicalAddress: initialApplicant?.address || "",
-      ward: initialApplicant?.ward || WARDS[0] || "the LGA",
+      ward: initialApplicant?.ward || wards[0]?.name || "the LGA",
       cacNumber: "",
       seatingCapacity: "",
       standardFee: "",
@@ -516,9 +517,9 @@ export default function ViewingCentreLicenceForm({
                       <SelectValue placeholder="Select Ward" />
                     </SelectTrigger>
                     <SelectContent>
-                      {WARDS.map((w) => (
-                        <SelectItem key={w} value={w}>
-                          {w} Ward
+                      {wards.map((w) => (
+                        <SelectItem key={w.id} value={w.name}>
+                          {w.name} Ward
                         </SelectItem>
                       ))}
                     </SelectContent>

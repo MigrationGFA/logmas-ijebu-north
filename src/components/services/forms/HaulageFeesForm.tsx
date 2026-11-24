@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { LGA_CONFIG } from "@/config/lga.config";
+import { useWards } from "@/hooks/queries/useWards";
 import { ServiceType } from "@/config/lgaServices";
 import { FormWizard, FormStep } from "./FormWizard";
 import { DocumentUploadStep, DocumentSpec } from "./DocumentUploadStep";
@@ -27,7 +28,6 @@ import {
 import { Plus, Trash2, Truck, Gauge } from "lucide-react";
 import { ApplicantSnapshot } from "../ApplicantSelectionStep";
 
-const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
 
 const vehicleSchema = z.object({
   plateNumber: z.string().min(1, "Plate / Reg number is required"),
@@ -159,6 +159,7 @@ export default function HaulageFeesForm({
   isSubmitting,
   initialApplicant,
 }: Props) {
+  const { wards } = useWards();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, string>>(
     {},
@@ -182,7 +183,7 @@ export default function HaulageFeesForm({
       phone: initialApplicant?.phone || "",
       email: initialApplicant?.email || "",
       officeAddress: initialApplicant?.address || "",
-      ward: initialApplicant?.ward || WARDS[0] || "Atan-Imuku",
+      ward: initialApplicant?.ward || wards[0]?.name || "Atan-Imuku",
       primaryCargo: "Granite & Quarry Stone Aggregates",
       loadingPoints: "",
       destinationCorridor: "",
@@ -460,9 +461,9 @@ export default function HaulageFeesForm({
                       <SelectValue placeholder="Select Ward" />
                     </SelectTrigger>
                     <SelectContent>
-                      {WARDS.map((w) => (
-                        <SelectItem key={w} value={w}>
-                          {w} Ward
+                      {wards.map((w) => (
+                        <SelectItem key={w.id} value={w.name}>
+                          {w.name} Ward
                         </SelectItem>
                       ))}
                     </SelectContent>

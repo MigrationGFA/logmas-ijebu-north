@@ -62,6 +62,7 @@ import {
   useApproveApplication,
   useDeclineApplication,
 } from "@/hooks/queries/useApplications";
+import { useWards } from "@/hooks/queries/useWards";
 import { Application, ApplicationStatus } from "@/types/application";
 import { FormDataViewer } from "@/components/services/FormDataViewer";
 import { DocumentsViewer } from "@/components/services/DocumentsViewer";
@@ -69,7 +70,7 @@ import { useServices } from "@/hooks/queries/useServices";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { TableSkeleton } from "@/components/ui/LoadingSkeleton";
 
-const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
+
 
 export default function ApplicationsPage() {
   const currentUser = tokenManager.getUser();
@@ -81,6 +82,7 @@ export default function ApplicationsPage() {
 
   // Search and Filter States
   const [searchTerm, setSearchTerm] = useState("");
+  const { wards } = useWards();
 
   // Seed the search box from the URL: the header quick search links here
   // with ?search=<application number> so its result lands pre-filtered.
@@ -94,6 +96,18 @@ export default function ApplicationsPage() {
 
   // Selection & Modal States
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+
+  // FO collections are stamped by the backend at creation time. The payer
+  // has no account; the record's applicant is the collecting officer, so
+  // the details modal presents the payer and the officer separately.
+  const isFoCollection = selectedApp?.formData?._foCollection === true;
+  const officerName = selectedApp
+    ? [selectedApp.applicant?.firstName, selectedApp.applicant?.lastName]
+        .filter(Boolean)
+        .join(" ") ||
+      selectedApp.applicant?.email ||
+      "Field Officer"
+    : "";
   const [detailModalOpen, setDetailModalOpen] = useState(false);
   const [declineModalOpen, setDeclineModalOpen] = useState(false);
   const [declineReason, setDeclineReason] = useState("");
@@ -453,9 +467,9 @@ export default function ApplicationsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All {LGA_CONFIG.identity.name} Wards</SelectItem>
-                {WARDS.map((w) => (
-                  <SelectItem key={w} value={w}>
-                    {w} Ward
+                {wards.map((w) => (
+                  <SelectItem key={w.id} value={w.name}>
+                    {w.name} Ward
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -687,6 +701,77 @@ export default function ApplicationsPage() {
 
             {/* Modal Body */}
             <div className="flex-1 overflow-y-auto pr-1 py-4 space-y-6">
+              {isFoCollection ? (
+                <>
+                  {/* Payer Details: the person the officer collected from */}
+                  <div className="border rounded-xl p-4 bg-muted/10 space-y-3">
+                    <div className="flex items-center justify-between border-b pb-1.5">
+                      <h5 className="font-bold text-xs uppercase tracking-wider text-primary flex items-center gap-1.5">
+                        <User className="h-3.5 w-3.5" /> Payer Details
+                      </h5>
+                      <Badge variant="outline" className="bg-sky-500/10 text-sky-700 text-[10px] border-sky-300">
+                        Field Officer Collection
+                      </Badge>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                      <div>
+                        <span className="text-muted-foreground text-[11px] block font-medium">Payer Name:</span>
+                        <span className="font-semibold text-foreground">{selectedApp.formData?.payerName || " - "}</span>
+                      </div>
+                      <div>
+                        <span className="text-muted-foreground text-[11px] block font-medium">Phone Number:</span>
+                        <span className="font-semibold text-foreground">{selectedApp.formData?.phone || "N/A"}</span>
+                      </div>
+                      {selectedApp.formData?.email && (
+                        <div>
+                          <span className="text-muted-foreground text-[11px] block font-medium">Email:</span>
+                          <span className="font-semibold text-foreground">{selectedApp.formData.email}</span>
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-muted-foreground text-[11px] block font-medium">Location:</span>
+                        <span className="font-semibold text-foreground">{selectedApp.formData?.location || " - "}</span>
+                      </div>
+                      {selectedApp.formData?.merchantName && (
+                        <div>
+                          <span className="text-muted-foreground text-[11px] block font-medium">Merchant Name:</span>
+                          <span className="font-semibold text-foreground">{selectedApp.formData.merchantName}</span>
+                        </div>
+                      )}
+                      <div>
+                        <span className="text-muted-foreground text-[11px] block font-medium">Amount Paid:</span>
+                        <span className="font-bold text-foreground">₦{Number(selectedApp.formData?.amountPaid ?? selectedApp.feeAmount ?? 0).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Collected By: the officer whose account is on the record */}
+                  <div className="border rounded-xl p-4 bg-muted/10 space-y-3">
+                    <h5 className="font-bold text-xs uppercase tracking-wider text-primary flex items-center gap-1.5 border-b pb-1.5">
+                      <UserCheck className="h-3.5 w-3.5" /> Collected By
+                    </h5>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 text-xs">
+                      <div>
+                        <span className="text-muted-foreground text-[11px] block font-medium">Officer Name:</span>
+                        <span className="font-semibold text-foreground">{officerName}</span>
+                      </div>
+                      {selectedApp.applicant?.phone && (
+                        <div>
+                          <span className="text-muted-foreground text-[11px] block font-medium">Officer Phone:</span>
+                          <span className="font-semibold text-foreground">{selectedApp.applicant.phone}</span>
+                        </div>
+                      )}
+                      {selectedApp.applicant?.ward && (
+                        <div>
+                          <span className="text-muted-foreground text-[11px] block font-medium">Ward:</span>
+                          <span className="font-semibold text-foreground">{selectedApp.applicant.ward}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
               {/* Applicant Snapshot Profile */}
               <div className="border rounded-xl p-4 bg-muted/10 space-y-3">
                 <div className="flex items-center justify-between border-b pb-1.5">
@@ -744,6 +829,9 @@ export default function ApplicationsPage() {
                 </div>
               </div>
 
+                </>
+              )}
+
               {/* Decline Reason Banner if declined */}
               {selectedApp.declineReason && (
                 <div className="bg-red-500/10 border-2 border-red-500/30 rounded-xl p-4 space-y-1 text-xs text-red-900 dark:text-red-200">
@@ -790,8 +878,9 @@ export default function ApplicationsPage() {
                 </div>
               )}
 
-              {/* Dynamic Form Data Viewer */}
-              {selectedApp.formData && (
+              {/* Dynamic Form Data Viewer. FO collections present their
+                  data in the Payer Details block above instead. */}
+              {selectedApp.formData && !isFoCollection && (
                 <div>
                   <h5 className="font-bold text-xs uppercase tracking-wider text-muted-foreground mb-2">
                     Application Parameters & Structured Data

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/queries/useAuth";
+import { useWards } from "@/hooks/queries/useWards";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { optional, z } from "zod";
@@ -40,8 +41,7 @@ import { FullPageLoader } from "@/components/ProtectedRoute";
 import { formatAndValidateNigerianPhoneNumber } from "@/lib/helper";
 import { LGA_CONFIG } from "@/config/lga.config";
 
-// Ward options - sourced from LGA_CONFIG
-const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
+// Ward options come from the database via useWards (see component).
 
 const GENDER_OPTIONS = ["Male", "Female", "Other"];
 const IDENTIFICATION_TYPES = [
@@ -120,6 +120,7 @@ export default function OnboardingPage() {
     isUpdatingProfile,
     isLoadingUser,
   } = useAuth();
+  const { wards } = useWards();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
@@ -714,9 +715,9 @@ export default function OnboardingPage() {
                           <SelectValue placeholder="Select ward" />
                         </SelectTrigger>
                         <SelectContent>
-                          {WARDS.map((ward) => (
-                            <SelectItem key={ward} value={ward}>
-                              {ward}
+                          {wards.map((ward) => (
+                            <SelectItem key={ward.id} value={ward.name}>
+                              {ward.name}
                             </SelectItem>
                           ))}
                         </SelectContent>

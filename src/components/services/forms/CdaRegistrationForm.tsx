@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { LGA_CONFIG } from "@/config/lga.config";
+import { useWards } from "@/hooks/queries/useWards";
 import { ServiceType, getConfiguredFeeForService } from "@/config/lgaServices";
 import { FormWizard, FormStep } from "./FormWizard";
 import { DocumentUploadStep, DocumentSpec, UploadedFileMeta } from "./DocumentUploadStep";
@@ -18,7 +19,6 @@ import { useForm, Controller, useFieldArray } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-const WARDS = LGA_CONFIG.wards.map((ward) => ward.name);
 
 const cdaOfficerSchema = z.object({
   role: z.string().min(1, "Role is required"),
@@ -170,6 +170,7 @@ export default function CdaRegistrationForm({
   mode = "citizen",
   initialApplicant,
 }: Props) {
+  const { wards } = useWards();
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [uploadedFiles, setUploadedFiles] = useState<Record<string, UploadedFileMeta>>({});
   const [declaration, setDeclaration] = useState(false);
@@ -200,7 +201,7 @@ export default function CdaRegistrationForm({
     defaultValues: {
       cdaName: "",
       cdaAcronym: "",
-      ward: WARDS[0] || "Atan-Imuku",
+      ward: wards[0]?.name || "Atan-Imuku",
       hostVillage: "",
       baaleName: "",
       baalePhone: "",
@@ -504,9 +505,9 @@ export default function CdaRegistrationForm({
                       <SelectValue placeholder="Select Ward" />
                     </SelectTrigger>
                     <SelectContent>
-                      {WARDS.map((w) => (
-                        <SelectItem key={w} value={w}>
-                          {w} Ward
+                      {wards.map((w) => (
+                        <SelectItem key={w.id} value={w.name}>
+                          {w.name} Ward
                         </SelectItem>
                       ))}
                     </SelectContent>

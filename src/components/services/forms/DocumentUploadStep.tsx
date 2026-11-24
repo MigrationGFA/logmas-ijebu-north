@@ -113,6 +113,14 @@ export function DocumentUploadStep({
     e.stopPropagation();
   };
 
+  // "Attach Sample" fabricates a document so forms can be exercised
+  // without real files. It is a development convenience only: it must
+  // never reach citizens on the live site.
+  const canAttachSample =
+    process.env.NODE_ENV === "development" ||
+    (typeof window !== "undefined" &&
+      ["localhost", "127.0.0.1"].includes(window.location.hostname));
+
   const simulateQuickUpload = (docId: string, docLabel: string) => {
     const isImageDoc = docId.toLowerCase().includes("photo") || docId.toLowerCase().includes("passport") || docId.toLowerCase().includes("image");
     const ext = isImageDoc ? "jpg" : "pdf";
@@ -298,15 +306,17 @@ export function DocumentUploadStep({
                       <Upload className="w-3.5 h-3.5" />
                       Choose File
                     </Button>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => simulateQuickUpload(doc.id, doc.label)}
-                      className="text-[11px] h-8 text-muted-foreground hover:text-foreground px-2.5 shrink-0"
-                    >
-                      Attach Sample
-                    </Button>
+                    {canAttachSample && (
+                      <Button
+                        type="button"
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => simulateQuickUpload(doc.id, doc.label)}
+                        className="text-[11px] h-8 text-muted-foreground hover:text-foreground px-2.5 shrink-0"
+                      >
+                        Attach Sample
+                      </Button>
+                    )}
                   </div>
                 )}
               </div>

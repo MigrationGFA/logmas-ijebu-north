@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -32,6 +32,7 @@ import {
   User,
 } from "lucide-react";
 import { useCreateDemandNotice } from "@/hooks/queries/useDemandNotices";
+import { useWards } from "@/hooks/queries/useWards";
 import { LGA_CONFIG, getLgaServiceBanking } from "@/config/lga.config";
 import { DemandNoticeRecord } from "@/services/apiDemandNotice";
 
@@ -63,7 +64,12 @@ export default function IssueDemandNoticeModal({
   const [rcNumber, setRcNumber] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [ward, setWard] = useState(LGA_CONFIG.wards[0]?.name ?? "");
+  const { wards } = useWards();
+  const [ward, setWard] = useState("");
+  // Default to the first ward once the database list arrives.
+  useEffect(() => {
+    if (!ward && wards.length > 0) setWard(wards[0].name);
+  }, [wards, ward]);
   const [address, setAddress] = useState("");
   const [serviceCode, setServiceCode] = useState("demand_notice");
   const [chargeDescription, setChargeDescription] = useState("Annual Municipal Business Premises Demand Notice");
@@ -227,7 +233,7 @@ export default function IssueDemandNoticeModal({
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    {LGA_CONFIG.wards.map((w) => (
+                    {wards.map((w) => (
                       <SelectItem key={w.id} value={w.name}>
                         {w.name}
                       </SelectItem>

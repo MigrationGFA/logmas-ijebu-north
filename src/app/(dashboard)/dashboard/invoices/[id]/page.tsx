@@ -114,7 +114,8 @@ export default function InvoiceDetail({
   const { bankAccount } = useBankAccount(
     Boolean(
       (invoice as any)?.service?.foOnly ??
-        (invoice as any)?.application?.service?.foOnly,
+        (invoice as any)?.application?.service?.foOnly ??
+        (invoice as any)?.application?.formData?._foCollection,
     ),
   );
   const [foProofFile, setFoProofFile] = React.useState<File | null>(null);
@@ -243,10 +244,20 @@ export default function InvoiceDetail({
   // FO-only services show the LGA collection account (from the database)
   // in their own panel instead of the public payment options: the officer
   // records the transfer with proof, the treasurer confirms.
+  // The _foCollection stamp on the application is a third signal, so the
+  // public payment options can never surface on an FO invoice even if a
+  // service relation is missing from the payload.
   const isFoOnlyInvoice = Boolean(
     (invoice as any)?.service?.foOnly ??
-      (invoice as any)?.application?.service?.foOnly,
+      (invoice as any)?.application?.service?.foOnly ??
+      (invoice as any)?.application?.formData?._foCollection,
   );
+
+  // ON HOLD (Nov 24, 2026): the Bank Transfer tab on public-service
+  // invoices is off for now. The tab block carries its own JSX comments,
+  // so it is switched off here instead of commented out; flip this back
+  // to true to restore it.
+  const SHOW_BANK_TRANSFER_TAB = false;
   const foPendingPayment =
     invoice.payments?.find((p) => p.status === "pending") || null;
 
@@ -520,19 +531,23 @@ export default function InvoiceDetail({
           ) : isPayable ? (
             <Card className="p-6 bg-gradient-card border-border/40">
               <h3 className="font-semibold mb-4">Payment Options</h3>
-              <Tabs defaultValue={isPayer ? "online" : isOfficer ? "pos" : "transfer"}>
+              <Tabs defaultValue={isPayer ? "online" : isOfficer ? "pos" : "online"}>
                 <TabsList className="mb-4">
                   {isPayer && (
                     <TabsTrigger value="online">
                       <Link2 className="h-4 w-4 mr-1.5" /> Pay online
                     </TabsTrigger>
                   )}
-                  {/* Bank transfer is visible to EVERYONE with invoice access —
-                      staff/FO need the account details to relay to citizens and
+                  {/* Bank Transfer tab: OFF for now (see
+                      SHOW_BANK_TRANSFER_TAB). When it returns: bank transfer
+                      is visible to EVERYONE with invoice access — staff/FO
+                      need the account details to relay to citizens and
                       merchants who cannot pay online. */}
-                  <TabsTrigger value="transfer">
-                    <Landmark className="h-4 w-4 mr-1.5" /> Bank Transfer
-                  </TabsTrigger>
+                  {SHOW_BANK_TRANSFER_TAB && (
+                    <TabsTrigger value="transfer">
+                      <Landmark className="h-4 w-4 mr-1.5" /> Bank Transfer
+                    </TabsTrigger>
+                  )}
                   {isOfficer && (
                     <>
                       <TabsTrigger value="pos">
@@ -582,6 +597,7 @@ export default function InvoiceDetail({
                     </Button>
                   </div>
                 </TabsContent>
+                {SHOW_BANK_TRANSFER_TAB && (
                 <TabsContent value="transfer">
                   <div className="p-4 rounded-lg border border-border/60 bg-background space-y-3">
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -754,6 +770,7 @@ export default function InvoiceDetail({
                         )}
                   </div>
                 </TabsContent>
+                )}
                 <TabsContent value="pos">
                   <POSConfirmDialog
                     onConfirm={(ref) => handlePaymentConfirm("pos", ref)}

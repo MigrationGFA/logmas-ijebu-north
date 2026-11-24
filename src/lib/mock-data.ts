@@ -75,7 +75,7 @@ export const TESTIMONIALS = [
   },
   {
     name: "Engr. Timothy Olalere",
-    role: `Quarry Operator, ${LGA_CONFIG.wards[0]?.name || "Ward 1"}`,
+    role: `Quarry Operator, Atan-Imuku`,
     quote:
       "LOGMAS makes haulage and quarry permit payments transparent for our fleet drivers.",
   },
@@ -85,7 +85,7 @@ export const NEWS = [
   {
     date: "12 May 2026",
     tag: "Announcement",
-    title: `${LGA_CONFIG.identity.name} LOGMAS Service Expansion Portal Goes Live Across All ${LGA_CONFIG.wards.length} Wards`,
+    title: `${LGA_CONFIG.identity.name} LOGMAS Service Expansion Portal Goes Live Across All 10 Wards`,
   },
 ];
 
@@ -229,7 +229,7 @@ export const LEADERSHIP = [
   {
     name: LGA_CONFIG.leadership.chairman.name,
     role: LGA_CONFIG.leadership.chairman.title,
-    bio: `Leading ${LGA_CONFIG.identity.fullName} with a vision for purposeful, people-centred governance, digital transformation, agricultural empowerment, and infrastructure growth across all ${LGA_CONFIG.wards.length} wards.`,
+    bio: `Leading ${LGA_CONFIG.identity.fullName} with a vision for purposeful, people-centred governance, digital transformation, agricultural empowerment, and infrastructure growth across all 10 wards.`,
     initials: LGA_CONFIG.leadership.chairman.name.split(" ").map(n => n[0]).filter(Boolean).slice(0, 2).join("") || "WA",
     accent: "primary",
     image: chairmanPhoto,
@@ -270,7 +270,7 @@ export const LEADERSHIP = [
   },
 ];
 
-export const WARDS = LGA_CONFIG.wards.map((w) => w.name);
+export const WARDS = ["Atan-Imuku", "Odosimadegun/Odosenbora", "Imomo/Ododeyo/Imewuro", "Odosenlu/Okeolowu/Alaro", "Igede/Itamarun", "Oju Ona", "Isonyin/Apunren", "Ilese Ijebu", "Ogbogbo Oke Eri", "Erunwon"];
 
 export const WARDS_INFO: {
   name: string;

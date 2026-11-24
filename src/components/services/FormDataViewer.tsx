@@ -158,8 +158,13 @@ export function FormDataViewer({ formData, className = "" }: FormDataViewerProps
   const complexEntries: Array<[string, any]> = [];
 
   Object.entries(formData).forEach(([k, v]) => {
-    // Ignore internal keys
-    if (["applicantId", "createdById", "feeAmount", "isDraft"].includes(k)) return;
+    // Ignore internal keys, including underscore-prefixed flags such as
+    // _foCollection that exist for the system, not for readers.
+    if (
+      ["applicantId", "createdById", "feeAmount", "isDraft"].includes(k) ||
+      k.startsWith("_")
+    )
+      return;
 
     if (Array.isArray(v) && v.length > 0 && typeof v[0] === "object") {
       complexEntries.push([k, v]);

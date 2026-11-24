@@ -59,6 +59,7 @@ import {
   useCancelDemandNotice,
   useResendDemandNotice,
 } from "@/hooks/queries/useDemandNotices";
+import { useWards } from "@/hooks/queries/useWards";
 import { DemandNoticeRecord } from "@/services/apiDemandNotice";
 import DemandNoticePrintModal from "@/components/demandNotice/DemandNoticePrintModal";
 import IssueDemandNoticeModal from "@/components/demandNotice/IssueDemandNoticeModal";
@@ -69,6 +70,7 @@ import { toast } from "sonner";
 export default function DemandNoticesPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [wardFilter, setWardFilter] = useState("all");
+  const { wards, count: wardCount } = useWards();
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
 
@@ -320,8 +322,8 @@ export default function DemandNoticesPage() {
               <SelectValue placeholder="All Wards" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All 11 Wards</SelectItem>
-              {LGA_CONFIG.wards.map((w) => (
+              <SelectItem value="all">All {wardCount} Wards</SelectItem>
+              {wards.map((w) => (
                 <SelectItem key={w.id} value={w.name}>
                   {w.name}
                 </SelectItem>
