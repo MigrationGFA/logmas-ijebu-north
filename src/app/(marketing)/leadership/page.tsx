@@ -16,29 +16,30 @@ import { useState } from "react";
 const councillors = LGA_CONFIG.leadership.councillors ?? [];
 
 // Executive photos are plain files under public/images/leadership/, added by
-// the team as they become available. Until a file exists (or if it fails to
-// load) the card falls back to the initials medallion, so the page never
-// shows a broken image.
-function ExecutivePhoto({ src, alt, initials }: { src: string; alt: string; initials: string }) {
+// the team as they become available. They render as avatars beside the name,
+// not as full-width banners, so a portrait photo is not cropped down to its
+// top strip. Until a file exists (or if it fails to load) the card falls back
+// to the initials tile, so the page never shows a broken image.
+function ExecutiveAvatar({ src, alt, initials }: { src: string; alt: string; initials: string }) {
     const [failed, setFailed] = useState(false);
     if (failed) {
         return (
-            <div className="absolute inset-0 flex items-center justify-center">
-                <div className="h-20 w-20 rounded-full bg-white/15 border-4 border-white/30 flex items-center justify-center text-2xl font-bold text-primary-foreground backdrop-blur">
-                    {initials}
-                </div>
+            <div className="h-20 w-20 shrink-0 rounded-2xl bg-gradient-hero text-primary-foreground flex items-center justify-center font-bold text-lg shadow-elegant">
+                {initials}
             </div>
         );
     }
     return (
-        <Image
-            src={src}
-            alt={alt}
-            fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-            className="object-cover object-top"
-            onError={() => setFailed(true)}
-        />
+        <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-2xl shadow-elegant">
+            <Image
+                src={src}
+                alt={alt}
+                fill
+                sizes="80px"
+                className="object-cover object-top"
+                onError={() => setFailed(true)}
+            />
+        </div>
     );
 }
 
@@ -135,25 +136,23 @@ export default function LeadershipPage() {
                     {LEADERSHIP.slice(1).map((m) => (
                         <Card
                             key={m.name}
-                            className="overflow-hidden bg-gradient-card border-border/40 hover:shadow-elegant transition-smooth flex flex-col"
+                            className="p-6 bg-gradient-card border-border/40 hover:shadow-elegant transition-smooth"
                         >
-                            <div className="relative h-52 bg-gradient-hero">
+                            <div className="flex items-center gap-4">
                                 {"image" in m && typeof m.image === "string" ? (
-                                    <ExecutivePhoto src={m.image} alt={`${m.name}, ${m.role}`} initials={m.initials} />
+                                    <ExecutiveAvatar src={m.image} alt={`${m.name}, ${m.role}`} initials={m.initials} />
                                 ) : (
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                        <div className="h-20 w-20 rounded-full bg-white/15 border-4 border-white/30 flex items-center justify-center text-2xl font-bold text-primary-foreground backdrop-blur">
-                                            {m.initials}
-                                        </div>
+                                    <div className="h-20 w-20 shrink-0 rounded-2xl bg-gradient-hero text-primary-foreground flex items-center justify-center font-bold text-lg shadow-elegant">
+                                        {m.initials}
                                     </div>
                                 )}
+                                <div>
+                                    <div className="font-semibold">{m.name}</div>
+                                    <div className="text-xs text-muted-foreground">{m.role}</div>
+                                </div>
                             </div>
-                            <div className="p-6 pt-5 flex flex-col flex-1">
-                                <div className="font-semibold">{m.name}</div>
-                                <div className="text-xs text-muted-foreground">{m.role}</div>
-                                <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{m.bio}</p>
-                                <div className="mt-auto pt-4">
-                                    <div className="pt-4 border-t border-border/40 flex gap-4 text-xs text-muted-foreground">
+                            <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{m.bio}</p>
+                            <div className="mt-4 pt-4 border-t border-border/40 flex gap-4 text-xs text-muted-foreground">
                                 {"phone" in m && m.phone && (
                                     <span className="flex items-center gap-1.5">
                                         <Phone className="h-3 w-3" /> {m.phone}
@@ -168,8 +167,6 @@ export default function LeadershipPage() {
                                         <Mail className="h-3 w-3" /> Not available
                                     </span>
                                 )}
-                                    </div>
-                                </div>
                             </div>
                         </Card>
                     ))}
