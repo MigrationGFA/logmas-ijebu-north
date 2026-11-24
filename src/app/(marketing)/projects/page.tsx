@@ -137,7 +137,7 @@ export default function ProjectsPage() {
         {/* Content */}
         <section className="container mx-auto px-4 py-12 md:py-16">
           {/* Category Filter */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-8">
+          <div className="flex flex-wrap items-center gap-2 pb-3 mb-8">
             {categories.map((c) => (
               <Button
                 key={c}
