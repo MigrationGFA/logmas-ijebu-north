@@ -146,6 +146,7 @@ export const LEADERSHIP = [
     bio: `Overseeing social development, health, and women empowerment initiatives in ${LGA_CONFIG.identity.formalTitle}.`,
     initials: "AA",
     accent: "gold",
+    image: "/images/leadership/vice-chairman.jpg",
     email: "",
   },
   {
@@ -154,6 +155,7 @@ export const LEADERSHIP = [
     bio: "Coordinates council administration and inter-departmental policy implementation.",
     initials: "OY",
     accent: "info",
+    image: "/images/leadership/secretary.jpg",
     email: "",
     phone: "09039165467",
   },
@@ -163,6 +165,7 @@ export const LEADERSHIP = [
     bio: `Directs civil service operations and public administration in ${LGA_CONFIG.identity.formalTitle}.`,
     initials: "HL",
     accent: "success",
+    image: "/images/leadership/holga.jpg",
     email: `holga@${LGA_CONFIG.contact.email.split("@")[1] || "lga.gov.ng"}`,
   },
   {
@@ -171,6 +174,7 @@ export const LEADERSHIP = [
     bio: "Manages public finance, revenue heads, and fiscal compliance.",
     initials: "CT",
     accent: "warning",
+    image: "/images/leadership/treasurer.jpg",
     email: `treasurer@${LGA_CONFIG.contact.email.split("@")[1] || "lga.gov.ng"}`,
   },
 ];
