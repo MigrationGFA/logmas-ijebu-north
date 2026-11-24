@@ -53,6 +53,9 @@ export const certificateOfOriginSchema = z.object({
   familyBaale: z.string().optional(),
   purpose: z.string().min(1, "Purpose of application is required"),
   previousApplication: z.string().optional(),
+  referrerWard: z.string().optional(),
+  referrerName: z.string().optional(),
+  referrerPhone: z.string().optional(),
 });
 
 export type CertificateOfOriginFormData = z.infer<typeof certificateOfOriginSchema>;
@@ -170,6 +173,9 @@ export default function CertificateOfOriginForm({
       familyBaale: "",
       purpose: "Employment / NYSC / Admission",
       previousApplication: "No",
+      referrerWard: "",
+      referrerName: "",
+      referrerPhone: "",
     },
     mode: "onChange",
   });
@@ -325,6 +331,9 @@ export default function CertificateOfOriginForm({
           familyBaale: data.familyBaale,
           purpose: data.purpose,
           previousApplication: data.previousApplication,
+          referrerWard: data.referrerWard || undefined,
+          referrerName: data.referrerName?.trim() || undefined,
+          referrerPhone: data.referrerPhone?.trim() || undefined,
         },
         files: filesPayload,
       });
@@ -366,6 +375,29 @@ export default function CertificateOfOriginForm({
         { label: "Residential Address", value: formValues.address || "N/A" },
       ],
     },
+    ...(formValues.referrerWard ||
+    formValues.referrerName ||
+    formValues.referrerPhone
+      ? [
+          {
+            title: "Your Referrer",
+            items: [
+              {
+                label: "Referrer's Ward",
+                value: formValues.referrerWard || "N/A",
+              },
+              {
+                label: "Name of Referrer",
+                value: formValues.referrerName || "N/A",
+              },
+              {
+                label: "Phone Number of Referrer",
+                value: formValues.referrerPhone || "N/A",
+              },
+            ],
+          },
+        ]
+      : []),
     {
       title: "Ancestral & Traditional Lineage",
       items: [
@@ -573,6 +605,66 @@ export default function CertificateOfOriginForm({
                   id="cacNumber"
                   {...register("cacNumber")}
                   placeholder="Enter CAC number (if applicable)"
+                  disabled={isSubmitting}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t pt-4 space-y-4">
+            <div>
+              <h5 className="font-bold text-xs uppercase tracking-wider text-primary">
+                Your Referrer (Optional)
+              </h5>
+              <p className="text-xs text-muted-foreground mt-1">
+                Your referrer must be someone from Ijebu North East: a
+                councillor, a traditional ruler, or a Local Government
+                officer.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="referrerWard">Referrer's Ward</Label>
+                <Controller
+                  name="referrerWard"
+                  control={control}
+                  render={({ field }) => (
+                    <Select
+                      value={field.value || ""}
+                      onValueChange={field.onChange}
+                      disabled={isSubmitting}
+                    >
+                      <SelectTrigger id="referrerWard">
+                        <SelectValue placeholder="Select Ward" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {wards.map((ward) => (
+                          <SelectItem key={ward.id} value={ward.name}>
+                            {ward.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="referrerName">Name of Referrer</Label>
+                <Input
+                  id="referrerName"
+                  {...register("referrerName")}
+                  placeholder="Full name of your referrer"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="referrerPhone">Phone Number of Referrer</Label>
+                <Input
+                  id="referrerPhone"
+                  {...register("referrerPhone")}
+                  placeholder="e.g. 0803 000 0000"
                   disabled={isSubmitting}
                 />
               </div>
