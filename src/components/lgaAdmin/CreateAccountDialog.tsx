@@ -49,6 +49,17 @@ const createAccountSchema = z
     role: z.string().min(1, "Role is required"),
     wardId: z.string().optional(),
   })
+  .superRefine((data, ctx) => {
+    // A field officer's phone is required: the payment SMS tells payers
+    // to send their transfer receipt to the officer's number.
+    if (data.role === "field_officer" && !data.phone?.trim()) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Phone number is required for field officers",
+        path: ["phone"],
+      });
+    }
+  });
   // .refine(
   //   (data) => {
   //     const requiresWard = ["ward_councillor", "field_officer"].includes(
@@ -170,8 +181,15 @@ export function CreateAccountDialog({ onSuccess }: { onSuccess: () => void }) {
             )}
           </div>
           <div>
-            <Label>Phone (Optional)</Label>
+            <Label>
+              {selectedRole === "field_officer" ? "Phone *" : "Phone (Optional)"}
+            </Label>
             <Input {...register("phone")} className="mt-1.5" />
+            {errors.phone && (
+              <p className="text-xs text-red-500 mt-1">
+                {errors.phone.message}
+              </p>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>

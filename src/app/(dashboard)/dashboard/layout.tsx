@@ -5,8 +5,7 @@ import {
   SidebarInset,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/dashboard/app-sidebar";
-import { Bell, Loader2, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { Bell, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
@@ -15,6 +14,7 @@ import Link from "next/link";
 import { useNotifications } from "@/hooks/queries/useNotifications";
 import { OnboardingIndicator } from "@/components/dashboard/OnboardingIndicator";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
+import { GlobalSearch } from "@/components/dashboard/GlobalSearch";
 import { OfflineRuntime } from "@/components/offline/OfflineRuntime";
 import { OfflineStatusBar } from "@/components/offline/OfflineStatusBar";
 
@@ -54,13 +54,7 @@ export default function AuthenticatedLayout({
               <div className="ml-auto flex items-center gap-2">
                 <OfflineStatusBar />
                 <LanguageSwitcher variant="compact" />
-                <div className="relative hidden sm:block">
-                  <Search className="h-3.5 w-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    placeholder="Search..."
-                    className="h-9 pl-8 w-48 md:w-64 bg-muted/50"
-                  />
-                </div>
+                <GlobalSearch />
                 <Button
                   asChild
                   variant="ghost"

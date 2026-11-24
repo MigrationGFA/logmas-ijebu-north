@@ -249,11 +249,11 @@ export default function InvoicesPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-1">
-                      {/* <Button asChild variant="ghost" size="sm">
-                        <Link href="/dashboard/invoices/$invoiceId" params={{ invoiceId: invoice.id }}>
+                      <Button asChild variant="ghost" size="sm">
+                        <Link href={`/dashboard/invoices/${invoice.reference}`}>
                           <Eye className="h-3.5 w-3.5 mr-1" /> View
                         </Link>
-                      </Button> */}
+                      </Button>
 
                       {invoice.paymentStatus === "confirmed" &&
                       invoice.receipts?.[0]?.id ? (
@@ -273,11 +273,7 @@ export default function InvoicesPage() {
                               Pay now
                             </Link>
                           </Button>
-                        ) : (
-                          <span className="text-xs text-muted-foreground px-2">
-                            -
-                          </span>
-                        )
+                        ) : null
                       ) : null}
                     </div>
                   </TableCell>

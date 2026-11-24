@@ -81,6 +81,13 @@ export default function ApplicationsPage() {
 
   // Search and Filter States
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Seed the search box from the URL: the header quick search links here
+  // with ?search=<application number> so its result lands pre-filtered.
+  React.useEffect(() => {
+    const param = new URLSearchParams(window.location.search).get("search");
+    if (param) setSearchTerm(param);
+  }, []);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [serviceFilter, setServiceFilter] = useState<string>("all");
   const [wardFilter, setWardFilter] = useState<string>("all");
