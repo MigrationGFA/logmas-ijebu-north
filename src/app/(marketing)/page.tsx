@@ -63,11 +63,11 @@ import {
   TOURISM,
   WARDS_INFO,
 } from "@/config/lgaContent.config";
-import bannerSecretariat from "@/assets/banner5.png";
-import bannerOjudeOba from "@/assets/banner1.png";
-import bannerMarket from "@/assets/banner2.png";
-import bannerInfra from "@/assets/banner3.png";
-import bannerFour from "@/assets/banner4.png";
+// import bannerSecretariat from "@/assets/banner5.png";
+// import bannerOjudeOba from "@/assets/banner1.png";
+// import bannerMarket from "@/assets/banner2.png";
+// import bannerInfra from "@/assets/banner3.png";
+// import bannerFour from "@/assets/banner4.png";
 import Link from "next/link";
 import Image from "next/image";
 import { Helmet } from "react-helmet-async";
@@ -122,6 +122,56 @@ function HomePage() {
 function HeroBanner() {
   const slides = [
     {
+      img: "/images/stewardship/st-michaels-classroom-block.jpeg",
+      eyebrow: "Projects & Achievements · Education",
+      title: "Commissioning of Two Modern Blocks of Classrooms",
+      subtitle:
+        "New classroom blocks at St. Michael's Primary School, Ododeyo, commissioned for our children.",
+      cta: { label: "See Our Projects", to: "/projects" as const },
+      alt: "New classroom block at St. Michael's Primary School, Ododeyo",
+    },
+    {
+      img: "/images/stewardship/solar-street-lights.jpeg",
+      eyebrow: "Projects & Achievements · Infrastructure",
+      title: "110 Solar Street Lights Across Our Wards",
+      subtitle:
+        "Solar powered street lights installed across the wards, keeping our streets lit and safe at night.",
+      cta: { label: "See Our Projects", to: "/projects" as const },
+      alt: "Solar street lights installed across Ijebu North East",
+    },
+    {
+      img: "/images/stewardship/health-centres-imomo-odomolasa.jpeg",
+      eyebrow: "Projects & Achievements · Health",
+      title: "Modern Health Centres for Imomo and Odomolasa",
+      subtitle:
+        "New and upgraded health centres bringing care closer to the people of Imomo and Odomolasa.",
+      cta: { label: "See Our Projects", to: "/projects" as const },
+      alt: "Health centre serving Imomo and Odomolasa",
+    },
+    {
+      img: "/images/stewardship/boreholes-across-wards.jpeg",
+      eyebrow: "Projects & Achievements · Water",
+      title: "Clean Water for Our Communities",
+      subtitle:
+        "Boreholes drilled across the wards, bringing clean and safe water closer to home.",
+      cta: { label: "View the Gallery", to: "/gallery" as const },
+      alt: "Borehole water projects across the wards",
+    },
+    {
+      img: "/images/stewardship/women-development-centre-erunwon.jpeg",
+      eyebrow: "Projects & Achievements · Empowerment",
+      title: "Women Development Centre, Erunwon",
+      subtitle:
+        "The Women Development Centre at Erunwon, rehabilitated and reopened for skills and enterprise.",
+      cta: { label: "View the Gallery", to: "/gallery" as const },
+      alt: "Women Development Centre, Erunwon",
+    },
+  ];
+
+  /* Previous banner slides, commented out on Nov 24, 2026 at the
+     company's request; the stewardship slides above replace them.
+  const slides = [
+    {
       img: bannerSecretariat,
       eyebrow: "Official Government Platform",
       title: `Building a Smarter ${LGA_CONFIG.identity.name} Local Government`,
@@ -170,6 +220,7 @@ One Future.
       alt: `Bustling ${LGA_CONFIG.identity.name} market with traders and produce`,
     },
   ];
+  */
 
   const [api, setApi] = useState<CarouselApi | null>(null);
   const [current, setCurrent] = useState(0);
