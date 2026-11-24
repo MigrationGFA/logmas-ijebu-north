@@ -76,7 +76,11 @@ export default function ServiceDetailPage({ params }: PageProps) {
   const serviceId = resolvedParams.serviceId;
   const router = useRouter();
 
-  const { services: allServices, useGetServiceBySlug } = useServices();
+  const {
+    services: allServices,
+    error: listError,
+    useGetServiceBySlug,
+  } = useServices();
 
   // Offline fallback: the services saved in the reference pack while the
   // officer was online. Without this, this page can only resolve its
@@ -95,8 +99,13 @@ export default function ServiceDetailPage({ params }: PageProps) {
 
   const matchesService = (s: any) =>
     s.id === serviceId || s.code === serviceId || s.slug === serviceId;
+  // The saved pack may only resolve a service when the live list cannot
+  // load (offline). While the live list loads fine, it is the truth: a
+  // service the treasurer has deactivated is absent from it, and the
+  // stale pack copy must not bring it back onto the screen.
   const matchedFromList: any =
-    allServices.find(matchesService) || packServices.find(matchesService);
+    allServices.find(matchesService) ||
+    (listError ? packServices.find(matchesService) : undefined);
   const lookupKey = matchedFromList?.code || matchedFromList?.slug || serviceId;
   const {
     data: fetchedService,

@@ -44,6 +44,84 @@ export interface ApiEnvelope<T = unknown> {
   error: string | null;
 }
 
+/**
+ * Turn whatever came back from a failed request into a sentence a person
+ * can act on. Raw server and library text (database invocation dumps,
+ * status-code strings, stack fragments) must never reach the screen:
+ * a clean server message passes through, validation details become
+ * plain field messages, and anything technical is replaced by a plain
+ * fallback for the status. Every api.* call funnels through here, so
+ * this one translation covers the whole app.
+ */
+function looksTechnical(message: string): boolean {
+  return (
+    message.length > 180 ||
+    message.includes("\n") ||
+    message.includes("`") ||
+    /prisma|invocation|node_modules|Cannot read properties|Request failed with status/i.test(
+      message,
+    )
+  );
+}
+
+function validationSummary(details: unknown): string | null {
+  if (!details || typeof details !== "object") return null;
+  const parts: string[] = [];
+  for (const [field, value] of Object.entries(
+    details as Record<string, unknown>,
+  )) {
+    if (field === "_errors") continue;
+    const errors = (value as { _errors?: unknown })?._errors;
+    if (Array.isArray(errors) && typeof errors[0] === "string") {
+      const label = field
+        .replace(/([A-Z])/g, " $1")
+        .replace(/^./, (c) => c.toUpperCase());
+      parts.push(`${label}: ${errors[0]}`);
+    }
+    if (parts.length >= 3) break;
+  }
+  return parts.length > 0 ? `Please check: ${parts.join("; ")}` : null;
+}
+
+export function humanizeErrorMessage(args: {
+  message?: string | null;
+  status?: number;
+  backendCode?: string;
+  backendDetails?: unknown;
+}): string {
+  const { message, status = 0, backendCode, backendDetails } = args;
+  if (backendCode === "VALIDATION_ERROR" || (status === 400 && backendDetails)) {
+    const summary = validationSummary(backendDetails);
+    if (summary) return summary;
+  }
+  // No response at all means the request never reached the server
+  // (offline, timeout, network down). Whatever the transport layer
+  // called it ("Network Error" and friends), the person needs the
+  // connection sentence, so this check comes before the pass-through.
+  if (!status) {
+    return "Connection problem. Check your network connection and try again.";
+  }
+  if (typeof message === "string" && message.trim() && !looksTechnical(message)) {
+    return message;
+  }
+  switch (status) {
+    case 400:
+      return "That request could not be accepted. Please check the details and try again.";
+    case 401:
+      return "Your session has expired. Please sign in again.";
+    case 403:
+      return "You do not have permission to do that.";
+    case 404:
+      return "That could not be found. It may have been moved or removed.";
+    case 409:
+      return "That conflicts with a record that already exists.";
+    default:
+      return status >= 500
+        ? "Something went wrong on our side. Please try again."
+        : "Something went wrong. Please try again.";
+  }
+}
+
 export function getAuthToken(): string | null {
   if (typeof window === "undefined") return null;
   return window.localStorage.getItem(TOKEN_KEY);
@@ -246,24 +324,21 @@ function unwrap<T>(envelope: ApiEnvelope<T> | T): T {
   if ("status" in obj && "data" in obj) {
     const env = envelope as ApiEnvelope<T>;
     if (env.status === "error") {
-      // 💡 FIX: Safely parse out string messages from object-shaped errors
-      let errorMessage = "Request failed";
-      if (typeof env.error === "string") {
-        errorMessage = env.error;
-      } else if (env.error && typeof env.error === "object") {
-        errorMessage = (env.error as any).message || JSON.stringify(env.error);
-      }
-
+      const envError =
+        env.error && typeof env.error === "object" ? (env.error as any) : undefined;
+      const rawMessage =
+        typeof env.error === "string" ? env.error : envError?.message;
       throw new ApiError(
-        errorMessage,
+        humanizeErrorMessage({
+          message: rawMessage,
+          status: 400,
+          backendCode: envError?.code,
+          backendDetails: envError?.details,
+        }),
         400,
         undefined,
-        env.error && typeof env.error === "object"
-          ? (env.error as any).code
-          : undefined,
-        env.error && typeof env.error === "object"
-          ? (env.error as any).details
-          : undefined,
+        envError?.code,
+        envError?.details,
       );
     }
     return env.data;
@@ -298,30 +373,25 @@ function unwrap<T>(envelope: ApiEnvelope<T> | T): T {
 function toApiError(err: unknown): ApiError {
   if (err instanceof AxiosError) {
     const env = err.response?.data as ApiEnvelope<unknown> | undefined;
+    const envError =
+      env?.error && typeof env.error === "object" ? (env.error as any) : undefined;
 
-    // 💡 FIX: Safely handle nested error objects in response interceptor failure cases too
-    let msg = "Network error";
-    if (env?.error) {
-      msg =
-        typeof env.error === "string"
-          ? env.error
-          : (env.error as any).message || JSON.stringify(env.error);
-    } else if (typeof env?.data === "string") {
-      msg = env.data;
-    } else {
-      msg = err.message || msg;
-    }
+    const rawMessage =
+      (typeof env?.error === "string" ? env.error : envError?.message) ??
+      (typeof env?.data === "string" ? env.data : undefined) ??
+      err.message;
 
     return new ApiError(
-      msg,
+      humanizeErrorMessage({
+        message: rawMessage,
+        status: err.response?.status ?? 0,
+        backendCode: envError?.code,
+        backendDetails: envError?.details,
+      }),
       err.response?.status ?? 0,
       err.code,
-      env?.error && typeof env.error === "object"
-        ? (env.error as any).code
-        : undefined,
-      env?.error && typeof env.error === "object"
-        ? (env.error as any).details
-        : undefined,
+      envError?.code,
+      envError?.details,
     );
   }
   if (err instanceof ApiError) return err;
