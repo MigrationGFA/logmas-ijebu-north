@@ -17,6 +17,7 @@ import {
   Clock,
   FileWarning,
   History,
+  Landmark,
   Paperclip,
   Pencil,
   RefreshCw,
@@ -30,6 +31,8 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { tokenManager } from "@/services/apiAuth";
 import { OFFLINE_QUEUE_EVENT, type OfflineQueueRecord } from "@/lib/offline/db";
+import { getPackEntry, PACK_KEYS } from "@/lib/offline/pack";
+import type { LgaBankAccount } from "@/services/apiBankAccount";
 import {
   addFileToRecord,
   deleteRecord,
@@ -38,6 +41,68 @@ import {
   listRecords,
 } from "@/lib/offline/queue";
 import { syncAllForOfficer } from "@/lib/offline/syncEngine";
+
+/**
+ * The LGA collection account, read from the offline pack saved on the
+ * last online dashboard visit. This is the screen an officer can always
+ * open offline, so it is where the transfer details live in the field:
+ * the officer shows them to the payer, who transfers to the LGA account
+ * and sends back the receipt. No payment is recorded here.
+ */
+function CollectionAccountCard() {
+  const [account, setAccount] = useState<LgaBankAccount | null | undefined>(
+    undefined,
+  );
+
+  useEffect(() => {
+    let live = true;
+    getPackEntry<LgaBankAccount>(PACK_KEYS.bankAccount)
+      .then((saved) => {
+        if (live) setAccount(saved);
+      })
+      .catch(() => {
+        if (live) setAccount(null);
+      });
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  if (account === undefined) return null;
+
+  if (!account) {
+    return (
+      <Card>
+        <CardContent className="py-4 text-sm text-muted-foreground">
+          No collection account is saved on this phone yet. Open the
+          dashboard once while online and the LGA account details will be
+          saved here for offline use.
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="flex items-center gap-2 text-base">
+          <Landmark className="h-4 w-4" /> LGA Collection Account
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-1 text-sm">
+        <p className="text-muted-foreground">{account.bankName}</p>
+        <p className="text-xl font-semibold tracking-wide">
+          {account.accountNumber}
+        </p>
+        <p>{account.accountName}</p>
+        <p className="pt-1 text-muted-foreground">
+          Show these details to the payer. They transfer to this account
+          and send you the receipt; the treasurer confirms on the platform.
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
 
 const STATUS_LABEL: Record<OfflineQueueRecord["status"], string> = {
   draft: "Needs evidence",
@@ -327,6 +392,8 @@ export function OfflineQueueManager() {
           Sync now
         </Button>
       </div>
+
+      <CollectionAccountCard />
 
       {records.length === 0 && (
         <Card>

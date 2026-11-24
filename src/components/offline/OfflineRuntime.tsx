@@ -7,8 +7,9 @@
  * it:
  * 1. Registers the service worker (public/sw.js), which is what lets the
  *    app open at all with no network.
- * 2. Saves the offline reference pack (services, wards, profile) whenever
- *    the dashboard loads with a connection.
+ * 2. Saves the offline reference pack (services, wards, profile, and the
+ *    LGA collection bank account) whenever the dashboard loads with a
+ *    connection, so the account details can be shown to a payer offline.
  * 3. Runs the sync engine when the browser comes back online, when the
  *    app opens, and when the service worker reports a background sync.
  *
@@ -19,6 +20,7 @@ import { useEffect } from "react";
 import { tokenManager } from "@/services/apiAuth";
 import { services } from "@/services/apiServices";
 import { wardsService } from "@/services/apiWard";
+import { bankAccountService } from "@/services/apiBankAccount";
 import { savePackEntry, PACK_KEYS } from "@/lib/offline/pack";
 import { syncAllForOfficer } from "@/lib/offline/syncEngine";
 import { warmOfflineRoutes } from "@/lib/offline/warm";
@@ -73,10 +75,12 @@ export function OfflineRuntime() {
     async function refreshPack() {
       if (!navigator.onLine || cancelled) return;
       try {
-        const [serviceList, wardList] = await Promise.allSettled([
-          services.listServices(),
-          wardsService.getWardsList(),
-        ]);
+        const [serviceList, wardList, bankAccountResult] =
+          await Promise.allSettled([
+            services.listServices(),
+            wardsService.getWardsList(),
+            bankAccountService.getBankAccount(),
+          ]);
         if (serviceList.status === "fulfilled") {
           await savePackEntry(PACK_KEYS.services, serviceList.value);
           // Warm every service form page into the service worker caches,
@@ -88,6 +92,15 @@ export function OfflineRuntime() {
         }
         if (wardList.status === "fulfilled") {
           await savePackEntry(PACK_KEYS.wards, wardList.value);
+        }
+        if (bankAccountResult.status === "fulfilled") {
+          // Saved even when null, so the pack mirrors the server: an
+          // account the treasurer removed must not linger on the phone.
+          // A failed fetch keeps the last saved account in place.
+          await savePackEntry(
+            PACK_KEYS.bankAccount,
+            bankAccountResult.value.bankAccount,
+          );
         }
         await savePackEntry(PACK_KEYS.profile, {
           id: user!.id,

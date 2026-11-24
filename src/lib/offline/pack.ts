@@ -3,9 +3,11 @@
  *
  * While the officer is online, the dashboard saves the data the field
  * forms need (the services list with their fees, the wards, the officer's
- * own profile) into IndexedDB, with the time it was saved. When the app
- * opens with no network, forms read the pack instead of the API, so a
- * capture can still name the right service and ward.
+ * own profile) into IndexedDB, with the time it was saved. It also saves
+ * the LGA collection bank account, so the officer can show a payer the
+ * transfer details in the field with no network. When the app opens with
+ * no network, forms read the pack instead of the API, so a capture can
+ * still name the right service and ward.
  *
  * The pack is reference data only. It never holds another officer's queue
  * and it is safe to overwrite on every online dashboard visit.
@@ -16,6 +18,7 @@ export const PACK_KEYS = {
   services: "services",
   wards: "wards",
   profile: "profile",
+  bankAccount: "bankAccount",
 } as const;
 
 export async function savePackEntry(key: string, data: unknown): Promise<void> {
