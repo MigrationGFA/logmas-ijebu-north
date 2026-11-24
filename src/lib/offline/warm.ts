@@ -70,7 +70,11 @@ export async function warmOfflineRoutes(
   if (!navigator.onLine) return;
   warmed = true;
 
-  const urls = new Set<string>(["/dashboard/permits", "/dashboard/offline-queue"]);
+  const urls = new Set<string>([
+    "/dashboard/services",
+    "/dashboard/permits",
+    "/dashboard/offline-queue",
+  ]);
   for (const service of services) {
     if (service?.id) urls.add(`/dashboard/services/${service.id}`);
   }

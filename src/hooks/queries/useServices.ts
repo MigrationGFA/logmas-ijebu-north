@@ -1,7 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { services } from "@/services/apiServices";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { getPackEntry, PACK_KEYS } from "@/lib/offline/pack";
 import { toast } from "sonner";
 
 export const serviceKey = {
@@ -35,8 +36,25 @@ export function useServices() {
     retry: 1,
   });
 
+  // Offline fallback: the services list saved in the reference pack the
+  // last time the dashboard loaded online. Without this, every consumer
+  // of this hook (the services catalogue first of all) renders empty
+  // offline even though the data is sitting on the device. Live data
+  // always wins when it loads; the pack only fills in when it cannot.
+  const [packServices, setPackServices] = useState<any[]>([]);
+  useEffect(() => {
+    let active = true;
+    void getPackEntry<any[]>(PACK_KEYS.services).then((saved) => {
+      if (active && Array.isArray(saved)) setPackServices(saved);
+    });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const servicesList = useMemo(() => {
-    if (!Array.isArray(data)) return [];
+    const source = Array.isArray(data) ? data : packServices;
+    if (!Array.isArray(source) || source.length === 0) return [];
     
     const LGA_SERVICES_ICONS = [
       { id: "certificate_of_origin", name: "State of Origin", icon: "FileBadge" },
@@ -53,11 +71,11 @@ export function useServices() {
       { id: "kiosk_licence", name: "Kiosk Licence", icon: "Store" }
     ];
     
-    return data.map((service: any) => ({
+    return source.map((service: any) => ({
       ...service,
       icon: LGA_SERVICES_ICONS.find(s => s.id === service.id)?.icon || null
     }));
-  }, [data]);
+  }, [data, packServices]);
 
   // Get single application by ID or slug
   const useGetServiceBySlug = (slug: string) => {
@@ -71,7 +89,9 @@ export function useServices() {
   return {
     services: servicesList,
     rawData: data,
-    isLoading,
+    // When the pack already produced a list, the page has something to
+    // show; do not keep it behind the live query's loading state.
+    isLoading: isLoading && servicesList.length === 0,
     error,
     refetch,
     useGetServiceBySlug,

@@ -58,6 +58,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/hooks/queries/useAuth";
 // import { tokenManager } from "@/services/apiAuth";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import Link from "next/link";
 import { LGA_CONFIG } from "@/config";
 
@@ -301,9 +302,16 @@ const NAV: Record<Role, { label: string; items: Item[] }[]> = {
 export function AppSidebar() {
   const {  logout,isLoggingOut,user } = useAuth();
   // const user = tokenManager.getUser()
-  const { state } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
   const collapsed = state === "collapsed";
   const path = usePathname()
+
+  // On mobile the sidebar is a drawer over the page. Close it whenever
+  // the route changes, so tapping a menu item lands on the new page
+  // instead of leaving the drawer open on top of it.
+  useEffect(() => {
+    if (isMobile) setOpenMobile(false);
+  }, [path, isMobile, setOpenMobile]);
  if (!user || isLoggingOut) return null;
   // console.log(path,"path")
 
