@@ -85,16 +85,23 @@ export function GlobalSearch() {
     setLoading(true);
     const timer = setTimeout(async () => {
       try {
-        if (!servicesCache.current) {
-          servicesCache.current = await services
-            .listServices()
-            .catch(() => [] as ServiceType[]);
+        // Cache only a successful, non-empty fetch. The first version
+        // cached whatever the first fetch produced, including an empty
+        // list from a failed call, for the whole session: one backend
+        // restart and every later search found nothing until a reload.
+        if (!servicesCache.current || servicesCache.current.length === 0) {
+          const list = await services.listServices().catch(() => null);
+          if (list && list.length > 0) servicesCache.current = list;
+          else if (!servicesCache.current) servicesCache.current = list ?? [];
         }
-        if (!invoicesCache.current) {
+        if (!invoicesCache.current || invoicesCache.current.length === 0) {
           const hub = await invoicesService
             .getInvoicesHub({})
             .catch(() => null);
-          invoicesCache.current = hub?.invoices ?? [];
+          if (hub && hub.invoices.length > 0)
+            invoicesCache.current = hub.invoices;
+          else if (!invoicesCache.current)
+            invoicesCache.current = hub?.invoices ?? [];
         }
         const apps = await apiApplications
           .getApplications({ search: term, limit: 6 })
@@ -105,7 +112,11 @@ export function GlobalSearch() {
 
         setResults({
           services: (servicesCache.current ?? [])
-            .filter((s) => s.name.toLowerCase().includes(needle))
+            .filter((s) =>
+              `${s.name} ${s.code} ${s.revenueHead} ${s.category}`
+                .toLowerCase()
+                .includes(needle),
+            )
             .slice(0, 5),
           applications: apps.slice(0, 6).map((app) => ({
             id: app.id,

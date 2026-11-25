@@ -535,7 +535,7 @@ export default function InvoiceDetail({
                 </p>
               )}
             </Card>
-          ) : isPayable ? (
+          ) : isPayable && (isPayer || isOfficer) ? (
             <Card className="p-6 bg-gradient-card border-border/40">
               <h3 className="font-semibold mb-4">Payment Options</h3>
               <Tabs defaultValue={isPayer ? "online" : isOfficer ? "pos" : "online"}>
@@ -826,7 +826,7 @@ export default function InvoiceDetail({
         </div>
 
         <div className="space-y-4">
-          {status !== "confirmed" && !isFoOnlyInvoice && (
+          {(isPayer || isOfficer) && status !== "confirmed" && !isFoOnlyInvoice && (
             <Card className="p-5 bg-gradient-card border-border/40 text-center">
               <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">
                 Scan to Pay

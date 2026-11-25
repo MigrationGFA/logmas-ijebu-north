@@ -2,8 +2,6 @@
 
 import { LGA_CONFIG } from "@/config/lga.config";
 import { useState, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
-import { GPayMonitoringHub } from "@/components/treasurer/GPayMonitoringHub";
 import { PageHeader } from "@/components/dashboard/shared";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -61,11 +59,6 @@ const money = (v: number) =>
   );
 
 function PaymentConfirmationsContent() {
-  const searchParams = useSearchParams();
-  const tabParam = searchParams.get("tab");
-  const [activeTopTab, setActiveTopTab] = useState<"queue" | "hub">(
-    tabParam === "hub" ? "hub" : "queue"
-  );
   const currentUser = tokenManager.getUser();
   const userRole = currentUser?.role || "treasurer";
   const isSubAdmin = userRole === "sub_admin";
@@ -181,45 +174,10 @@ function PaymentConfirmationsContent() {
 
   return (
     <div className="space-y-6">
-      {/* Top Segmented Navigation Tabs */}
-      <div className="flex flex-wrap items-center gap-2 p-1.5 bg-muted/60 rounded-xl border border-border w-fit">
-        <button
-          type="button"
-          onClick={() => setActiveTopTab("queue")}
-          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
-            activeTopTab === "queue"
-              ? "bg-background text-foreground shadow-sm border border-border"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <ShieldCheck className="h-4 w-4 text-primary" />
-          Citizen Payment Claims
-          {data?.meta?.total !== undefined && (
-            <Badge variant="secondary" className="text-[10px] ml-1">
-              {data.meta.total}
-            </Badge>
-          )}
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTopTab("hub")}
-          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
-            activeTopTab === "hub"
-              ? "bg-background text-foreground shadow-sm border border-border"
-              : "text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Landmark className="h-4 w-4 text-emerald-400" />
-          Direct Bank Inflows &amp; Settlements
-          <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse ml-0.5" />
-        </button>
-      </div>
-
-      {activeTopTab === "hub" ? (
-        <GPayMonitoringHub userRole={userRole} />
-      ) : (
-        <>
+      {/* Direct Bank Inflows & Settlements (the GPay Monitoring Hub)
+          is hidden while that provider is parked (Nov 25, 2026); this
+          page is the Citizen Payment Claims queue alone. */}
+      <>
           <PageHeader
         title={
           isSubAdmin
@@ -924,8 +882,7 @@ function PaymentConfirmationsContent() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-        </>
-      )}
+      </>
     </div>
   );
 }
