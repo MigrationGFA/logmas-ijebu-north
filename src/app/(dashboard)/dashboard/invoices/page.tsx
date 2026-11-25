@@ -34,6 +34,8 @@ import { useAuth } from "@/hooks/queries/useAuth";
 import Link from "next/link";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { MetricsSkeleton, TableSkeleton } from "@/components/ui/LoadingSkeleton";
+import { usePagination } from "@/hooks/usePagination";
+import { ListPagination } from "@/components/ui/list-pagination";
 
 export default function InvoicesPage() {
   const [tab, setTab] = useState("all");
@@ -76,6 +78,8 @@ export default function InvoicesPage() {
         .toLowerCase()
         .includes(q.toLowerCase()),
   );
+
+  const pagination = usePagination(filtered, 10, [tab, q]);
 
   const exportCSV = () => {
     if (!filtered.length) {
@@ -226,7 +230,7 @@ export default function InvoicesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((invoice) => (
+              {pagination.pageItems.map((invoice) => (
                 <TableRow key={invoice.id}>
                   <TableCell className="font-mono text-xs">
                     {invoice.reference}
@@ -293,6 +297,8 @@ export default function InvoicesPage() {
             </TableBody>
           </Table>
         </div>
+
+        <ListPagination pagination={pagination} unit="invoices" />
       </Card>
     </div>
   );

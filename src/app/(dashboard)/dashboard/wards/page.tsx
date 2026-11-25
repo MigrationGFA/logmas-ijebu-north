@@ -29,6 +29,8 @@ import AddCouncillorDialog from "@/components/lgaAdmin/AddCouncillorDialog";
 import AddWardDialog from "@/components/lgaAdmin/AddWardDialog";
 import AssignCouncillorDialog from "@/components/lgaAdmin/AssignCouncillorDialog";
 import { Staff } from "@/services/apiLgaAdmin";
+import { usePagination } from "@/hooks/usePagination";
+import { ListPagination } from "@/components/ui/list-pagination";
 
 
 // Ward Form Schema
@@ -75,7 +77,10 @@ export default function WardsPage() {
     if (!query) return wards;
     return wards.filter((w) => w.name.toLowerCase().includes(query));
   }, [wards, searchQuery]);
-  
+
+  const wardsPagination = usePagination(filteredWards, 12, [searchQuery]);
+  const councillorsPagination = usePagination(councillors, 10);
+
   const assignedCount = wards?.filter((w) => (w?.councillors?.length ?? 0) > 0).length ?? 0;
   const unassignedCount = wards.length - assignedCount;
 
@@ -162,7 +167,7 @@ export default function WardsPage() {
             </div>
           ) : (
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredWards.map((ward) => {
+              {wardsPagination.pageItems.map((ward) => {
                 const councillor = ward.councillors?.[0];
                 return (
                   <Card key={ward.id} className="p-5">
@@ -234,6 +239,9 @@ export default function WardsPage() {
               )}
             </div>
           )}
+          {!isLoading && (
+            <ListPagination pagination={wardsPagination} unit="wards" />
+          )}
         </TabsContent>
 
         <TabsContent value="councillors" className="mt-4">
@@ -255,7 +263,7 @@ export default function WardsPage() {
                     </tr>
                   </thead>
                   <tbody className="divide-y">
-                    {councillors.map((c:Staff) => {
+                    {councillorsPagination.pageItems.map((c:Staff) => {
                       const ward = wards.find((w) => w.id === c.wardId);
                       return (
                         <tr key={c.id} className="hover:bg-muted/30">
@@ -336,6 +344,14 @@ export default function WardsPage() {
                     )}
                   </tbody>
                 </table>
+              </div>
+            )}
+            {!isLoading && (
+              <div className="px-4 pb-4">
+                <ListPagination
+                  pagination={councillorsPagination}
+                  unit="councillors"
+                />
               </div>
             )}
           </Card>

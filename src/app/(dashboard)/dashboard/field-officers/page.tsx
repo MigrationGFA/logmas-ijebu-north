@@ -49,6 +49,8 @@ import { tokenManager } from "@/services/apiAuth";
 import { FieldOfficer } from "@/services/apiTreasurer";
 import { useRevenueCategories } from "@/hooks/queries/useRevenueCategories";
 import { useWards } from "@/hooks/queries/useWards";
+import { usePagination } from "@/hooks/usePagination";
+import { ListPagination } from "@/components/ui/list-pagination";
 
 // const WARDS = ["Atan", "Ojowo", "Owu", "Ososa", "Imuwo", "Ikija", "Ife", "Itele", "Mamu"];
 // const LEVIES: LevyCategory[] = [
@@ -92,6 +94,8 @@ export default function FieldOfficersPage() {
     }
     return officers;
   }, [officers, userRole, user?.id]);
+
+  const pagination = usePagination(visibleOfficers, 10, [userRole]);
 
   if (!canView) {
     return (
@@ -185,7 +189,7 @@ export default function FieldOfficersPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {visibleOfficers.map((officer: FieldOfficer) => (
+              {pagination.pageItems.map((officer: FieldOfficer) => (
                 <TableRow key={officer.id}>
                   <TableCell>
                     <div className="flex items-center gap-2.5">
@@ -270,6 +274,9 @@ export default function FieldOfficersPage() {
               )}
             </TableBody>
           </Table>
+        </div>
+        <div className="px-4 pb-4">
+          <ListPagination pagination={pagination} unit="officers" />
         </div>
       </Card>
     </div>

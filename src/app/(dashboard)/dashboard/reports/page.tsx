@@ -26,6 +26,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useReportsOverview, useReportsExport } from "@/hooks/queries/useReports";
+import { usePagination } from "@/hooks/usePagination";
+import { ListPagination } from "@/components/ui/list-pagination";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useServices } from "@/hooks/queries/useServices";
@@ -222,6 +224,19 @@ export default function ReportsPage() {
     if (selectedService === "all") return byService;
     return byService.filter((item) => item.id === selectedService);
   }, [byService, selectedService]);
+
+  const byServicePagination = usePagination(filteredByService, 10, [
+    selectedService,
+    filterRange,
+  ]);
+  const invoicesPagination = usePagination(invoices, 10, [
+    selectedService,
+    filterRange,
+  ]);
+  const receiptsPagination = usePagination(receipts, 10, [
+    selectedService,
+    filterRange,
+  ]);
 
   if (isLoading || servicesLoading) {
     return (
@@ -426,7 +441,7 @@ export default function ReportsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredByService.map((item) => {
+                {byServicePagination.pageItems.map((item) => {
                   const totalRevenue = stats?.totalRevenue || 0;
                   const pct = totalRevenue > 0
                     ? ((item.revenue / totalRevenue) * 100).toFixed(1)
@@ -454,6 +469,9 @@ export default function ReportsPage() {
                 )}
               </TableBody>
             </Table>
+            <div className="px-4 pb-4">
+              <ListPagination pagination={byServicePagination} unit="services" />
+            </div>
           </Card>
         </TabsContent>
 
@@ -472,7 +490,7 @@ export default function ReportsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {invoices.map((i) => (
+                {invoicesPagination.pageItems.map((i) => (
                   <TableRow key={i.id}>
                     <TableCell className="font-mono text-xs">{i.reference}</TableCell>
                     <TableCell className="font-mono text-xs">{i.applicationNumber || " - "}</TableCell>
@@ -506,6 +524,9 @@ export default function ReportsPage() {
                 )}
               </TableBody>
             </Table>
+            <div className="px-4 pb-4">
+              <ListPagination pagination={invoicesPagination} unit="invoices" />
+            </div>
           </Card>
         </TabsContent>
 
@@ -525,7 +546,7 @@ export default function ReportsPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {receipts.map((r) => (
+                {receiptsPagination.pageItems.map((r) => (
                   <TableRow key={r.id}>
                     <TableCell className="font-mono text-xs">{r.receiptNumber}</TableCell>
                     <TableCell className="font-mono text-xs">{r.invoiceNumber}</TableCell>
@@ -551,6 +572,9 @@ export default function ReportsPage() {
                 )}
               </TableBody>
             </Table>
+            <div className="px-4 pb-4">
+              <ListPagination pagination={receiptsPagination} unit="receipts" />
+            </div>
           </Card>
         </TabsContent>
       </Tabs>

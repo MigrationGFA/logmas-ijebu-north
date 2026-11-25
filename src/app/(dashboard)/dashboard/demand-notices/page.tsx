@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   FileText,
   Plus,
@@ -83,6 +83,14 @@ export default function DemandNoticesPage() {
   });
 
   const notices = data?.notices || [];
+  const paginationMeta = data?.pagination;
+  const totalPages = paginationMeta?.totalPages ?? 1;
+
+  // Server pagination: changing a filter returns to the first page.
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter, wardFilter, searchTerm]);
+
   const metrics = data?.metrics || {
     totalIssued: 0,
     totalPaid: 0,
@@ -530,6 +538,46 @@ export default function DemandNoticesPage() {
             </TableBody>
           </Table>
         </div>
+        {paginationMeta && paginationMeta.total > 0 && (
+          <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t">
+            <p className="text-xs text-muted-foreground">
+              Showing {(page - 1) * paginationMeta.limit + 1} to{" "}
+              {Math.min(page * paginationMeta.limit, paginationMeta.total)}{" "}
+              of {paginationMeta.total} notices
+            </p>
+            <div className="flex items-center gap-1.5">
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page <= 1}
+                onClick={() => setPage(page - 1)}
+              >
+                Previous
+              </Button>
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                (pageNumber) => (
+                  <Button
+                    key={pageNumber}
+                    variant={pageNumber === page ? "default" : "outline"}
+                    size="sm"
+                    className="min-w-9"
+                    onClick={() => setPage(pageNumber)}
+                  >
+                    {pageNumber}
+                  </Button>
+                ),
+              )}
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={page >= totalPages}
+                onClick={() => setPage(page + 1)}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </Card>
 
       {/* Printable Modal */}

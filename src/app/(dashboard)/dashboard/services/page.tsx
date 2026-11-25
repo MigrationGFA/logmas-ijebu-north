@@ -37,6 +37,8 @@ import {
   Edit3,
 } from "lucide-react";
 import { useServices } from "@/hooks/queries/useServices";
+import { usePagination } from "@/hooks/usePagination";
+import { ListPagination } from "@/components/ui/list-pagination";
 import { tokenManager } from "@/services/apiAuth";
 import { CreateServiceModal } from "@/components/treasurer/CreateServiceModal";
 import { EditServiceModal } from "@/components/treasurer/EditServiceModal";
@@ -110,6 +112,34 @@ export default function ServicesPage() {
     isFieldOfficer ? (CATEGORY_LABELS[cat] ?? cat) : cat;
 
 
+  const filteredServices = services
+    .filter((service) => {
+      const matchesSearch =
+        service.name.toLowerCase().includes(search.toLowerCase()) ||
+        service.description.toLowerCase().includes(search.toLowerCase()) ||
+        service.revenueHead.toLowerCase().includes(search.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "All" ||
+        service.category === selectedCategory ||
+        (selectedCategory === "Others" && service.category === "OTHERS") ||
+        (selectedCategory === "FO Only" && service.foOnly);
+      return matchesSearch && matchesCategory;
+    })
+    // (pagination applied below, after sorting)
+    .sort((a: any, b: any) => {
+      const aIsCoo = a.id === "state_of_origin" || a.code === "state_of_origin";
+      const bIsCoo = b.id === "state_of_origin" || b.code === "state_of_origin";
+      if (aIsCoo && !bIsCoo) return -1;
+      if (!aIsCoo && bIsCoo) return 1;
+      return 0;
+    });
+
+  const pagination = usePagination(filteredServices, 12, [
+    search,
+    selectedCategory,
+  ]);
+  const pagedServices = pagination.pageItems;
+
   if (error) {
     return (
       <div className="space-y-6">
@@ -126,26 +156,6 @@ export default function ServicesPage() {
     );
   }
 
-  const filteredServices = services
-    .filter((service) => {
-      const matchesSearch =
-        service.name.toLowerCase().includes(search.toLowerCase()) ||
-        service.description.toLowerCase().includes(search.toLowerCase()) ||
-        service.revenueHead.toLowerCase().includes(search.toLowerCase());
-      const matchesCategory =
-        selectedCategory === "All" ||
-        service.category === selectedCategory ||
-        (selectedCategory === "Others" && service.category === "OTHERS") ||
-        (selectedCategory === "FO Only" && service.foOnly);
-      return matchesSearch && matchesCategory;
-    })
-    .sort((a: any, b: any) => {
-      const aIsCoo = a.id === "state_of_origin" || a.code === "state_of_origin";
-      const bIsCoo = b.id === "state_of_origin" || b.code === "state_of_origin";
-      if (aIsCoo && !bIsCoo) return -1;
-      if (!aIsCoo && bIsCoo) return 1;
-      return 0;
-    });
 
   return (
     <div className="space-y-6">
@@ -245,7 +255,7 @@ export default function ServicesPage() {
                 </CardFooter>
               </Card>
             ))
-          : filteredServices.map((service: ServiceType) => {
+          : pagedServices.map((service: ServiceType) => {
               const IconComponent = (service.icon && ICON_MAP[service.icon]) || FileBadge;
 
               return (
@@ -357,6 +367,10 @@ export default function ServicesPage() {
               );
             })}
       </div>
+
+      {!isLoading && filteredServices.length > 0 && (
+        <ListPagination pagination={pagination} unit="services" />
+      )}
 
       {!isLoading && filteredServices.length === 0 && (
         <Card className="p-12 text-center bg-muted/20">

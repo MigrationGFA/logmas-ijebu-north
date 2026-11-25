@@ -2,6 +2,8 @@
 
 import React, { useState } from "react";
 import { PageHeader } from "@/components/dashboard/shared";
+import { usePagination } from "@/hooks/usePagination";
+import { ListPagination } from "@/components/ui/list-pagination";
 import {
   Card,
   CardContent,
@@ -192,6 +194,13 @@ export default function ApplicationsPage() {
     const declined = displayApplications.filter((a) => a.status?.toLowerCase() === "declined" || a.status?.toLowerCase() === "rejected").length;
     return { total, submitted, underReview, approved, declined };
   }, [displayApplications]);
+
+  const pagination = usePagination(displayApplications, 10, [
+    searchTerm,
+    statusFilter,
+    serviceFilter,
+    wardFilter,
+  ]);
 
   const handleOpenDetail = (app: Application) => {
     setSelectedApp(app);
@@ -506,7 +515,7 @@ export default function ApplicationsPage() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {displayApplications.map((app) => {
+          {pagination.pageItems.map((app) => {
             const s = String(app.status).toLowerCase();
             const isSubmitted = s === "submitted";
             const isUnderReview = s.includes("review");
@@ -666,6 +675,10 @@ export default function ApplicationsPage() {
             );
           })}
         </div>
+      )}
+
+      {!isLoading && displayApplications.length > 0 && (
+        <ListPagination pagination={pagination} unit="applications" />
       )}
 
       {/* DETAILED APPLICATION DRAWER / MODAL */}

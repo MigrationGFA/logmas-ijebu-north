@@ -11,6 +11,8 @@ import { useInvoices } from "@/hooks/queries/useInvoices";
 import AddCustomerDialog from "@/components/field-officer/NewCustomer";
 import { tokenManager } from "@/services/apiAuth";
 import {  BusinessInvoice } from "@/services/apiFieldOfficer";
+import { usePagination } from "@/hooks/usePagination";
+import { ListPagination } from "@/components/ui/list-pagination";
 
 export default function CustomersPage() {
   const user = tokenManager.getUser()
@@ -32,6 +34,8 @@ export default function CustomersPage() {
         .includes(query)
     );
   }, [businesses, searchQuery]);
+
+  const pagination = usePagination(filteredCustomers, 12, [searchQuery]);
 
   const isLoading = businessesLoading || invoicesLoading;
 
@@ -72,7 +76,7 @@ export default function CustomersPage() {
       </div>
       
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredCustomers.map((business) => {
+        {pagination.pageItems.map((business) => {
           // const businessInvoices = invoices.filter(
           //   (inv) => inv.customerId === business.id || inv.businessId === business.id
           // );
@@ -147,6 +151,8 @@ export default function CustomersPage() {
           </div>
         )}
       </div>
+
+      <ListPagination pagination={pagination} unit="customers" />
     </div>
   );
 }

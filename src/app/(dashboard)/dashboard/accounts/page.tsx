@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { toast } from "sonner";
 import {
   PageHeader,
@@ -85,6 +85,13 @@ export default function AccountsPage() {
   const debouncedValue = useDebounce(search, 500);
   const [roleFilter, setRoleFilter] = useState<string>("");
   const [page, setPage] = useState(1);
+
+  // Server pagination: changing the search or role filter returns to
+  // the first page, so a filtered list never lands on an out-of-range
+  // empty page.
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedValue, roleFilter]);
 
   const { data, isLoading, refetch } = useGetAccounts({
     search: debouncedValue || undefined,

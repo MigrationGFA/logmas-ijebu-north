@@ -38,6 +38,8 @@ import { AddContractorDialog } from "@/components/lgaAdmin/AddContractorDialog";
 import { AddAgentDialog } from "@/components/lgaAdmin/AddAgentDialog";
 import Link from "next/link";
 import { AddAgentData } from "@/services/apiLgaAdmin";
+import { usePagination } from "@/hooks/usePagination";
+import { ListPagination } from "@/components/ui/list-pagination";
 
 
 
@@ -65,6 +67,8 @@ export default function ContractorsPage() {
     c.companyName.toLowerCase().includes(search.toLowerCase()) ||
     c.email.toLowerCase().includes(search.toLowerCase())
   );
+
+  const pagination = usePagination(filteredContractors, 12, [search]);
 
   const handleCreateContractor = async (formData: any) => {
     await createContractor(formData);
@@ -125,7 +129,7 @@ export default function ContractorsPage() {
 
         <TabsContent value="grid">
           <div className="grid lg:grid-cols-2 gap-4">
-            {filteredContractors.map((contractor) => (
+            {pagination.pageItems.map((contractor) => (
               <ContractorCard
                 key={contractor.id}
                 contractor={contractor}
@@ -141,6 +145,7 @@ export default function ContractorsPage() {
               </Card>
             )}
           </div>
+          <ListPagination pagination={pagination} unit="contractors" />
         </TabsContent>
 
         <TabsContent value="agents">
@@ -283,6 +288,7 @@ function ContractorCard({ contractor, canManage, onAddAgent, onRefresh, isAdding
 
 // Agents Table Component
 function AgentsTable({ agents }: { agents: any[] }) {
+  const pagination = usePagination(agents, 10);
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-NG', { style: 'currency', currency: 'NGN' }).format(amount);
   };
@@ -310,7 +316,7 @@ function AgentsTable({ agents }: { agents: any[] }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {agents.map((agent) => (
+            {pagination.pageItems.map((agent) => (
               <TableRow key={agent.id}>
                 <TableCell>
                   <div className="flex items-center gap-2.5">
@@ -344,6 +350,9 @@ function AgentsTable({ agents }: { agents: any[] }) {
             )}
           </TableBody>
         </Table>
+      </div>
+      <div className="px-4 pb-4">
+        <ListPagination pagination={pagination} unit="agents" />
       </div>
     </Card>
   );

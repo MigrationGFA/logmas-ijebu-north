@@ -32,6 +32,8 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { usePagination } from "@/hooks/usePagination";
+import { ListPagination } from "@/components/ui/list-pagination";
 
 export default function CertificatesDashboardPage() {
   const { user } = useAuth();
@@ -89,6 +91,11 @@ export default function CertificatesDashboardPage() {
       );
     });
   }, [certificates, searchTerm, selectedServiceFilter]);
+
+  const pagination = usePagination(filteredCertificates, 10, [
+    searchTerm,
+    selectedServiceFilter,
+  ]);
 
   // Quick statistics
   const stats = useMemo(() => {
@@ -322,7 +329,7 @@ export default function CertificatesDashboardPage() {
         </Card>
       ) : (
         <div className="grid grid-cols-1 gap-3">
-          {filteredCertificates.map((cert) => {
+          {pagination.pageItems.map((cert) => {
             const applicantName =
               cert.application?.applicant?.name ||
               cert.application?.formData?.fullName ||
@@ -448,6 +455,10 @@ export default function CertificatesDashboardPage() {
             );
           })}
         </div>
+      )}
+
+      {!isLoading && filteredCertificates.length > 0 && (
+        <ListPagination pagination={pagination} unit="certificates" />
       )}
 
       {/* Certificate Detailed Inspector Modal */}
