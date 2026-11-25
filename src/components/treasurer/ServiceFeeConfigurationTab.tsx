@@ -249,7 +249,9 @@ export default function ServiceFeeConfigurationTab() {
       await upsertServiceFee({
         serviceId,
         data: {
-          amount: fee,
+          // feeConfig.amount arrives as a string (money serialization);
+          // the API contract wants a number.
+          amount: Number(fee),
           status: newStatus === "ACTIVE",
         },
       });
