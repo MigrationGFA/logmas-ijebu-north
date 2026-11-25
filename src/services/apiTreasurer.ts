@@ -216,6 +216,7 @@ export interface ServiceWithFee {
   certificateType: string;
   supportsRenewal: boolean;
   isActive: boolean;
+  foOnly?: boolean;
   feeConfig: ServiceFeeConfig | null;
   createdAt: string;
   updatedAt: string;

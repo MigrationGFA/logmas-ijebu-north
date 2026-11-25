@@ -765,8 +765,14 @@ export default function ServiceFeeConfigurationTab() {
                   filteredServices.map((service, index) => {
                     const isSelected = service.id === selectedServiceId;
                     const fee = service.feeConfig?.amount || 0;
-                    const status =
-                      service.feeConfig?.status || "NOT_CONFIGURED";
+                    // FO-only services carry no fee config by design: their
+                    // status is the service's own active flag, never
+                    // "Not Configured".
+                    const status = service.foOnly
+                      ? service.isActive === false
+                        ? "INACTIVE"
+                        : "ACTIVE"
+                      : service.feeConfig?.status || "NOT_CONFIGURED";
                     const lastUpdated =
                       service.feeConfig?.updatedAt || service.updatedAt;
                     const isToggling = isUpserting && isSelected;
@@ -824,7 +830,11 @@ export default function ServiceFeeConfigurationTab() {
                         </TableCell>
 
                         <TableCell className="text-right">
-                          {fee > 0 ? (
+                          {service.foOnly ? (
+                            <span className="text-xs text-muted-foreground italic">
+                              Per collection
+                            </span>
+                          ) : fee > 0 ? (
                             <span className="font-bold text-base text-foreground">
                               {formatNgn(fee)}
                             </span>
@@ -881,20 +891,22 @@ export default function ServiceFeeConfigurationTab() {
                               Edit
                             </Button>
 
-                            <Button
-                              variant={isSelected ? "default" : "outline"}
-                              size="sm"
-                              className="h-8 text-xs px-2.5"
-                              onClick={() => {
-                                handleServiceSelect(service.id);
-                                window.scrollTo({ top: 0, behavior: "smooth" });
-                              }}
-                            >
-                              <SlidersHorizontal className="h-3 w-3 mr-1" />
-                              {isSelected ? "Editing" : "Configure"}
-                            </Button>
+                            {!service.foOnly && (
+                              <Button
+                                variant={isSelected ? "default" : "outline"}
+                                size="sm"
+                                className="h-8 text-xs px-2.5"
+                                onClick={() => {
+                                  handleServiceSelect(service.id);
+                                  window.scrollTo({ top: 0, behavior: "smooth" });
+                                }}
+                              >
+                                <SlidersHorizontal className="h-3 w-3 mr-1" />
+                                {isSelected ? "Editing" : "Configure"}
+                              </Button>
+                            )}
 
-                            {status !== "NOT_CONFIGURED" && (
+                            {!service.foOnly && status !== "NOT_CONFIGURED" && (
                               <Button
                                 variant="ghost"
                                 size="sm"
