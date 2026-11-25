@@ -32,7 +32,7 @@ export default function AuthenticatedLayout({
       <SidebarProvider>
         <div className="min-h-screen flex w-full bg-muted/30">
           <AppSidebar />
-          <SidebarInset>
+          <SidebarInset className="min-w-0">
             <header className="sticky top-0 z-30 h-14 flex items-center gap-3 border-b border-border/60 bg-background/80 backdrop-blur px-4">
               <SidebarTrigger />
               <nav className="hidden md:flex items-center text-sm text-muted-foreground gap-1.5">
@@ -77,7 +77,7 @@ export default function AuthenticatedLayout({
             </header>
             <OnboardingIndicator />
             <OfflineRuntime />
-            <main className="flex-1 p-4 md:p-6 lg:p-8">{children}</main>
+            <main className="flex-1 min-w-0 p-4 md:p-6 lg:p-8">{children}</main>
           </SidebarInset>
         </div>
       </SidebarProvider>

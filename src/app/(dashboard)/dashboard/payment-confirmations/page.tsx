@@ -237,17 +237,17 @@ function PaymentConfirmationsContent() {
         </Card>
       ) : (
         <Card className="overflow-x-auto bg-gradient-card border-border/40">
-          <Table className="min-w-[1220px]">
+          <Table className="min-w-[1320px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[200px]">Application / Service</TableHead>
-                <TableHead className="w-[180px]">Applicant / Payer</TableHead>
-                <TableHead className="w-[180px]">Destination Account</TableHead>
-                <TableHead className="w-[190px]">Expected vs. Received</TableHead>
-                <TableHead className="w-[170px]">Transaction Ref / Date</TableHead>
-                <TableHead className="w-[140px]">Payment Evidence</TableHead>
-                <TableHead className="w-[170px]">Verification Status</TableHead>
-                <TableHead className="text-right w-[190px]">Actions</TableHead>
+                <TableHead className="w-[190px]">Application / Service</TableHead>
+                <TableHead className="w-[170px]">Applicant / Payer</TableHead>
+                <TableHead className="w-[160px]">Destination Account</TableHead>
+                <TableHead className="w-[180px]">Expected vs. Received</TableHead>
+                <TableHead className="w-[160px]">Transaction Ref / Date</TableHead>
+                <TableHead className="w-[130px]">Payment Evidence</TableHead>
+                <TableHead className="w-[160px]">Verification Status</TableHead>
+                <TableHead className="text-right w-[170px]">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -324,7 +324,7 @@ function PaymentConfirmationsContent() {
                         <div className="text-xs font-semibold text-foreground">
                           {app.invoice?.virtualBankName || "Official LGA Collection Bank"}
                         </div>
-                        <div className="font-mono text-xs text-muted-foreground whitespace-nowrap">
+                        <div className="font-mono text-xs text-muted-foreground break-all">
                           {app.invoice?.virtualAccountNumber || "—"}
                         </div>
                       </TableCell>
@@ -366,7 +366,7 @@ function PaymentConfirmationsContent() {
 
                       {/* 5. Transaction Ref */}
                       <TableCell className="align-top">
-                        <div className="text-xs font-mono font-medium text-foreground truncate max-w-[150px]">
+                        <div className="text-xs font-mono font-medium text-foreground break-all">
                           {p?.reference || "—"}
                         </div>
                         <div className="text-[10px] text-muted-foreground">
