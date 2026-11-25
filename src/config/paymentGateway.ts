@@ -26,7 +26,7 @@ export const PAYMENT_PROVIDER_KEY = "pendingPaymentProvider";
  * Gateway used by the "apply & pay" and "pay invoice" entry points.
  * Override per environment with NEXT_PUBLIC_PAYMENT_PROVIDER=paystack|gpay.
  */
-export const DEFAULT_PAYMENT_PROVIDER: PaymentProvider = "gpay";
+export const DEFAULT_PAYMENT_PROVIDER: PaymentProvider = "paystack";
 
 export const PAYMENT_PROVIDER_LABELS: Record<PaymentProvider, string> = {
   paystack: "Debit Card / Online Payment",
@@ -35,7 +35,11 @@ export const PAYMENT_PROVIDER_LABELS: Record<PaymentProvider, string> = {
 
 export function getActivePaymentProvider(): PaymentProvider {
   const configured = process.env.NEXT_PUBLIC_PAYMENT_PROVIDER;
-  if (configured === "paystack" || configured === "gpay") return configured;
+  // GPay is parked (Nov 25, 2026): every online card payment runs on
+  // Paystack, so gpay is commented out of selection entirely, including
+  // the environment override. Restore the line below to bring it back.
+  // if (configured === "paystack" || configured === "gpay") return configured;
+  if (configured === "paystack") return configured;
   return DEFAULT_PAYMENT_PROVIDER;
 }
 
@@ -66,7 +70,11 @@ export function resolvePaymentProvider(
   if (storedProvider === "gpay" || storedProvider === "paystack") {
     return storedProvider;
   }
-  return isGpayReference(reference) ? "gpay" : "paystack";
+  // While GPay is parked, a storage-less return is verified against
+  // Paystack. Both gateways mint PAY- references, so the old prefix
+  // guess would send a Paystack payer to the wrong verify endpoint.
+  // return isGpayReference(reference) ? "gpay" : "paystack";
+  return "paystack";
 }
 
 /** Persist the reference + provider so we know which gateway to verify against. */

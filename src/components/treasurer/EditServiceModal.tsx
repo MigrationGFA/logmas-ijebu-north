@@ -43,26 +43,36 @@ interface EditServiceModalProps {
   onSuccess?: () => void;
 }
 
+// The values in both lists must match the backend Prisma enums exactly
+// (ServiceCategory and CertificateType in the backend schema). The
+// database rejects anything else, which used to kill every save from
+// this modal, price and active-status changes included, whenever a
+// dropdown was touched: the old lists carried display labels and
+// invented values the database has never heard of. Labels here are
+// display only; the value is what gets saved. There is deliberately no
+// "custom category" option: the database cannot store one.
 const PRESET_CATEGORIES = [
-  "Certificates",
-  "Community & Agriculture",
-  "Rates & Levies",
-  "Licences & Permits",
-  "Urban Development",
+  { value: "CERTIFICATE", label: "Certificates" },
+  { value: "RATES_AND_LEVIES", label: "Rates & Levies" },
+  { value: "LICENCES_AND_PERMITS", label: "Licences & Permits" },
+  { value: "URBAN_DEVELOPMENT", label: "Urban Development" },
+  { value: "OTHERS", label: "Others" },
 ];
 
 const PRESET_CERT_TYPES = [
   { value: "CERTIFICATE_OF_ORIGIN", label: "Certificate of Origin" },
-  { value: "CERTIFICATE_OF_REGISTRATION", label: "Certificate of Registration" },
-  { value: "TENEMENT_RATE_ASSESSMENT", label: "Tenement Rate Assessment" },
-  { value: "ENVIRONMENTAL_HEALTH_CERTIFICATE", label: "Environmental Health Certificate" },
-  { value: "TRADE_PERMIT", label: "Trade / Business Permit" },
+  { value: "CLUB_REGISTRATION", label: "Club Registration Certificate" },
+  { value: "CDA_REGISTRATION", label: "CDA Registration Certificate" },
+  { value: "FARMERS_REGISTRATION", label: "Farmers Registration Certificate" },
+  { value: "ENVIRONMENTAL_SANITATION_COMPLIANCE", label: "Environmental Sanitation Compliance" },
+  { value: "TENEMENT_RATE_CLEARANCE", label: "Tenement Rate Clearance" },
+  { value: "HAULAGE_PERMIT", label: "Haulage & Loading Permit" },
   { value: "LIQUOR_LICENCE", label: "Liquor Licence" },
   { value: "VIEWING_CENTRE_LICENCE", label: "Viewing Centre Licence" },
   { value: "QUARRY_PERMIT", label: "Quarry Operation Permit" },
   { value: "STREET_NAMING_CERTIFICATE", label: "Street Naming Approval Certificate" },
-  { value: "KIOSK_PERMIT", label: "Kiosk / Temporary Structure Permit" },
-  { value: "HAULAGE_PERMIT", label: "Haulage & Loading Permit" },
+  { value: "KIOSK_LICENCE", label: "Kiosk Licence" },
+  { value: "MARRIAGE_CERTIFICATE", label: "Marriage Certificate" },
   { value: "NONE", label: "None / Statutory Receipt Only" },
 ];
 
@@ -88,8 +98,7 @@ export function EditServiceModal({
   // Form State
   const [code, setCode] = useState("");
   const [name, setName] = useState("");
-  const [category, setCategory] = useState("Licences & Permits");
-  const [customCategory, setCustomCategory] = useState("");
+  const [category, setCategory] = useState("LICENCES_AND_PERMITS");
   const [revenueHead, setRevenueHead] = useState("");
   const [description, setDescription] = useState("");
   const [estimatedDays, setEstimatedDays] = useState("3");
@@ -117,28 +126,23 @@ export function EditServiceModal({
 
     setCode(service.code || service.slug || "");
     setName(service.name || "");
-    if (PRESET_CATEGORIES.includes(service.category)) {
-      setCategory(service.category);
-      setCustomCategory("");
-    } else if (service.category) {
-      setCategory("custom");
-      setCustomCategory(service.category);
-    } else {
-      setCategory("Licences & Permits");
-      setCustomCategory("");
-    }
+    setCategory(
+      PRESET_CATEGORIES.some((c) => c.value === service.category)
+        ? service.category
+        : "LICENCES_AND_PERMITS",
+    );
 
     setRevenueHead(service.revenueHead || "");
     setDescription(service.description || "");
     setEstimatedDays(String(service.estimatedDays || 3));
-    setCertificateType(service.certificateType || "CERTIFICATE_OF_REGISTRATION");
+    setCertificateType(
+      PRESET_CERT_TYPES.some((ct) => ct.value === service.certificateType)
+        ? service.certificateType
+        : "CERTIFICATE_OF_ORIGIN",
+    );
     setSupportsRenewal(Boolean(service.supportsRenewal));
     setIsActive(service.isActive !== false);
     setFoOnly(Boolean(service.foOnly));
-    if (service.category === "OTHERS") {
-      setCategory("OTHERS");
-      setCustomCategory("");
-    }
 
     // Requirements
     if (Array.isArray(service.requirements)) {
@@ -202,13 +206,10 @@ export function EditServiceModal({
       return;
     }
 
-    const finalCategory =
-      category === "custom" ? customCategory.trim() || "General Services" : category;
-
     const payload: any = {
       code: code.trim(),
       name: name.trim(),
-      category: foOnly ? "OTHERS" : finalCategory,
+      category: foOnly ? "OTHERS" : category,
       revenueHead: revenueHead.trim().toUpperCase(),
       description: description.trim(),
       requirements: foOnly ? [] : requirements,
@@ -333,28 +334,12 @@ export function EditServiceModal({
                   </SelectTrigger>
                   <SelectContent>
                     {PRESET_CATEGORIES.map((cat) => (
-                      <SelectItem key={cat} value={cat} className="text-xs">
-                        {cat}
+                      <SelectItem key={cat.value} value={cat.value} className="text-xs">
+                        {cat.label}
                       </SelectItem>
                     ))}
-                    {(foOnly || category === "OTHERS") && (
-                      <SelectItem value="OTHERS" className="text-xs">
-                        Others
-                      </SelectItem>
-                    )}
-                    <SelectItem value="custom" className="text-xs italic text-primary">
-                      + Custom Category...
-                    </SelectItem>
                   </SelectContent>
                 </Select>
-                {category === "custom" && (
-                  <Input
-                    placeholder="Type custom category name..."
-                    value={customCategory}
-                    onChange={(e) => setCustomCategory(e.target.value)}
-                    className="h-8 text-xs mt-1 bg-background"
-                  />
-                )}
               </div>
               )}
 

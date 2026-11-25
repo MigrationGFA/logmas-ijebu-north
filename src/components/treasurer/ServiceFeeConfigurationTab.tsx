@@ -55,7 +55,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { format } from "date-fns";
-import { useServices } from "@/hooks/queries/useServices";
+
 import { useServiceFees } from "@/hooks/queries/useTreasurer";
 import { CreateServiceModal } from "./CreateServiceModal";
 import { EditServiceModal } from "./EditServiceModal";
@@ -87,8 +87,13 @@ function getServiceIcon(id: string, className = "h-4 w-4") {
 }
 
 export default function ServiceFeeConfigurationTab() {
-  const { upsertServiceFee, isUpserting } = useServiceFees();
-  const { services: servicesData, isLoading, refetch } = useServices();
+  const { upsertServiceFee, isUpserting, useGetServiceFees } = useServiceFees();
+  // The list comes from the treasurer fees endpoint, not the catalogue:
+  // it returns every service with its fee config, active or not, which
+  // is what a pricing screen needs. The catalogue only lists active
+  // services, so a deactivated service could never be priced or
+  // switched back on from here.
+  const { data: servicesData, isLoading, refetch } = useGetServiceFees();
   // Add these state variables near the other useState declarations
   const [initialFeeAmount, setInitialFeeAmount] = useState<number | string>("");
   const [initialFeeStatus, setInitialFeeStatus] = useState<
