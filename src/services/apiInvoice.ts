@@ -628,6 +628,31 @@ export const invoicesService = {
   return await api.post<OnlinePaymentInitResponse>(`/invoices/${id}/pay-online`, {});
 },
 
+/** Public card payment for an existing invoice (the /pay/:invoiceNumber
+ *  link): no account needed; the email comes from the collection record
+ *  or is supplied by the payer on the pay page. */
+initializePublicInvoicePayment: async (
+  invoiceNumber: string,
+  email?: string,
+): Promise<OnlinePaymentInitResponse> => {
+  return await api.post<OnlinePaymentInitResponse>(
+    `/invoices/public/${invoiceNumber}/initialize`,
+    email ? { email } : {},
+  );
+},
+
+/** FO collections: re-send the payment instructions SMS (card link or
+ *  bank transfer details) to the payer. */
+resendPaymentInstructions: async (
+  invoiceNumber: string,
+  body: { channel: "card" | "transfer"; email?: string },
+): Promise<{ smsSent: boolean; channel: string }> => {
+  return await api.post<{ smsSent: boolean; channel: string }>(
+    `/invoices/${invoiceNumber}/resend-payment-link`,
+    body,
+  );
+},
+
 verifyPayment: async (reference: string): Promise<VerifyPaymentResponse> => {
   return await api.get<VerifyPaymentResponse>(`/payments/verify/${reference}`);
 },

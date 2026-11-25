@@ -48,6 +48,7 @@ import {
 import { useBankAccount } from "@/hooks/queries/useBankAccount";
 
 import { tokenManager } from "@/services/apiAuth";
+import { invoicesService } from "@/services/apiInvoice";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ErrorState } from "@/components/ui/ErrorState";
@@ -462,6 +463,18 @@ export default function InvoiceDetail({
                     before payers can be given transfer details.
                   </div>
                 ))}
+              {status !== "confirmed" &&
+                !foPendingPayment &&
+                ["field_officer", "treasurer", "lga_admin", "super_admin"].includes(
+                  userRole ?? "",
+                ) && (
+                  <div className="mb-4">
+                    <ResendInstructionsDialog
+                      invoiceNumber={invoice.invoiceNumber}
+                      payerEmail={invoice.application?.formData?.email ?? null}
+                    />
+                  </div>
+                )}
               {status === "confirmed" ? (
                 <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                   <CheckCircle2 className="h-4 w-4" /> Confirmed by the
@@ -1071,3 +1084,110 @@ function CashConfirmDialog({
   );
 }
 
+
+/**
+ * Resend the payment instructions for an FO collection invoice by SMS:
+ * the card payment link, or the LGA collection account details for a
+ * bank transfer. The backend refuses while a recorded transfer is
+ * awaiting treasurer confirmation, so a payer is never pushed to pay
+ * twice. Card links need the payer's email (Paystack requires one); it
+ * is prefilled from the collection record where one was captured.
+ */
+function ResendInstructionsDialog({
+  invoiceNumber,
+  payerEmail,
+}: {
+  invoiceNumber: string;
+  payerEmail?: string | null;
+}) {
+  const [open, setOpen] = useState(false);
+  const [channel, setChannel] = useState<"card" | "transfer">("transfer");
+  const [email, setEmail] = useState(payerEmail ?? "");
+  const [sending, setSending] = useState(false);
+
+  const handleSend = async () => {
+    if (channel === "card" && !email.trim()) {
+      toast.error("Enter the payer's email address for the card payment link");
+      return;
+    }
+    setSending(true);
+    try {
+      const result = await invoicesService.resendPaymentInstructions(
+        invoiceNumber,
+        channel === "card" ? { channel, email: email.trim() } : { channel },
+      );
+      if (result.smsSent) {
+        toast.success("Payment instructions sent to the payer by SMS");
+        setOpen(false);
+      } else {
+        toast.error("The SMS could not be sent. Check the number and try again.");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Could not resend the payment instructions");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="w-full">
+          <Send className="h-4 w-4 mr-1.5" /> Resend payment instructions
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Resend payment instructions</DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4">
+          <p className="text-sm text-muted-foreground">
+            The payer gets an SMS with how to pay this invoice. Choose how
+            they want to pay.
+          </p>
+          <div className="grid grid-cols-2 gap-2">
+            <Button
+              type="button"
+              variant={channel === "transfer" ? "default" : "outline"}
+              onClick={() => setChannel("transfer")}
+            >
+              <Landmark className="h-4 w-4 mr-1.5" /> Bank transfer
+            </Button>
+            <Button
+              type="button"
+              variant={channel === "card" ? "default" : "outline"}
+              onClick={() => setChannel("card")}
+            >
+              <Link2 className="h-4 w-4 mr-1.5" /> Card payment link
+            </Button>
+          </div>
+          {channel === "card" && (
+            <div>
+              <Label htmlFor="resend-payer-email">Payer&apos;s email</Label>
+              <Input
+                id="resend-payer-email"
+                type="email"
+                className="mt-1.5"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="payer@example.com"
+              />
+              <p className="text-xs text-muted-foreground mt-1.5">
+                Needed for the card payment. The SMS carries the payment
+                link itself.
+              </p>
+            </div>
+          )}
+          <Button onClick={handleSend} disabled={sending} className="w-full">
+            {sending ? (
+              <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+            ) : (
+              <Send className="h-4 w-4 mr-1.5" />
+            )}
+            Send SMS
+          </Button>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
