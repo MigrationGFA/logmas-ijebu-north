@@ -109,6 +109,13 @@ export default function ServiceFeeConfigurationTab() {
   const [categoryFilter, setCategoryFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
 
+  // Table pagination (client-side over the filtered list)
+  const PAGE_SIZE = 10;
+  const [currentPage, setCurrentPage] = useState(1);
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, categoryFilter, statusFilter]);
+
   // Create & Edit Service Modals State
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [editingService, setEditingService] = useState<any | null>(null);
@@ -286,6 +293,20 @@ export default function ServiceFeeConfigurationTab() {
       return matchesSearch && matchesCategory && matchesStatus;
     });
   }, [services, searchQuery, categoryFilter, statusFilter]);
+
+  // Paged slice of the filtered list. The page clamps to the last valid
+  // page when the list shrinks (a save, a filter change), so the table
+  // never lands on a blank page.
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredServices.length / PAGE_SIZE),
+  );
+  const safePage = Math.min(currentPage, totalPages);
+  const pageStartIndex = (safePage - 1) * PAGE_SIZE;
+  const pagedServices = filteredServices.slice(
+    pageStartIndex,
+    pageStartIndex + PAGE_SIZE,
+  );
 
   // Summary statistics
   const stats = useMemo(() => {
@@ -762,7 +783,7 @@ export default function ServiceFeeConfigurationTab() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredServices.map((service, index) => {
+                  pagedServices.map((service, index) => {
                     const isSelected = service.id === selectedServiceId;
                     const fee = service.feeConfig?.amount || 0;
                     // FO-only services carry no fee config by design: their
@@ -788,7 +809,7 @@ export default function ServiceFeeConfigurationTab() {
                         }`}
                       >
                         <TableCell className="text-center text-xs font-mono text-muted-foreground">
-                          {index + 1}
+                          {pageStartIndex + index + 1}
                         </TableCell>
 
                         <TableCell>
@@ -942,6 +963,49 @@ export default function ServiceFeeConfigurationTab() {
               </TableBody>
             </Table>
           </div>
+          {filteredServices.length > 0 && (
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-4">
+              <p className="text-xs text-muted-foreground">
+                Showing {pageStartIndex + 1} to{" "}
+                {Math.min(
+                  pageStartIndex + PAGE_SIZE,
+                  filteredServices.length,
+                )}{" "}
+                of {filteredServices.length} services
+              </p>
+              <div className="flex items-center gap-1.5">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={safePage <= 1}
+                  onClick={() => setCurrentPage(safePage - 1)}
+                >
+                  Previous
+                </Button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(
+                  (page) => (
+                    <Button
+                      key={page}
+                      variant={page === safePage ? "default" : "outline"}
+                      size="sm"
+                      className="min-w-9"
+                      onClick={() => setCurrentPage(page)}
+                    >
+                      {page}
+                    </Button>
+                  ),
+                )}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={safePage >= totalPages}
+                  onClick={() => setCurrentPage(safePage + 1)}
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 
