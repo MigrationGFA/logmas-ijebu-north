@@ -85,6 +85,30 @@ export default function ServicesPage() {
 
   const { services, isLoading, error, refetch } = useServices();
 
+  // A field officer only ever sees FO-only services, so the FO Only chip
+  // is meaningless for them. Their category chips are built from the
+  // categories their services actually carry (the internal revenue list
+  // being seeded for them spans several), matched on the stored category
+  // value with a friendly label.
+  const isFieldOfficer = currentUser?.role === "field_officer";
+  const CATEGORY_LABELS: Record<string, string> = {
+    CERTIFICATE: "Certificates",
+    RATES_AND_LEVIES: "Rates & Levies",
+    LICENCES_AND_PERMITS: "Licences & Permits",
+    URBAN_DEVELOPMENT: "Urban Development",
+    OTHERS: "Others",
+  };
+  const visibleCategories = isFieldOfficer
+    ? [
+        "All",
+        ...Array.from(
+          new Set(services.map((s: ServiceType) => s.category)),
+        ),
+      ]
+    : categories;
+  const categoryLabel = (cat: string) =>
+    isFieldOfficer ? (CATEGORY_LABELS[cat] ?? cat) : cat;
+
 
   if (error) {
     return (
@@ -156,7 +180,7 @@ export default function ServicesPage() {
 
         <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           <Filter className="h-4 w-4 text-muted-foreground shrink-0 hidden sm:inline" />
-          {categories.map((cat) => (
+          {visibleCategories.map((cat) => (
             <Button
               key={cat}
               variant={selectedCategory === cat ? "default" : "outline"}
@@ -164,7 +188,7 @@ export default function ServicesPage() {
               onClick={() => setSelectedCategory(cat)}
               className="whitespace-nowrap text-xs"
             >
-              {cat}
+              {categoryLabel(cat)}
             </Button>
           ))}
         </div>

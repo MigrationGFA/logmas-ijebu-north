@@ -634,7 +634,7 @@ export default function ServiceDetailPage({ params }: PageProps) {
       ) : (
         /* SERVICE FORM WIZARD */
         <div className="space-y-4">
-          {isFieldOfficer && (
+          {isFieldOfficer && !service.foOnly && (
             <Card className="p-4">
               <p className="text-xs uppercase font-bold tracking-wider text-muted-foreground mb-2">
                 Payment method (field officer)

@@ -122,8 +122,10 @@ export default function FieldOfficerOverview() {
 
   return (
     <>
-      {/* Metrics Row: live database figures only */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      {/* Metrics Row: live database figures only. Hidden on phones
+          (Nov 25, 2026): the mobile overview is Quick Actions and
+          Recent Applications alone, for faster field navigation. */}
+      <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard
           label="My Applications"
           value={String(metrics.totalApplications)}
@@ -250,7 +252,7 @@ export default function FieldOfficerOverview() {
 
       {/* Quick Action Navigation Grid */}
       <div className="grid lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2 p-5 bg-card border-border/60 space-y-3">
+        <Card className="hidden lg:block lg:col-span-2 p-5 bg-card border-border/60 space-y-3">
           <h4 className="font-bold text-sm text-foreground flex items-center gap-2">
             <ScanLine className="h-4 w-4 text-primary" />
             Field Verification & Revenue Operations
