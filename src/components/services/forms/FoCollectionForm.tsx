@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, ReceiptText } from "lucide-react";
+import { Landmark, Link2, Loader2, ReceiptText } from "lucide-react";
 import { services } from "@/services/apiServices";
 import { ServiceType } from "@/config/lgaServices";
 
@@ -20,21 +20,37 @@ interface FoCollectionFormProps {
  * The service was already selected in the catalogue. The officer records
  * who paid, how much was actually paid after bargaining, and the
  * merchant where there is one. There is no fixed fee and no document
- * checklist for these services. Submitting creates the application and
- * its invoice together, then lands the officer on the invoice page to
- * record how the payer paid (cash or bank transfer) for the treasurer
- * to confirm.
+ * checklist for these services. The officer chooses how the payer will
+ * pay before recording (bank transfer or the online payment link), and
+ * the payer is texted the matching instructions. Submitting creates the
+ * application and its invoice together, then lands the officer on the
+ * invoice page; a recorded transfer is confirmed by the treasurer, while
+ * a card payment confirms itself at the gateway.
  */
+/** Digits-only comparison so 0803..., +234 803... and 234803... agree. */
+const samePhoneNumber = (a: string, b: string): boolean => {
+  const norm = (v: string) => {
+    const d = v.replace(/\D/g, "");
+    return d.startsWith("234") && d.length >= 12 ? `0${d.slice(3)}` : d;
+  };
+  return norm(a) !== "" && norm(a) === norm(b);
+};
+
 export default function FoCollectionForm({ service }: FoCollectionFormProps) {
   const router = useRouter();
   const [payerName, setPayerName] = useState("");
   const [phone, setPhone] = useState("");
+  const [confirmPhone, setConfirmPhone] = useState("");
   const [email, setEmail] = useState("");
   const [merchantName, setMerchantName] = useState("");
   const [location, setLocation] = useState("");
   const [amount, setAmount] = useState("");
+  const [channel, setChannel] = useState<"card" | "transfer">("transfer");
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const phoneMismatch =
+    confirmPhone.trim() !== "" && !samePhoneNumber(phone, confirmPhone);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,6 +59,10 @@ export default function FoCollectionForm({ service }: FoCollectionFormProps) {
     const paidAmount = Number(amount);
     if (!payerName.trim()) return setError("Payer name is required.");
     if (!phone.trim()) return setError("Phone number is required.");
+    if (!confirmPhone.trim())
+      return setError("Confirm the phone number. The payment instructions are sent to it.");
+    if (!samePhoneNumber(phone, confirmPhone))
+      return setError("The two phone numbers do not match. Check them and try again.");
     if (!location.trim()) return setError("Collection location is required.");
     if (!paidAmount || paidAmount <= 0)
       return setError("Enter the amount actually paid. It must be greater than ₦0.");
@@ -58,6 +78,7 @@ export default function FoCollectionForm({ service }: FoCollectionFormProps) {
         merchantName: merchantName.trim() || undefined,
         location: location.trim(),
         amount: paidAmount,
+        channel,
       });
 
       const invoiceNumber =
@@ -66,7 +87,16 @@ export default function FoCollectionForm({ service }: FoCollectionFormProps) {
         throw new Error("Collection was recorded but no invoice was returned.");
       }
 
-      toast.success("Collection recorded. Now choose how the payer paid.");
+      const smsSent = res?.smsSent ?? res?.data?.smsSent;
+      if (channel === "card") {
+        if (smsSent) {
+          toast.success("Collection recorded. The payment link was sent to the payer by SMS.");
+        } else {
+          toast.warning("Collection recorded, but the SMS did not go through. Resend it from the invoice page.");
+        }
+      } else {
+        toast.success("Collection recorded. Now record the transfer once the payer pays.");
+      }
       router.push(`/dashboard/invoices/${invoiceNumber}`);
     } catch (err: any) {
       console.error("FO collection failed:", err);
@@ -81,8 +111,8 @@ export default function FoCollectionForm({ service }: FoCollectionFormProps) {
       <div className="rounded-lg border border-primary/30 bg-primary/5 p-3 text-xs text-muted-foreground">
         <span className="font-semibold text-foreground">FO-only service.</span>{" "}
         This service is not visible to the public and has no fixed fee. Record
-        the amount actually paid after bargaining. No bank details are shown
-        for this service; the treasurer confirms the collection afterwards.
+        the amount actually paid after bargaining, choose how the payer will
+        pay, and the payment instructions go to their phone by SMS.
       </div>
 
       {error && (
@@ -118,6 +148,30 @@ export default function FoCollectionForm({ service }: FoCollectionFormProps) {
             className="h-10 text-sm bg-background"
             required
           />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label htmlFor="fo-confirm-phone" className="text-xs font-semibold">
+            Confirm Phone Number <span className="text-destructive">*</span>
+          </Label>
+          <Input
+            id="fo-confirm-phone"
+            placeholder="Re-enter the phone number"
+            value={confirmPhone}
+            onChange={(e) => setConfirmPhone(e.target.value)}
+            className="h-10 text-sm bg-background"
+            required
+          />
+          {phoneMismatch ? (
+            <p className="text-[11px] text-destructive">
+              The two phone numbers do not match.
+            </p>
+          ) : (
+            <p className="text-[11px] text-muted-foreground">
+              The payment instructions are sent to this number, so it has to
+              be right.
+            </p>
+          )}
         </div>
 
         <div className="space-y-1.5">
@@ -184,6 +238,42 @@ export default function FoCollectionForm({ service }: FoCollectionFormProps) {
           <span className="text-[10px] text-muted-foreground">
             Enter what was actually paid, not a standard rate.
           </span>
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-xs font-semibold">
+          How will the payer pay? <span className="text-destructive">*</span>
+        </Label>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <Button
+            type="button"
+            variant={channel === "transfer" ? "default" : "outline"}
+            className="h-auto py-3 justify-start"
+            onClick={() => setChannel("transfer")}
+          >
+            <Landmark className="h-4 w-4 mr-2 shrink-0" />
+            <span className="text-left">
+              <span className="block text-sm font-semibold">Bank Transfer</span>
+              <span className="block text-xs font-normal opacity-80">
+                The payer gets the LGA account details by SMS
+              </span>
+            </span>
+          </Button>
+          <Button
+            type="button"
+            variant={channel === "card" ? "default" : "outline"}
+            className="h-auto py-3 justify-start"
+            onClick={() => setChannel("card")}
+          >
+            <Link2 className="h-4 w-4 mr-2 shrink-0" />
+            <span className="text-left">
+              <span className="block text-sm font-semibold">Pay Online</span>
+              <span className="block text-xs font-normal opacity-80">
+                The payer gets a card payment link by SMS
+              </span>
+            </span>
+          </Button>
         </div>
       </div>
 

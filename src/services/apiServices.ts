@@ -70,6 +70,7 @@ export const services = {
     merchantName?: string;
     location: string;
     amount: number;
+    channel: "card" | "transfer";
   }) => api.post<any>("/services/fo-collections", payload),
 };
 
