@@ -4,7 +4,7 @@ import type { PaymentProvider } from "@/config/paymentGateway";
 
 // Types based on your controller
 export type InvoiceStatus = "sent" | "paid" | "partially_paid" | "overdue" | "cancelled" | "pending";
-export type PaymentMethod = "cash" | "pos" | "bank_transfer" | "online" | "virtual_account";
+export type PaymentMethod = "cash" | "pos" | "bank_transfer" | "online" | "online_gateway" | "virtual_account";
 
 export interface Payment {
   id: string;

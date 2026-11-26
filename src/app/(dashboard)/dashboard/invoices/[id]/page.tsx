@@ -266,8 +266,33 @@ export default function InvoiceDetail({
       (invoice as any)?.application?.formData?._foCollection,
   );
 
+  // Only a recorded bank transfer counts as a pending FO claim. A pending
+  // card payment (the payer opened the pay link but has not finished) is
+  // not a transfer record and must never present as one.
   const foPendingPayment =
-    invoice.payments?.find((p) => p.status === "pending") || null;
+    invoice.payments?.find(
+      (p) => p.status === "pending" && p.method === "bank_transfer",
+    ) || null;
+
+  // The method the payer is currently set to use, recorded on the
+  // collection when it was created and updated whenever the officer
+  // resends on the other channel.
+  const paymentChannel: "card" | "transfer" =
+    (invoice.application?.formData as any)?.paymentChannel === "card"
+      ? "card"
+      : "transfer";
+
+  // How this invoice was actually settled, once it is settled.
+  const confirmedPayment =
+    invoice.payments?.find((p) => p.status === "confirmed") || null;
+  const paidViaCard = confirmedPayment?.method === "online_gateway";
+
+  // On an FO collection the payer is the walk-up customer captured on the
+  // collection form, not the officer whose account created the record.
+  const payerName =
+    invoice.application?.formData?.payerName ||
+    invoice.application?.formData?.fullName ||
+    "N/A";
 
   const handlePaymentConfirm = (
     method: "transfer" | "pos" | "cash",
@@ -394,8 +419,29 @@ export default function InvoiceDetail({
             </div>
 
             <div className="grid sm:grid-cols-2 gap-4 text-sm">
-              {/* <Field label="Customer" value={customerName} /> */}
+              <Field
+                label={isFoOnlyInvoice ? "Payer" : "Customer"}
+                value={isFoOnlyInvoice ? payerName : customerName}
+              />
               {customerPhone && <Field label="Phone" value={customerPhone} />}
+              {isFoOnlyInvoice && invoice.application?.applicant?.fullName && (
+                <Field
+                  label="Collected By"
+                  value={invoice.application.applicant.fullName}
+                />
+              )}
+              {invoice.application?.formData?.merchantName && (
+                <Field
+                  label="Business"
+                  value={invoice.application.formData.merchantName}
+                />
+              )}
+              {invoice.application?.formData?.location && (
+                <Field
+                  label="Location"
+                  value={invoice.application.formData.location}
+                />
+              )}
               <Field label="Service/Levy" value={serviceName} />
               {revenueHead && (
                 <Field label="Revenue Head" value={revenueHead} />
@@ -431,13 +477,15 @@ export default function InvoiceDetail({
             <Card className="p-6 bg-gradient-card border-border/40">
               <h3 className="font-semibold mb-2">Officer Collection</h3>
               <p className="text-sm text-muted-foreground mb-4">
-                This is a field-officer-only service. The payer transfers
-                to the LGA collection account below, then sends you the
-                receipt.
-                {status !== "confirmed" &&
-                  " Record the transfer with the receipt attached, and the treasurer will confirm it. You will be notified once it is confirmed."}
+                {status === "confirmed"
+                  ? paidViaCard
+                    ? "This is a field-officer-only service. The payer paid online by card, and the payment was confirmed automatically when it went through."
+                    : "This is a field-officer-only service. The payer paid by bank transfer to the LGA collection account, and the treasurer confirmed it."
+                  : paymentChannel === "card"
+                    ? "This is a field-officer-only service. The payer pays online by card, using the payment link sent to their phone by SMS. This invoice confirms itself automatically when the payment goes through."
+                    : "This is a field-officer-only service. The payer transfers to the LGA collection account below, then sends the collecting officer the receipt. The officer records the transfer here, and the treasurer confirms it."}
               </p>
-              {status !== "confirmed" &&
+              {status !== "confirmed" && paymentChannel === "transfer" &&
                 (bankAccount ? (
                   <div className="rounded-lg border border-border/60 bg-background p-4 mb-4">
                     <div className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -463,22 +511,23 @@ export default function InvoiceDetail({
                     before payers can be given transfer details.
                   </div>
                 ))}
-              {status !== "confirmed" &&
-                !foPendingPayment &&
-                ["field_officer", "treasurer", "lga_admin", "super_admin"].includes(
-                  userRole ?? "",
-                ) && (
-                  <div className="mb-4">
-                    <ResendInstructionsDialog
-                      invoiceNumber={invoice.invoiceNumber}
-                      payerEmail={invoice.application?.formData?.email ?? null}
-                    />
-                  </div>
-                )}
+              {status !== "confirmed" && !foPendingPayment && isOfficer && (
+                <div className="mb-4">
+                  <ResendInstructionsDialog
+                    key={paymentChannel}
+                    invoiceNumber={invoice.invoiceNumber}
+                    payerEmail={invoice.application?.formData?.email ?? null}
+                    currentChannel={paymentChannel}
+                    onSent={() => refetch()}
+                  />
+                </div>
+              )}
               {status === "confirmed" ? (
                 <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
-                  <CheckCircle2 className="h-4 w-4" /> Confirmed by the
-                  treasurer
+                  <CheckCircle2 className="h-4 w-4" />
+                  {paidViaCard
+                    ? "Paid online by card"
+                    : "Confirmed by the treasurer"}
                 </div>
               ) : foPendingPayment ? (
                 <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 text-sm">
@@ -498,8 +547,8 @@ export default function InvoiceDetail({
                       )
                     </>
                   )}
-                  . Awaiting treasurer confirmation. You will be notified
-                  when it is confirmed.
+                  . Awaiting treasurer confirmation.
+                  {isOfficer && " You will be notified when it is confirmed."}
                 </div>
               ) : isOfficer ? (
                 <div className="space-y-3">
@@ -543,8 +592,9 @@ export default function InvoiceDetail({
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Awaiting the collecting officer&apos;s transfer record,
-                  then treasurer confirmation.
+                  {paymentChannel === "card"
+                    ? "This collection is set to pay online. Payment follow-up for it sits with the collecting officer."
+                    : "Awaiting the collecting officer's transfer record, then treasurer confirmation."}
                 </p>
               )}
             </Card>
@@ -898,7 +948,7 @@ export default function InvoiceDetail({
                       </span>
                     </div>
                     {payment.status === "pending" &&
-                    payment.method === "online" ? (
+                    payment.method === "online_gateway" ? (
                       <Button
                         size="sm"
                         variant="outline"
@@ -1096,12 +1146,16 @@ function CashConfirmDialog({
 function ResendInstructionsDialog({
   invoiceNumber,
   payerEmail,
+  currentChannel,
+  onSent,
 }: {
   invoiceNumber: string;
   payerEmail?: string | null;
+  currentChannel: "card" | "transfer";
+  onSent?: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const [channel, setChannel] = useState<"card" | "transfer">("transfer");
+  const [channel, setChannel] = useState<"card" | "transfer">(currentChannel);
   const [email, setEmail] = useState(payerEmail ?? "");
   const [sending, setSending] = useState(false);
 
@@ -1118,6 +1172,7 @@ function ResendInstructionsDialog({
       );
       if (result.smsSent) {
         toast.success("Payment instructions sent to the payer by SMS");
+        onSent?.();
         setOpen(false);
       } else {
         toast.error("The SMS could not be sent. Check the number and try again.");
@@ -1133,17 +1188,18 @@ function ResendInstructionsDialog({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full">
-          <Send className="h-4 w-4 mr-1.5" /> Resend payment instructions
+          <Send className="h-4 w-4 mr-1.5" /> Resend or switch payment method
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Resend payment instructions</DialogTitle>
+          <DialogTitle>Send payment instructions</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            The payer gets an SMS with how to pay this invoice. Choose how
-            they want to pay.
+            The payer gets an SMS with how to pay this invoice. Picking the
+            other method switches this collection to it, so the payer can
+            pay the new way instead.
           </p>
           <div className="grid grid-cols-2 gap-2">
             <Button
