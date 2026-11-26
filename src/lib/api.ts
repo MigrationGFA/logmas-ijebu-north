@@ -151,6 +151,12 @@ console.log(`API Base URL: ${API_BASE_URL}`);
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
+  // Field networks drop without cleanly closing connections, and with
+  // no timeout axios waits on the OS for minutes: the form just spins
+  // and the officer sees no response at all. Twenty seconds is long
+  // for any JSON call here, and failing fast is what lets the offline
+  // queue capture and the error messages do their job.
+  timeout: 20000,
 });
 
 /**
@@ -164,6 +170,9 @@ const axiosInstance = axios.create({
 const refreshAxios = axios.create({
   baseURL: API_BASE_URL,
   headers: { "Content-Type": "application/json" },
+  // Same reasoning as the main instance: a hung refresh would queue
+  // every other request behind it indefinitely.
+  timeout: 15000,
 });
 
 // Request interceptor for adding token
@@ -425,6 +434,9 @@ export const api = {
       method: config?.method || "POST",
       url,
       data: formData,
+      // Uploads ride the slowest links in the field; give them a
+      // minute before failing, unless the caller set its own timeout.
+      timeout: config?.timeout ?? 60000,
       headers: {
         ...(config?.headers ?? {}),
         "Content-Type": "multipart/form-data",

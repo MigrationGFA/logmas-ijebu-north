@@ -254,6 +254,14 @@ export default function ServiceDetailPage({ params }: PageProps) {
     // FO assisted bank-transfer path: park at awaiting_payment_confirmation
     // with a static-account transfer + proof upload for the treasurer.
     if (isFieldOfficer && payMethod === "bank_transfer") {
+      // This path creates a payment claim, so it is never captured
+      // offline. Say so at once instead of letting the submit hang.
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        toast.error(
+          "No network. A bank transfer application needs a connection, so it cannot be saved on this phone. Reconnect and submit again.",
+        );
+        return;
+      }
       try {
         const [firstName, ...rest] = String(applicant?.fullName || "").trim().split(" ");
         const lastName = rest.join(" ");

@@ -67,6 +67,13 @@ export default function FoCollectionForm({ service }: FoCollectionFormProps) {
     if (!paidAmount || paidAmount <= 0)
       return setError("Enter the amount actually paid. It must be greater than ₦0.");
     if (!service.code) return setError("Service code is missing.");
+    // A collection creates an invoice and sends the payer an SMS, so
+    // it can never be recorded offline. Say so at once instead of
+    // letting the submit hang on a dead connection.
+    if (typeof navigator !== "undefined" && !navigator.onLine)
+      return setError(
+        "No network. A collection needs a connection because it creates the invoice and sends the payer an SMS. Reconnect and try again.",
+      );
 
     setIsSubmitting(true);
     try {
