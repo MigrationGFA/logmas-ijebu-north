@@ -38,7 +38,17 @@ import {
   FileText,
   AlertCircle,
   RefreshCw,
+  X,
 } from "lucide-react";
+import {
+  Attachment,
+  AttachmentMedia,
+  AttachmentContent,
+  AttachmentTitle,
+  AttachmentDescription,
+  AttachmentActions,
+  AttachmentAction,
+} from "@/components/ui/attachment";
 import {
   useInvoiceDetails,
   useInvoicePayment,
@@ -659,10 +669,27 @@ export default function InvoiceDetail({
                         }
                       />
                       {replaceProofFile && (
-                        <p className="text-xs text-muted-foreground">
-                          {replaceProofFile.name} (
-                          {formatFileSize(replaceProofFile.size)})
-                        </p>
+                        <Attachment size="sm" className="bg-background">
+                          <AttachmentMedia>
+                            <FileText />
+                          </AttachmentMedia>
+                          <AttachmentContent>
+                            <AttachmentTitle>
+                              {replaceProofFile.name}
+                            </AttachmentTitle>
+                            <AttachmentDescription>
+                              {formatFileSize(replaceProofFile.size)}
+                            </AttachmentDescription>
+                          </AttachmentContent>
+                          <AttachmentActions>
+                            <AttachmentAction
+                              onClick={() => setReplaceProofFile(null)}
+                              aria-label="Remove replacement receipt"
+                            >
+                              <X />
+                            </AttachmentAction>
+                          </AttachmentActions>
+                        </Attachment>
                       )}
                       <Button
                         size="sm"
@@ -702,32 +729,39 @@ export default function InvoiceDetail({
                       the receipt to match the payment in the LGA account.
                     </p>
                     {foProofFile && (
-                      <div className="mt-3 rounded-lg border border-border/60 bg-background p-3">
-                        {foProofPreviewUrl ? (
+                      <div className="mt-3 space-y-2">
+                        <Attachment className="w-full bg-background">
+                          <AttachmentMedia
+                            variant={foProofPreviewUrl ? "image" : "icon"}
+                          >
+                            {foProofPreviewUrl ? (
+                              <img src={foProofPreviewUrl} alt="" />
+                            ) : (
+                              <FileText />
+                            )}
+                          </AttachmentMedia>
+                          <AttachmentContent>
+                            <AttachmentTitle>{foProofFile.name}</AttachmentTitle>
+                            <AttachmentDescription>
+                              {formatFileSize(foProofFile.size)}
+                            </AttachmentDescription>
+                          </AttachmentContent>
+                          <AttachmentActions>
+                            <AttachmentAction
+                              onClick={() => setFoProofFile(null)}
+                              aria-label="Remove receipt"
+                            >
+                              <X />
+                            </AttachmentAction>
+                          </AttachmentActions>
+                        </Attachment>
+                        {foProofPreviewUrl && (
                           <img
                             src={foProofPreviewUrl}
                             alt="Selected receipt preview"
-                            className="max-h-48 rounded-md object-contain"
+                            className="max-h-48 rounded-md border border-border/60 object-contain"
                           />
-                        ) : (
-                          <div className="flex items-center gap-2 text-sm">
-                            <FileText className="h-4 w-4 text-muted-foreground" />
-                            PDF receipt selected
-                          </div>
                         )}
-                        <div className="mt-2 flex items-center justify-between gap-2">
-                          <span className="text-xs text-muted-foreground truncate">
-                            {foProofFile.name} ({formatFileSize(foProofFile.size)})
-                          </span>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setFoProofFile(null)}
-                          >
-                            Remove
-                          </Button>
-                        </div>
                       </div>
                     )}
                   </div>
@@ -957,6 +991,29 @@ export default function InvoiceDetail({
                                 setProofFile(e.target.files?.[0] ?? null)
                               }
                             />
+                            {proofFile && (
+                              <Attachment size="sm" className="bg-background">
+                                <AttachmentMedia>
+                                  <FileText />
+                                </AttachmentMedia>
+                                <AttachmentContent>
+                                  <AttachmentTitle>
+                                    {proofFile.name}
+                                  </AttachmentTitle>
+                                  <AttachmentDescription>
+                                    {formatFileSize(proofFile.size)}
+                                  </AttachmentDescription>
+                                </AttachmentContent>
+                                <AttachmentActions>
+                                  <AttachmentAction
+                                    onClick={() => setProofFile(null)}
+                                    aria-label="Remove proof"
+                                  >
+                                    <X />
+                                  </AttachmentAction>
+                                </AttachmentActions>
+                              </Attachment>
+                            )}
                             <Button
                               className="w-full"
                               onClick={handleUploadProof}
@@ -1405,9 +1462,25 @@ function FoCorrectionForm({
           onChange={(e) => setProofFile(e.target.files?.[0] || null)}
         />
         {proofFile && (
-          <p className="text-xs text-muted-foreground mt-1.5">
-            {proofFile.name} ({fileSize(proofFile.size)})
-          </p>
+          <Attachment size="sm" className="mt-1.5 bg-background">
+            <AttachmentMedia>
+              <FileText />
+            </AttachmentMedia>
+            <AttachmentContent>
+              <AttachmentTitle>{proofFile.name}</AttachmentTitle>
+              <AttachmentDescription>
+                {fileSize(proofFile.size)}
+              </AttachmentDescription>
+            </AttachmentContent>
+            <AttachmentActions>
+              <AttachmentAction
+                onClick={() => setProofFile(null)}
+                aria-label="Remove new receipt"
+              >
+                <X />
+              </AttachmentAction>
+            </AttachmentActions>
+          </Attachment>
         )}
       </div>
       <Button
