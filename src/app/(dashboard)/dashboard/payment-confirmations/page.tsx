@@ -489,7 +489,7 @@ function PaymentConfirmationsContent() {
           if (!open && !busy) setReviewApp(null);
         }}
       >
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
+        <DialogContent className="max-h-[90vh] overflow-y-auto overflow-x-hidden [&>*]:min-w-0">
           {reviewApp && rf && (
             <>
               <DialogHeader>
@@ -521,7 +521,7 @@ function PaymentConfirmationsContent() {
                   <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">
                     {rf.isFo ? "Payer & Collection" : "Payer"}
                   </h4>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs rounded-xl border p-3 bg-card [&>*]:min-w-0">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs rounded-xl border p-3 bg-card [&>*]:min-w-0 [&_span]:break-words">
                     <div>
                       <span className="text-[10px] text-muted-foreground uppercase font-bold block">Payer</span>
                       <span className="font-semibold text-foreground">{rf.payerName}</span>
@@ -577,7 +577,7 @@ function PaymentConfirmationsContent() {
                   <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">
                     Payment
                   </h4>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs rounded-xl border p-3 bg-card [&>*]:min-w-0">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs rounded-xl border p-3 bg-card [&>*]:min-w-0 [&_span]:break-words">
                     <div>
                       <span className="text-[10px] text-muted-foreground uppercase font-bold block">Amount Claimed</span>
                       <span className="text-sm font-black text-foreground">
@@ -748,7 +748,7 @@ function PaymentConfirmationsContent() {
                           </Alert>
                         ) : null}
 
-                        <div className="grid grid-cols-3 gap-2 p-3 bg-muted/40 rounded-xl border text-xs">
+                        <div className="grid grid-cols-3 gap-2 p-3 bg-muted/40 rounded-xl border text-xs [&>*]:min-w-0 [&_span]:break-words">
                           <div>
                             <span className="text-[10px] text-muted-foreground uppercase font-bold block">
                               Statutory Fee
@@ -776,7 +776,7 @@ function PaymentConfirmationsContent() {
                         </div>
 
                         {auditData.foundInGateway && (
-                          <div className="rounded-xl border divide-y text-xs bg-card">
+                          <div className="rounded-xl border divide-y text-xs bg-card [&>div]:flex-wrap [&>div]:gap-x-3 [&_span]:min-w-0 [&_span:last-child]:break-all">
                             <div className="flex justify-between p-2.5">
                               <span className="text-muted-foreground">Payer Bank &amp; Account:</span>
                               <span className="font-semibold text-foreground text-right">
@@ -850,7 +850,7 @@ function PaymentConfirmationsContent() {
                 )}
               </div>
 
-              <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2">
+              <DialogFooter className="flex flex-col sm:flex-row sm:flex-wrap gap-2 pt-2">
                 <Button
                   variant="outline"
                   size="sm"
