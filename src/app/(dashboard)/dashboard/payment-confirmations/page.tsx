@@ -489,7 +489,7 @@ function PaymentConfirmationsContent() {
           if (!open && !busy) setReviewApp(null);
         }}
       >
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
           {reviewApp && rf && (
             <>
               <DialogHeader>
@@ -521,7 +521,7 @@ function PaymentConfirmationsContent() {
                   <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">
                     {rf.isFo ? "Payer & Collection" : "Payer"}
                   </h4>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs rounded-xl border p-3 bg-card">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs rounded-xl border p-3 bg-card [&>*]:min-w-0">
                     <div>
                       <span className="text-[10px] text-muted-foreground uppercase font-bold block">Payer</span>
                       <span className="font-semibold text-foreground">{rf.payerName}</span>
@@ -577,7 +577,7 @@ function PaymentConfirmationsContent() {
                   <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">
                     Payment
                   </h4>
-                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs rounded-xl border p-3 bg-card">
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs rounded-xl border p-3 bg-card [&>*]:min-w-0">
                     <div>
                       <span className="text-[10px] text-muted-foreground uppercase font-bold block">Amount Claimed</span>
                       <span className="text-sm font-black text-foreground">
@@ -639,13 +639,13 @@ function PaymentConfirmationsContent() {
                     Payment Evidence
                   </h4>
                   {rp?.proofUrl ? (
-                    <div className="rounded-xl border p-3 bg-card space-y-2">
+                    <div className="rounded-xl border p-3 bg-card space-y-2 overflow-hidden">
                       {proofIsImage && (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
                           src={rp.proofUrl}
                           alt="Payment proof"
-                          className="max-h-72 w-full object-contain rounded-lg border bg-muted/30"
+                          className="block mx-auto w-auto max-w-full h-auto max-h-80 object-contain rounded-lg border bg-muted/30"
                         />
                       )}
                       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
