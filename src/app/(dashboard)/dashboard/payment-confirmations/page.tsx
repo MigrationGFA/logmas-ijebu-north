@@ -489,7 +489,7 @@ function PaymentConfirmationsContent() {
           if (!open && !busy) setReviewApp(null);
         }}
       >
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto overflow-x-hidden">
           {reviewApp && rf && (
             <>
               <DialogHeader>
@@ -504,8 +504,8 @@ function PaymentConfirmationsContent() {
                     </Badge>
                   )}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  <span className="font-mono font-semibold text-primary">
+                <p className="text-xs text-muted-foreground break-words">
+                  <span className="font-mono font-semibold text-primary break-all">
                     {reviewApp.applicationNumber}
                   </span>
                   {" · "}
@@ -515,7 +515,7 @@ function PaymentConfirmationsContent() {
                 </p>
               </DialogHeader>
 
-              <div className="space-y-5 pt-1">
+              <div className="space-y-5 pt-1 min-w-0">
                 {/* Who paid */}
                 <div>
                   <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">
@@ -537,7 +537,7 @@ function PaymentConfirmationsContent() {
                     {rf.isFo ? (
                       <div>
                         <span className="text-[10px] text-muted-foreground uppercase font-bold block">Collected By</span>
-                        <span className="font-semibold text-foreground">
+                        <span className="font-semibold text-foreground break-all">
                           {reviewApp.createdBy
                             ? `${reviewApp.createdBy.firstName} ${reviewApp.createdBy.lastName} (${reviewApp.createdBy.role})`
                             : "—"}
@@ -546,7 +546,7 @@ function PaymentConfirmationsContent() {
                     ) : (
                       <div>
                         <span className="text-[10px] text-muted-foreground uppercase font-bold block">Submitted By</span>
-                        <span className="font-semibold text-foreground">
+                        <span className="font-semibold text-foreground break-all">
                           {reviewApp.createdBy
                             ? `${reviewApp.createdBy.firstName} ${reviewApp.createdBy.lastName} (${reviewApp.createdBy.role})`
                             : "Citizen Self-service"}
@@ -639,14 +639,19 @@ function PaymentConfirmationsContent() {
                     Payment Evidence
                   </h4>
                   {rp?.proofUrl ? (
-                    <div className="rounded-xl border p-3 bg-card space-y-2 overflow-hidden">
+                    <div className="rounded-xl border p-3 bg-card space-y-2 overflow-hidden min-w-0">
                       {proofIsImage && (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img
-                          src={rp.proofUrl}
-                          alt="Payment proof"
-                          className="block mx-auto w-auto max-w-full h-auto max-h-80 object-contain rounded-lg border bg-muted/30"
-                        />
+                        <div className="max-h-96 overflow-auto rounded-lg border bg-muted/30">
+                          {/* Proof images vary in size, so the preview
+                              keeps its natural size inside a scrollable
+                              box instead of stretching the modal. */}
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img
+                            src={rp.proofUrl}
+                            alt="Payment proof"
+                            className="block w-auto h-auto max-w-none"
+                          />
+                        </div>
                       )}
                       <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                         <a
