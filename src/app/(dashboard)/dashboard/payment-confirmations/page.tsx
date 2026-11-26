@@ -76,8 +76,9 @@ function PaymentConfirmationsContent() {
   const [reason, setReason] = useState("");
   const [busy, setBusy] = useState(false);
 
-  // GPay Audit Modal State
-  const [auditApp, setAuditApp] =
+  // Review Modal State (the bank settlement audit lives inside it,
+  // and only for claims that came through a gateway account)
+  const [reviewApp, setReviewApp] =
     useState<AwaitingConfirmationApplication | null>(null);
   const [auditLoading, setAuditLoading] = useState(false);
   const [auditData, setAuditData] = useState<any | null>(null);
@@ -96,7 +97,6 @@ function PaymentConfirmationsContent() {
   async function handleOpenGPayAudit(app: AwaitingConfirmationApplication) {
     const payment = app.invoice?.payments[0];
     if (!payment) return;
-    setAuditApp(app);
     setAuditLoading(true);
     setAuditData(null);
     setOverrideUnderpayment(false);
@@ -130,7 +130,7 @@ function PaymentConfirmationsContent() {
         });
       }
       setDeclining(null);
-      setAuditApp(null);
+      setReviewApp(null);
       setReason("");
       await refetch();
     } catch (err: any) {
@@ -155,7 +155,7 @@ function PaymentConfirmationsContent() {
         comment,
       });
       setCorrectionApp(null);
-      setAuditApp(null);
+      setReviewApp(null);
       setReason("");
       await refetch();
     } catch {
@@ -171,6 +171,114 @@ function PaymentConfirmationsContent() {
     "Payment evidence is invalid, unreadable, or missing",
     "Payment was sent to wrong destination account",
   ];
+
+  // One place that works out what a claim is and what can be done with
+  // it, shared by the slim table row and the review modal. FO
+  // collections carry the real payer in formData and have no fixed
+  // fee, so underpayment never applies to them.
+  const str = (v: unknown) =>
+    typeof v === "string" && v.trim() ? v : null;
+
+  function claimFacts(app: AwaitingConfirmationApplication) {
+    const p = app.invoice?.payments[0];
+    const fd = (app.formData ?? {}) as Record<string, unknown>;
+    const isFo = app.service?.foOnly === true || fd._foCollection === true;
+    const applicantName = app.applicant
+      ? `${app.applicant.firstName} ${app.applicant.lastName}`
+      : null;
+    const payerName =
+      (isFo ? str(fd.payerName) : str(fd.fullName)) ||
+      applicantName ||
+      app.fullName ||
+      "—";
+    const payerPhone =
+      str(fd.phone) || app.applicant?.phone || app.phone || null;
+    const payerEmail =
+      str(fd.email) || app.applicant?.email || app.email || null;
+    const expectedFee = Number(app.invoice?.amount || 0);
+    const receivedAmount = Number(p?.amount || 0);
+    const isUnderpaid =
+      !isFo &&
+      (p?.matchStatus === "underpayment" ||
+        (expectedFee > 0 &&
+          receivedAmount > 0 &&
+          receivedAmount < expectedFee - 0.01));
+    const shortfall = isUnderpaid ? expectedFee - receivedAmount : 0;
+    const confirmed = p?.status === "confirmed";
+    const rejected = p?.matchStatus === "rejected";
+    const subAdminApproved = p?.matchStatus === "sub_admin_approved";
+    const correctionRequested = p?.matchStatus === "correction_requested";
+    const canReview =
+      !confirmed &&
+      !rejected &&
+      (app.status === "awaiting_payment_confirmation" ||
+        app.status === "correction_requested") &&
+      (!!p?.proofUrl || !!p?.id);
+    return {
+      p,
+      isFo,
+      payerName,
+      payerPhone,
+      payerEmail,
+      expectedFee,
+      receivedAmount,
+      isUnderpaid,
+      shortfall,
+      confirmed,
+      rejected,
+      subAdminApproved,
+      correctionRequested,
+      canReview,
+    };
+  }
+
+  function statusBadge(f: ReturnType<typeof claimFacts>) {
+    if (f.confirmed)
+      return (
+        <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 gap-1 text-[11px] font-semibold">
+          <CheckCircle2 className="h-3 w-3" /> Payment Confirmed
+        </Badge>
+      );
+    if (f.rejected)
+      return (
+        <Badge variant="destructive" className="gap-1 text-[11px]">
+          <XCircle className="h-3 w-3" /> Payment Rejected
+        </Badge>
+      );
+    if (f.subAdminApproved)
+      return (
+        <Badge className="bg-blue-500/15 text-blue-700 border-blue-500/30 gap-1 text-[11px] font-semibold">
+          <ShieldCheck className="h-3 w-3" /> Sub-Admin Verified
+        </Badge>
+      );
+    if (f.correctionRequested)
+      return (
+        <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 gap-1 text-[11px] font-semibold">
+          <AlertTriangle className="h-3 w-3" /> Correction Requested
+        </Badge>
+      );
+    return (
+      <Badge
+        variant="outline"
+        className="text-[11px] text-amber-700 border-amber-300 bg-amber-500/10 font-semibold gap-1"
+      >
+        <Clock className="h-3 w-3" /> Pending Verification
+      </Badge>
+    );
+  }
+
+  function openReview(app: AwaitingConfirmationApplication) {
+    setReviewApp(app);
+    setAuditData(null);
+    setAuditLoading(false);
+    setOverrideUnderpayment(false);
+  }
+
+  const rf = reviewApp ? claimFacts(reviewApp) : null;
+  const rp = rf?.p ?? undefined;
+  const rfd = (reviewApp?.formData ?? {}) as Record<string, unknown>;
+  const proofIsImage =
+    !!rp?.proofUrl && /\.(png|jpe?g|gif|webp)(\?|#|$)/i.test(rp.proofUrl);
 
   return (
     <div className="space-y-6">
@@ -237,271 +345,100 @@ function PaymentConfirmationsContent() {
         </Card>
       ) : (
         <Card className="overflow-x-auto bg-gradient-card border-border/40">
-          <Table className="min-w-[1320px]">
+          <Table className="min-w-[820px]">
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[190px]">Application / Service</TableHead>
-                <TableHead className="w-[170px]">Applicant / Payer</TableHead>
-                <TableHead className="w-[160px]">Destination Account</TableHead>
-                <TableHead className="w-[180px]">Expected vs. Received</TableHead>
-                <TableHead className="w-[160px]">Transaction Ref / Date</TableHead>
-                <TableHead className="w-[130px]">Payment Evidence</TableHead>
-                <TableHead className="w-[160px]">Verification Status</TableHead>
-                <TableHead className="text-right w-[170px]">Actions</TableHead>
+                <TableHead>Application / Service</TableHead>
+                <TableHead>Payer</TableHead>
+                <TableHead>Amount</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Date</TableHead>
+                <TableHead className="text-right">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-10 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-10 text-muted-foreground">
                     <Loader2 className="h-5 w-5 animate-spin mx-auto mb-2 text-primary" />
                     Loading treasury payment records…
                   </TableCell>
                 </TableRow>
               ) : !data?.data.length ? (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center py-12 text-muted-foreground">
+                  <TableCell colSpan={6} className="text-center py-12 text-muted-foreground">
                     No payments match this filter.
                   </TableCell>
                 </TableRow>
               ) : (
                 data.data.map((app) => {
-                  const p = app.invoice?.payments[0];
-                  const rejected = p?.matchStatus === "rejected";
-                  const confirmed = p?.status === "confirmed";
-                  const subAdminApproved =
-                    p?.matchStatus === "sub_admin_approved";
-                  const correctionRequested =
-                    p?.matchStatus === "correction_requested";
-
-                  const expectedFee = Number(app.invoice?.amount || 0);
-                  const receivedAmount = Number(p?.amount || 0);
-                  const isUnderpaid =
-                    p?.matchStatus === "underpayment" || (expectedFee > 0 && receivedAmount > 0 && receivedAmount < expectedFee - 0.01);
-                  const shortfall = isUnderpaid ? expectedFee - receivedAmount : 0;
-
-                  const canReview =
-                    !confirmed &&
-                    !rejected &&
-                    (app.status === "awaiting_payment_confirmation" ||
-                      app.status === "correction_requested") &&
-                    (!!p?.proofUrl || !!p?.id);
-
+                  const f = claimFacts(app);
                   return (
                     <TableRow key={app.id}>
-                      {/* 1. Application & Service */}
+                      {/* Application & Service */}
                       <TableCell className="align-top">
                         <div className="font-mono font-bold text-primary text-xs">
                           {app.applicationNumber}
                         </div>
-                        <div className="text-xs font-semibold text-foreground truncate max-w-[180px]">
+                        <div className="text-xs font-semibold text-foreground">
                           {app.service.name}
                         </div>
-                        <div className="text-[11px] text-muted-foreground">
-                          {date(app.createdAt)}
-                        </div>
+                        {f.isFo && (
+                          <Badge className="bg-amber-500 text-white text-[10px] py-0 px-1.5 mt-1 w-fit font-semibold">
+                            FO Collection
+                          </Badge>
+                        )}
                       </TableCell>
 
-                      {/* 2. Applicant / Contact */}
+                      {/* Payer (the real payer; for FO collections that
+                          is the person in formData, not the officer) */}
                       <TableCell className="align-top">
                         <div className="font-medium text-xs text-foreground">
-                          {app.applicant
-                            ? `${app.applicant.firstName} ${app.applicant.lastName}`
-                            : app.fullName || "—"}
+                          {f.payerName}
                         </div>
-                        <div className="text-[11px] text-muted-foreground truncate max-w-[160px]">
-                          {app.applicant?.email || app.email || "—"}
-                        </div>
-                        <div className="text-[10px] text-muted-foreground">
-                          {app.createdBy
-                            ? `${app.createdBy.firstName} (${app.createdBy.role})`
-                            : "Citizen Self-service"}
+                        <div className="text-[11px] text-muted-foreground truncate max-w-[180px]">
+                          {f.payerPhone || f.payerEmail || "—"}
                         </div>
                       </TableCell>
 
-                      {/* 3. Destination Account */}
+                      {/* Amount */}
                       <TableCell className="align-top">
-                        <div className="text-xs font-semibold text-foreground">
-                          {app.invoice?.virtualBankName || "Official LGA Collection Bank"}
+                        <div className="text-xs font-bold text-foreground whitespace-nowrap">
+                          {money(f.receivedAmount || f.expectedFee)}
                         </div>
-                        <div className="font-mono text-xs text-muted-foreground break-all">
-                          {app.invoice?.virtualAccountNumber || "—"}
-                        </div>
-                      </TableCell>
-
-                      {/* 4. Expected vs Received (Underpayment Flagging) */}
-                      <TableCell className="align-top">
-                        <div className="text-xs whitespace-nowrap">
-                          <span className="text-muted-foreground text-[10px] uppercase font-bold block">
-                            Expected: {money(expectedFee)}
-                          </span>
-                          {isUnderpaid ? (
-                            <span className="font-bold text-rose-600 block">
-                              Settled: {money(receivedAmount)}
-                            </span>
-                          ) : confirmed ? (
-                            <span className="font-bold text-emerald-700 block">
-                              Received: {money(receivedAmount || expectedFee)}
-                            </span>
-                          ) : (
-                            <span className="font-medium text-amber-600 block">
-                              {receivedAmount > 0 ? `Claimed: ${money(receivedAmount)}` : "Awaiting Bank Settlement"}
-                            </span>
-                          )}
-                        </div>
-                        {isUnderpaid ? (
-                          <Badge variant="destructive" className="text-[10px] py-0 px-1.5 mt-1 block w-fit font-bold">
-                            ⚠️ Underpayment: -{money(shortfall)}
-                          </Badge>
-                        ) : confirmed ? (
-                          <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 text-[10px] py-0 px-1.5 mt-1 block w-fit font-semibold">
-                            ✓ Full Settlement
-                          </Badge>
-                        ) : (
-                          <Badge variant="outline" className="text-[10px] py-0 px-1.5 mt-1 block w-fit font-medium text-amber-700 border-amber-300 bg-amber-500/10">
-                            Pending Bank Settlement
-                          </Badge>
+                        {f.isUnderpaid && (
+                          <div className="text-[11px] text-rose-600 font-semibold whitespace-nowrap">
+                            Expected {money(f.expectedFee)}
+                          </div>
                         )}
                       </TableCell>
 
-                      {/* 5. Transaction Ref */}
+                      {/* Status */}
                       <TableCell className="align-top">
-                        <div className="text-xs font-mono font-medium text-foreground break-all">
-                          {p?.reference || "—"}
-                        </div>
-                        <div className="text-[10px] text-muted-foreground">
-                          {p?.gatewayRef ? `Gateway Ref: ${p.gatewayRef}` : "Direct Static Transfer"}
-                        </div>
-                      </TableCell>
-
-                      {/* 6. Payment Evidence */}
-                      <TableCell className="align-top">
-                        {p?.proofUrl ? (
-                          <a
-                            href={p.proofUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-primary hover:underline font-semibold text-xs flex items-center gap-1"
-                          >
-                            <ExternalLink className="h-3 w-3" /> View Proof
-                          </a>
-                        ) : (
-                          <span className="text-xs text-muted-foreground font-mono">
-                            Claim Logged (&quot;I Have Paid&quot;)
-                          </span>
+                        {statusBadge(f)}
+                        {f.rejected && app.declineReason && (
+                          <p className="text-[11px] text-destructive max-w-[160px] truncate mt-1" title={app.declineReason}>
+                            {app.declineReason}
+                          </p>
                         )}
-                        <div className="text-[10px] text-muted-foreground">
-                          {date(p?.proofUploadedAt || p?.createdAt)}
-                        </div>
                       </TableCell>
 
-                      {/* 7. Verification Status */}
-                      <TableCell className="align-top">
-                        <div className="space-y-1">
-                          {confirmed ? (
-                            <Badge className="bg-emerald-500/15 text-emerald-700 border-emerald-500/30 gap-1 text-[11px] font-semibold">
-                              <CheckCircle2 className="h-3 w-3" /> Payment Confirmed
-                            </Badge>
-                          ) : rejected ? (
-                            <Badge variant="destructive" className="gap-1 text-[11px]">
-                              <XCircle className="h-3 w-3" /> Payment Rejected
-                            </Badge>
-                          ) : subAdminApproved ? (
-                            <Badge className="bg-blue-500/15 text-blue-700 border-blue-500/30 gap-1 text-[11px] font-semibold">
-                              <ShieldCheck className="h-3 w-3" /> Sub-Admin Verified
-                            </Badge>
-                          ) : correctionRequested ? (
-                            <Badge className="bg-amber-500/15 text-amber-700 border-amber-500/30 gap-1 text-[11px] font-semibold">
-                              <AlertTriangle className="h-3 w-3" /> Correction Requested
-                            </Badge>
-                          ) : (
-                            <Badge variant="outline" className="text-[11px] text-amber-700 border-amber-300 bg-amber-500/10 font-semibold gap-1">
-                              <Clock className="h-3 w-3" /> Pending Verification
-                            </Badge>
-                          )}
-                          {rejected && app.declineReason && (
-                            <p className="text-[11px] text-destructive max-w-[160px] truncate" title={app.declineReason}>
-                              {app.declineReason}
-                            </p>
-                          )}
-                        </div>
+                      {/* Date the claim was made */}
+                      <TableCell className="align-top text-xs text-muted-foreground whitespace-nowrap">
+                        {date(f.p?.proofUploadedAt || f.p?.createdAt || app.createdAt)}
                       </TableCell>
 
-                      {/* 8. Actions */}
+                      {/* The one action: everything else lives in the
+                          review modal */}
                       <TableCell className="text-right align-top">
-                        <div className="flex flex-wrap items-center justify-end gap-1.5">
-                          {/* Live GPay / Bank Audit Button */}
-                          {p && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleOpenGPayAudit(app)}
-                              className="text-xs h-8 gap-1 border-blue-400 text-blue-700 hover:bg-blue-50 dark:hover:bg-blue-950 font-semibold"
-                            >
-                              <Landmark className="h-3.5 w-3.5" />
-                              Audit Payment
-                            </Button>
-                          )}
-
-                          {canReview && (
-                            <>
-                              {/* Sub-Admin First-Level Verification */}
-                              {(isSubAdmin || (!subAdminApproved && isFinalTreasurer)) && !subAdminApproved && (
-                                <Button
-                                  size="sm"
-                                  variant="default"
-                                  disabled={busy}
-                                  onClick={() => handleSubAdminReview(app, "approve")}
-                                  className="text-xs h-8 gap-1 bg-primary text-primary-foreground font-semibold"
-                                >
-                                  <ShieldCheck className="h-3.5 w-3.5" />
-                                  1st Review Approve
-                                </Button>
-                              )}
-
-                              {/* Treasurer Final Confirm & Receipt Issuance */}
-                              {isFinalTreasurer && (
-                                <Button
-                                  size="sm"
-                                  disabled={busy}
-                                  onClick={() => {
-                                    if (isUnderpaid) {
-                                      handleOpenGPayAudit(app);
-                                    } else {
-                                      review(app);
-                                    }
-                                  }}
-                                  className={`text-xs h-8 gap-1 text-white font-semibold ${
-                                    isUnderpaid
-                                      ? "bg-amber-600 hover:bg-amber-700"
-                                      : "bg-emerald-600 hover:bg-emerald-700"
-                                  }`}
-                                >
-                                  <CheckCircle2 className="h-3.5 w-3.5" />
-                                  {isUnderpaid ? "Check Underpayment" : "Confirm & Receipt"}
-                                </Button>
-                              )}
-
-                              {/* Reject Payment Button */}
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                disabled={busy}
-                                onClick={() => {
-                                  setDeclining(app);
-                                  setReason(
-                                    isUnderpaid
-                                      ? `Underpayment: Transferred ${money(receivedAmount)} instead of statutory fee ${money(expectedFee)} (Shortfall: ${money(shortfall)})`
-                                      : "",
-                                  );
-                                }}
-                                className="text-xs h-8"
-                              >
-                                Reject
-                              </Button>
-                            </>
-                          )}
-                        </div>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => openReview(app)}
+                          className="text-xs h-8 font-semibold"
+                        >
+                          Review
+                        </Button>
                       </TableCell>
                     </TableRow>
                   );
@@ -539,235 +476,465 @@ function PaymentConfirmationsContent() {
       )}
 
       {/* ============================================================
-          LIVE GPAY / BANK SETTLEMENT AUDIT MODAL
+          PAYMENT REVIEW MODAL
+          Everything about one claim in one place: who paid, what was
+          claimed, the evidence, the bank settlement audit where one
+          exists, and only the actions that apply to this claim and
+          this role. FO collections have no gateway settlement, so
+          they get no audit section at all.
          ============================================================ */}
       <Dialog
-        open={!!auditApp}
+        open={!!reviewApp}
         onOpenChange={(open) => {
-          if (!open && !busy) setAuditApp(null);
+          if (!open && !busy) setReviewApp(null);
         }}
       >
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <div className="flex items-center gap-2">
-              <div className="p-2 bg-primary/10 rounded-lg text-primary">
-                <Landmark className="h-5 w-5" />
-              </div>
-              <div>
-                <DialogTitle className="text-lg font-bold">
-                  Bank Settlement Audit
-                </DialogTitle>
+          {reviewApp && rf && (
+            <>
+              <DialogHeader>
+                <div className="flex flex-wrap items-center gap-2">
+                  <DialogTitle className="text-lg font-bold">
+                    Payment Review
+                  </DialogTitle>
+                  {statusBadge(rf)}
+                  {rf.isFo && (
+                    <Badge className="bg-amber-500 text-white text-[10px] font-semibold">
+                      FO Collection
+                    </Badge>
+                  )}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  Direct audit against council bank settlement ledger &amp; designated collection accounts.
+                  <span className="font-mono font-semibold text-primary">
+                    {reviewApp.applicationNumber}
+                  </span>
+                  {" · "}
+                  {reviewApp.service.name}
+                  {" · Invoice "}
+                  {reviewApp.invoice?.invoiceNumber || "—"}
                 </p>
+              </DialogHeader>
+
+              <div className="space-y-5 pt-1">
+                {/* Who paid */}
+                <div>
+                  <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">
+                    {rf.isFo ? "Payer & Collection" : "Payer"}
+                  </h4>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs rounded-xl border p-3 bg-card">
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold block">Payer</span>
+                      <span className="font-semibold text-foreground">{rf.payerName}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold block">Phone</span>
+                      <span className="font-semibold text-foreground">{rf.payerPhone || "—"}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold block">Email</span>
+                      <span className="font-semibold text-foreground break-all">{rf.payerEmail || "—"}</span>
+                    </div>
+                    {rf.isFo ? (
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase font-bold block">Collected By</span>
+                        <span className="font-semibold text-foreground">
+                          {reviewApp.createdBy
+                            ? `${reviewApp.createdBy.firstName} ${reviewApp.createdBy.lastName} (${reviewApp.createdBy.role})`
+                            : "—"}
+                        </span>
+                      </div>
+                    ) : (
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase font-bold block">Submitted By</span>
+                        <span className="font-semibold text-foreground">
+                          {reviewApp.createdBy
+                            ? `${reviewApp.createdBy.firstName} ${reviewApp.createdBy.lastName} (${reviewApp.createdBy.role})`
+                            : "Citizen Self-service"}
+                        </span>
+                      </div>
+                    )}
+                    {rf.isFo && str(rfd.merchantName) && (
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase font-bold block">Business</span>
+                        <span className="font-semibold text-foreground">{str(rfd.merchantName)}</span>
+                      </div>
+                    )}
+                    {rf.isFo && str(rfd.location) && (
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase font-bold block">Location</span>
+                        <span className="font-semibold text-foreground">{str(rfd.location)}</span>
+                      </div>
+                    )}
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold block">Application Date</span>
+                      <span className="font-semibold text-foreground">{date(reviewApp.createdAt)}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* The payment itself */}
+                <div>
+                  <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">
+                    Payment
+                  </h4>
+                  <div className="grid grid-cols-2 gap-x-4 gap-y-3 text-xs rounded-xl border p-3 bg-card">
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold block">Amount Claimed</span>
+                      <span className="text-sm font-black text-foreground">
+                        {money(rf.receivedAmount || rf.expectedFee)}
+                      </span>
+                    </div>
+                    {!rf.isFo && (
+                      <div>
+                        <span className="text-[10px] text-muted-foreground uppercase font-bold block">Expected Fee</span>
+                        <span className="text-sm font-black text-foreground">{money(rf.expectedFee)}</span>
+                      </div>
+                    )}
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold block">Reference</span>
+                      <span className="font-mono font-medium text-foreground break-all">{rp?.reference || "—"}</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold block">Method</span>
+                      <span className="font-semibold text-foreground">
+                        {rf.isFo ? "Bank transfer" : rp?.gatewayRef ? "Gateway transfer" : "Direct static transfer"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold block">Destination</span>
+                      <span className="font-semibold text-foreground">
+                        {rf.isFo
+                          ? "LGA collection account"
+                          : reviewApp.invoice?.virtualBankName || "Official LGA Collection Bank"}
+                      </span>
+                      {!rf.isFo && reviewApp.invoice?.virtualAccountNumber && (
+                        <span className="font-mono text-[11px] text-muted-foreground block break-all">
+                          {reviewApp.invoice.virtualAccountNumber}
+                        </span>
+                      )}
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-muted-foreground uppercase font-bold block">Claim Date</span>
+                      <span className="font-semibold text-foreground">
+                        {date(rp?.proofUploadedAt || rp?.createdAt)}
+                      </span>
+                    </div>
+                  </div>
+                  {rf.isUnderpaid && (
+                    <Alert variant="destructive" className="border-2 border-rose-500/40 bg-rose-500/10 mt-3">
+                      <AlertTriangle className="h-5 w-5 text-rose-600" />
+                      <AlertTitle className="text-sm font-bold">
+                        Underpayment: shortfall of {money(rf.shortfall)}
+                      </AlertTitle>
+                      <AlertDescription className="text-xs leading-relaxed mt-1">
+                        The claimed amount is {money(rf.receivedAmount)} against an expected fee of {money(rf.expectedFee)}. Run the settlement audit below before confirming.
+                      </AlertDescription>
+                    </Alert>
+                  )}
+                </div>
+
+                {/* The evidence */}
+                <div>
+                  <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground mb-2">
+                    Payment Evidence
+                  </h4>
+                  {rp?.proofUrl ? (
+                    <div className="rounded-xl border p-3 bg-card space-y-2">
+                      {proofIsImage && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={rp.proofUrl}
+                          alt="Payment proof"
+                          className="max-h-72 w-full object-contain rounded-lg border bg-muted/30"
+                        />
+                      )}
+                      <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                        <a
+                          href={rp.proofUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary hover:underline font-semibold flex items-center gap-1"
+                        >
+                          <ExternalLink className="h-3 w-3" /> Open proof full size
+                        </a>
+                        <span className="text-[11px] text-muted-foreground">
+                          Uploaded {date(rp.proofUploadedAt || rp.createdAt)}
+                          {rp.proofUploadedBy
+                            ? ` by ${rp.proofUploadedBy.firstName} ${rp.proofUploadedBy.lastName}`
+                            : ""}
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground rounded-xl border p-3 bg-card">
+                      Claim logged without an uploaded receipt (the payer used &quot;I have paid&quot;).
+                    </p>
+                  )}
+                </div>
+
+                {rf.rejected && reviewApp.declineReason && (
+                  <div className="rounded-xl border border-rose-300 bg-rose-50 p-3 text-xs text-rose-900">
+                    <span className="font-bold block mb-0.5">Rejection reason</span>
+                    {reviewApp.declineReason}
+                  </div>
+                )}
+
+                {/* Settlement audit: gateway claims only. FO transfers
+                    settle into the one LGA account and have nothing for
+                    a gateway to audit. */}
+                {rf.isFo ? (
+                  <div className="rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 leading-relaxed">
+                    This is a field officer collection, so there is no gateway settlement to audit. Check the transfer against the LGA collection account statement, then confirm or reject below.
+                  </div>
+                ) : (
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
+                        <Landmark className="h-3.5 w-3.5" /> Bank Settlement Audit
+                      </h4>
+                      {!auditLoading && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleOpenGPayAudit(reviewApp)}
+                          className="text-xs h-7 font-semibold"
+                        >
+                          {auditData ? "Re-run check" : "Run check"}
+                        </Button>
+                      )}
+                    </div>
+                    {auditLoading ? (
+                      <div className="rounded-xl border p-4 flex items-center gap-2 text-xs text-muted-foreground">
+                        <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                        Checking the council bank settlement records…
+                      </div>
+                    ) : auditData ? (
+                      <div className="space-y-3">
+                        {auditData.isUnderpayment ? (
+                          <Alert variant="destructive" className="border-2 border-rose-500/40 bg-rose-500/10">
+                            <AlertTriangle className="h-5 w-5 text-rose-600" />
+                            <AlertTitle className="text-sm font-bold">
+                              ⚠️ UNDERPAYMENT DETECTED: Shortfall of {money(auditData.shortfall)}
+                            </AlertTitle>
+                            <AlertDescription className="text-xs leading-relaxed mt-1">
+                              The citizen transferred <strong>{money(auditData.settledAmount)}</strong>, but the statutory fee for this service is <strong>{money(auditData.expectedAmount)}</strong>.
+                              An official receipt cannot be issued for an underpaid transaction without full settlement or an authorized waiver note.
+                            </AlertDescription>
+                          </Alert>
+                        ) : auditData.isExactMatch ? (
+                          <Alert className="border-2 border-emerald-500/40 bg-emerald-500/10 text-emerald-950">
+                            <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                            <AlertTitle className="text-sm font-bold text-emerald-900">
+                              ✓ Full Settlement Verified on Council Bank Account
+                            </AlertTitle>
+                            <AlertDescription className="text-xs text-emerald-800 leading-relaxed mt-1">
+                              Exact statutory fee of <strong>{money(auditData.settledAmount)}</strong> has been verified and settled to the {LGA_CONFIG.identity.name} LGA trust account.
+                            </AlertDescription>
+                          </Alert>
+                        ) : !auditData.foundInGateway ? (
+                          <Alert className="border-amber-400 bg-amber-50 text-amber-950">
+                            <Clock className="h-5 w-5 text-amber-600" />
+                            <AlertTitle className="text-sm font-bold text-amber-900">
+                              No Bank Inflow Found Yet
+                            </AlertTitle>
+                            <AlertDescription className="text-xs text-amber-800 leading-relaxed mt-1">
+                              No matching transaction was found on the official council account for this reference. The citizen may have transferred recently or entered an incorrect reference.
+                            </AlertDescription>
+                          </Alert>
+                        ) : null}
+
+                        <div className="grid grid-cols-3 gap-2 p-3 bg-muted/40 rounded-xl border text-xs">
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold block">
+                              Statutory Fee
+                            </span>
+                            <span className="text-sm font-black text-foreground">
+                              {money(auditData.expectedAmount)}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold block">
+                              Actual Settled
+                            </span>
+                            <span className={`text-sm font-black ${auditData.isUnderpayment ? "text-rose-600" : "text-emerald-700"}`}>
+                              {money(auditData.settledAmount)}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase font-bold block">
+                              Difference / Shortfall
+                            </span>
+                            <span className={`text-sm font-black ${auditData.isUnderpayment ? "text-rose-600" : "text-foreground"}`}>
+                              {auditData.isUnderpayment ? `-${money(auditData.shortfall)}` : "₦0.00"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {auditData.foundInGateway && (
+                          <div className="rounded-xl border divide-y text-xs bg-card">
+                            <div className="flex justify-between p-2.5">
+                              <span className="text-muted-foreground">Payer Bank &amp; Account:</span>
+                              <span className="font-semibold text-foreground text-right">
+                                {auditData.payerDetails?.sourceBankName || "OPAY"} • {auditData.payerDetails?.sourceAccountNumber || "—"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between p-2.5">
+                              <span className="text-muted-foreground">Payer Customer Name:</span>
+                              <span className="font-semibold text-foreground text-right">
+                                {auditData.payerDetails?.sourceAccountName || auditData.payerDetails?.customerName || "—"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between p-2.5">
+                              <span className="text-muted-foreground">Destination Collection Account:</span>
+                              <span className="font-mono font-medium text-foreground text-right">
+                                {auditData.gatewayDetails?.accountNumber} ({auditData.gatewayDetails?.serviceCode})
+                              </span>
+                            </div>
+                            <div className="flex justify-between p-2.5">
+                              <span className="text-muted-foreground">Bank Session / Reference ID:</span>
+                              <span className="font-mono text-[11px] text-muted-foreground text-right break-all">
+                                {auditData.gatewayDetails?.sessionId || "—"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between p-2.5">
+                              <span className="text-muted-foreground">Settlement Reference:</span>
+                              <span className="font-mono text-[11px] text-muted-foreground text-right break-all">
+                                {auditData.gatewayDetails?.gpayReference || auditData.gatewayDetails?.settlementId}
+                              </span>
+                            </div>
+                            <div className="flex justify-between p-2.5">
+                              <span className="text-muted-foreground">Transfer Narration / Remarks:</span>
+                              <span className="text-[11px] text-foreground text-right max-w-xs break-words">
+                                {auditData.payerDetails?.tranRemarks || "—"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between p-2.5">
+                              <span className="text-muted-foreground">Bank Timestamp:</span>
+                              <span className="text-foreground text-right">
+                                {date(auditData.payerDetails?.tranDateTime || auditData.gatewayDetails?.createdAt)}
+                              </span>
+                            </div>
+                          </div>
+                        )}
+
+                        {isFinalTreasurer && auditData.isUnderpayment && (
+                          <div className="p-3 bg-amber-50 border border-amber-300 rounded-lg text-xs space-y-2 text-amber-950">
+                            <label className="flex items-start gap-2 font-semibold cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={overrideUnderpayment}
+                                onChange={(e) => setOverrideUnderpayment(e.target.checked)}
+                                className="mt-0.5 rounded text-amber-600 focus:ring-amber-500"
+                              />
+                              <span>
+                                Authorized Override: Proceed with confirmation despite shortfall (Recorded in Audit Ledger).
+                              </span>
+                            </label>
+                            <p className="text-[11px] text-amber-800">
+                              Only check this if an official fee waiver, instalment agreement, or cash balance was settled directly at the council treasury.
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground rounded-xl border p-3 bg-card">
+                        Run the check to see whether this transfer has settled in the council account, and for how much.
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
-            </div>
-          </DialogHeader>
 
-          {auditLoading ? (
-            <div className="py-12 flex flex-col items-center justify-center space-y-3 text-center">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="text-xs text-muted-foreground">
-                Connecting to banking settlement ledger &amp; auditing records...
-              </p>
-            </div>
-          ) : auditData ? (
-            <div className="space-y-4 pt-1">
-              {/* Alert Status Banner */}
-              {auditData.isUnderpayment ? (
-                <Alert variant="destructive" className="border-2 border-rose-500/40 bg-rose-500/10">
-                  <AlertTriangle className="h-5 w-5 text-rose-600" />
-                  <AlertTitle className="text-sm font-bold">
-                    ⚠️ UNDERPAYMENT DETECTED: Shortfall of {money(auditData.shortfall)}
-                  </AlertTitle>
-                  <AlertDescription className="text-xs leading-relaxed mt-1">
-                    The citizen transferred <strong>{money(auditData.settledAmount)}</strong>, but the statutory fee for this service is <strong>{money(auditData.expectedAmount)}</strong>.
-                    An official receipt cannot be issued for an underpaid transaction without full settlement or an authorized waiver note.
-                  </AlertDescription>
-                </Alert>
-              ) : auditData.isExactMatch ? (
-                <Alert className="border-2 border-emerald-500/40 bg-emerald-500/10 text-emerald-950">
-                  <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                  <AlertTitle className="text-sm font-bold text-emerald-900">
-                    ✓ Full Settlement Verified on Council Bank Account
-                  </AlertTitle>
-                  <AlertDescription className="text-xs text-emerald-800 leading-relaxed mt-1">
-                    Exact statutory fee of <strong>{money(auditData.settledAmount)}</strong> has been verified and settled to the {LGA_CONFIG.identity.name} LGA trust account.
-                  </AlertDescription>
-                </Alert>
-              ) : !auditData.foundInGateway ? (
-                <Alert className="border-amber-400 bg-amber-50 text-amber-950">
-                  <Clock className="h-5 w-5 text-amber-600" />
-                  <AlertTitle className="text-sm font-bold text-amber-900">
-                    No Bank Inflow Found Yet
-                  </AlertTitle>
-                  <AlertDescription className="text-xs text-amber-800 leading-relaxed mt-1">
-                    No matching transaction was found on the official council account for this reference. The citizen may have transferred recently or entered an incorrect reference.
-                  </AlertDescription>
-                </Alert>
-              ) : null}
-
-              {/* Settlement Breakdown Cards */}
-              <div className="grid grid-cols-3 gap-2 p-3 bg-muted/40 rounded-xl border text-xs">
-                <div>
-                  <span className="text-[10px] text-muted-foreground uppercase font-bold block">
-                    Statutory Fee
-                  </span>
-                  <span className="text-sm font-black text-foreground">
-                    {money(auditData.expectedAmount)}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-muted-foreground uppercase font-bold block">
-                    Actual Settled
-                  </span>
-                  <span className={`text-sm font-black ${auditData.isUnderpayment ? "text-rose-600" : "text-emerald-700"}`}>
-                    {money(auditData.settledAmount)}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-[10px] text-muted-foreground uppercase font-bold block">
-                    Difference / Shortfall
-                  </span>
-                  <span className={`text-sm font-black ${auditData.isUnderpayment ? "text-rose-600" : "text-foreground"}`}>
-                    {auditData.isUnderpayment ? `-${money(auditData.shortfall)}` : "₦0.00"}
-                  </span>
-                </div>
-              </div>
-
-              {/* Audit Details Table */}
-              {auditData.foundInGateway && (
-                <div className="rounded-xl border divide-y text-xs bg-card">
-                  <div className="flex justify-between p-2.5">
-                    <span className="text-muted-foreground">Payer Bank &amp; Account:</span>
-                    <span className="font-semibold text-foreground text-right">
-                      {auditData.payerDetails?.sourceBankName || "OPAY"} • {auditData.payerDetails?.sourceAccountNumber || "—"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between p-2.5">
-                    <span className="text-muted-foreground">Payer Customer Name:</span>
-                    <span className="font-semibold text-foreground text-right">
-                      {auditData.payerDetails?.sourceAccountName || auditData.payerDetails?.customerName || "—"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between p-2.5">
-                    <span className="text-muted-foreground">Destination Collection Account:</span>
-                    <span className="font-mono font-medium text-foreground text-right">
-                      {auditData.gatewayDetails?.accountNumber} ({auditData.gatewayDetails?.serviceCode})
-                    </span>
-                  </div>
-                  <div className="flex justify-between p-2.5">
-                    <span className="text-muted-foreground">Bank Session / Reference ID:</span>
-                    <span className="font-mono text-[11px] text-muted-foreground text-right break-all">
-                      {auditData.gatewayDetails?.sessionId || "—"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between p-2.5">
-                    <span className="text-muted-foreground">Settlement Reference:</span>
-                    <span className="font-mono text-[11px] text-muted-foreground text-right break-all">
-                      {auditData.gatewayDetails?.gpayReference || auditData.gatewayDetails?.settlementId}
-                    </span>
-                  </div>
-                  <div className="flex justify-between p-2.5">
-                    <span className="text-muted-foreground">Transfer Narration / Remarks:</span>
-                    <span className="text-[11px] text-foreground text-right max-w-xs break-words">
-                      {auditData.payerDetails?.tranRemarks || "—"}
-                    </span>
-                  </div>
-                  <div className="flex justify-between p-2.5">
-                    <span className="text-muted-foreground">Bank Timestamp:</span>
-                    <span className="text-foreground text-right">
-                      {date(auditData.payerDetails?.tranDateTime || auditData.gatewayDetails?.createdAt)}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-              {/* Underpayment Override Checkbox for Authorized Treasurer */}
-              {isFinalTreasurer && auditData.isUnderpayment && (
-                <div className="p-3 bg-amber-50 border border-amber-300 rounded-lg text-xs space-y-2 text-amber-950">
-                  <label className="flex items-start gap-2 font-semibold cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={overrideUnderpayment}
-                      onChange={(e) => setOverrideUnderpayment(e.target.checked)}
-                      className="mt-0.5 rounded text-amber-600 focus:ring-amber-500"
-                    />
-                    <span>
-                      Authorized Override: Proceed with confirmation despite shortfall (Recorded in Audit Ledger).
-                    </span>
-                  </label>
-                  <p className="text-[11px] text-amber-800">
-                    Only check this if an official fee waiver, instalment agreement, or cash balance was settled directly at the council treasury.
-                  </p>
-                </div>
-              )}
-            </div>
-          ) : null}
-
-          <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={busy}
-              onClick={() => setAuditApp(null)}
-              className="text-xs"
-            >
-              Close
-            </Button>
-
-            {auditApp && (
-              <>
-                {/* Reject Button from Audit Modal */}
+              <DialogFooter className="flex flex-col sm:flex-row gap-2 pt-2">
                 <Button
-                  variant="destructive"
+                  variant="outline"
                   size="sm"
                   disabled={busy}
-                  onClick={() => {
-                    const app = auditApp;
-                    setAuditApp(null);
-                    setDeclining(app);
-                    setReason(
-                      auditData?.isUnderpayment
-                        ? `Underpayment: Received ${money(auditData.settledAmount)} instead of statutory fee ${money(auditData.expectedAmount)} (Shortfall: ${money(auditData.shortfall)})`
-                        : "No matching bank settlement record found for this transaction claim",
-                    );
-                  }}
+                  onClick={() => setReviewApp(null)}
                   className="text-xs"
                 >
-                  Reject Claim
+                  Close
                 </Button>
 
-                {/* Sub-Admin First Review Approval */}
-                {isSubAdmin && (
-                  <Button
-                    size="sm"
-                    disabled={busy || (auditData?.isUnderpayment && !overrideUnderpayment)}
-                    onClick={() => handleSubAdminReview(auditApp, "approve")}
-                    className="text-xs bg-primary text-primary-foreground font-semibold"
-                  >
-                    1st Review Approve
-                  </Button>
-                )}
+                {rf.canReview ? (
+                  <>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      disabled={busy}
+                      onClick={() => {
+                        const app = reviewApp;
+                        setReviewApp(null);
+                        setDeclining(app);
+                        setReason(
+                          rf.isUnderpaid
+                            ? `Underpayment: Transferred ${money(rf.receivedAmount)} instead of statutory fee ${money(rf.expectedFee)} (Shortfall: ${money(rf.shortfall)})`
+                            : "",
+                        );
+                      }}
+                      className="text-xs"
+                    >
+                      Reject
+                    </Button>
 
-                {/* Treasurer Final Confirm & Receipt */}
-                {isFinalTreasurer && (
-                  <Button
-                    size="sm"
-                    disabled={
-                      busy ||
-                      (auditData?.isUnderpayment && !overrideUnderpayment) ||
-                      (!auditData?.foundInGateway && !overrideUnderpayment)
-                    }
-                    onClick={() => review(auditApp, undefined, overrideUnderpayment)}
-                    className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold"
-                  >
-                    {busy ? "Confirming..." : "Final Confirm & Issue Receipt"}
-                  </Button>
+                    {!rf.subAdminApproved && (isSubAdmin || isFinalTreasurer) && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={busy}
+                        onClick={() => {
+                          setCorrectionApp(reviewApp);
+                          setReason("");
+                          setReviewApp(null);
+                        }}
+                        className="text-xs border-amber-400 text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950 font-semibold"
+                      >
+                        Request Correction
+                      </Button>
+                    )}
+
+                    {(isSubAdmin || (!rf.subAdminApproved && isFinalTreasurer)) && !rf.subAdminApproved && (
+                      <Button
+                        size="sm"
+                        disabled={busy}
+                        onClick={() => handleSubAdminReview(reviewApp, "approve")}
+                        className="text-xs bg-primary text-primary-foreground font-semibold gap-1"
+                      >
+                        <ShieldCheck className="h-3.5 w-3.5" />
+                        1st Review Approve
+                      </Button>
+                    )}
+
+                    {isFinalTreasurer &&
+                      (rf.isUnderpaid && !auditData ? (
+                        <Button
+                          size="sm"
+                          disabled={busy || auditLoading}
+                          onClick={() => handleOpenGPayAudit(reviewApp)}
+                          className="text-xs bg-amber-600 hover:bg-amber-700 text-white font-semibold"
+                        >
+                          Check Underpayment
+                        </Button>
+                      ) : (
+                        <Button
+                          size="sm"
+                          disabled={busy || (!!auditData?.isUnderpayment && !overrideUnderpayment)}
+                          onClick={() => review(reviewApp, undefined, overrideUnderpayment)}
+                          className="text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold gap-1"
+                        >
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          {busy ? "Confirming..." : "Confirm & Receipt"}
+                        </Button>
+                      ))}
+                  </>
+                ) : (
+                  <p className="text-[11px] text-muted-foreground self-center">
+                    This claim has already been decided. The details above are read only.
+                  </p>
                 )}
-              </>
-            )}
-          </DialogFooter>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 

@@ -551,7 +551,8 @@ export interface AwaitingConfirmationApplication {
   phone: string | null;
   declineReason?: string | null;
   createdAt: string;
-  service: { id: string; name: string; code: string };
+  formData?: Record<string, unknown> | null;
+  service: { id: string; name: string; code: string; foOnly?: boolean };
   applicant: {
     id: string;
     firstName: string;
