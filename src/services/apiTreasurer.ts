@@ -683,16 +683,14 @@ export const treasurerService = {
     ),
 
   /**
-   * PATCH /treasurer/payments/:paymentId/sub-admin-review
-   * Sub-Admin first-level review of manual payment evidence before Treasurer final approval.
+   * PATCH /treasurer/payments/:paymentId/request-correction
+   * Treasurer sends a bank transfer claim back for correction; the
+   * claim stays alive and the applicant is notified.
    */
-  subAdminReviewStaticAccountPayment: (
-    paymentId: string,
-    payload: { action: "approve" | "request_correction"; comment?: string },
-  ) =>
-    api.patch<{ updatedPayment: unknown; action: string }>(
-      `/treasurer/payments/${paymentId}/sub-admin-review`,
-      payload,
+  requestPaymentCorrection: (paymentId: string, comment: string) =>
+    api.patch<{ updatedPayment: unknown; updatedApplication: unknown }>(
+      `/treasurer/payments/${paymentId}/request-correction`,
+      { comment },
     ),
 
   // ============================================================

@@ -61,7 +61,6 @@ const money = (v: number) =>
 function PaymentConfirmationsContent() {
   const currentUser = tokenManager.getUser();
   const userRole = currentUser?.role || "treasurer";
-  const isSubAdmin = userRole === "sub_admin";
   const isFinalTreasurer =
     userRole === "treasurer" ||
     userRole === "lga_admin" ||
@@ -88,7 +87,7 @@ function PaymentConfirmationsContent() {
     useGetAwaitingConfirmation,
     confirmPaymentAsync,
     declinePaymentAsync,
-    subAdminReviewPaymentAsync,
+    requestCorrectionAsync,
   } = useAwaitingConfirmation();
 
   const { data, isLoading, isFetching, error, refetch } =
@@ -140,19 +139,15 @@ function PaymentConfirmationsContent() {
     }
   }
 
-  async function handleSubAdminReview(
-    app: AwaitingConfirmationApplication,
-    action: "approve" | "request_correction",
-    comment?: string,
-  ) {
-    const payment = app.invoice?.payments[0];
-    if (!payment) return;
+  async function handleRequestCorrection() {
+    const app = correctionApp;
+    const payment = app?.invoice?.payments[0];
+    if (!app || !payment) return;
     setBusy(true);
     try {
-      await subAdminReviewPaymentAsync({
+      await requestCorrectionAsync({
         paymentId: payment.id,
-        action,
-        comment,
+        comment: reason.trim(),
       });
       setCorrectionApp(null);
       setReviewApp(null);
@@ -287,16 +282,9 @@ function PaymentConfirmationsContent() {
           page is the Citizen Payment Claims queue alone. */}
       <>
           <PageHeader
-        title={
-          isSubAdmin
-            ? "First-Level Payment Verification (Sub-Admin)"
-            : "Treasury Payment Verification & Receipt Issuance"
-        }
-        subtitle={
-          isSubAdmin
-            ? "Inspect bank transfer claims and evidence before forwarding verified payments to the Treasurer for final approval."
-            : "Verify payment inflows against council accounts, check for underpayments, issue official revenue receipts, and maintain statutory audit records."
-        }
+        title="Treasury Payment Verification & Receipt Issuance"
+        subtitle="Verify payment inflows against council accounts, check for underpayments, issue official revenue receipts, and maintain statutory audit records."
+
         action={
           <Button
             variant="outline"
@@ -861,7 +849,11 @@ function PaymentConfirmationsContent() {
                   Close
                 </Button>
 
-                {rf.canReview ? (
+                {rf.correctionRequested ? (
+                  <p className="text-[11px] text-muted-foreground self-center">
+                    A correction is outstanding on this claim. It comes back here when the correction is sent in.
+                  </p>
+                ) : rf.canReview && isFinalTreasurer ? (
                   <>
                     <Button
                       variant="destructive"
@@ -882,7 +874,7 @@ function PaymentConfirmationsContent() {
                       Reject
                     </Button>
 
-                    {!rf.subAdminApproved && (isSubAdmin || isFinalTreasurer) && (
+                    {isFinalTreasurer && (
                       <Button
                         size="sm"
                         variant="outline"
@@ -895,18 +887,6 @@ function PaymentConfirmationsContent() {
                         className="text-xs border-amber-400 text-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950 font-semibold"
                       >
                         Request Correction
-                      </Button>
-                    )}
-
-                    {(isSubAdmin || (!rf.subAdminApproved && isFinalTreasurer)) && !rf.subAdminApproved && (
-                      <Button
-                        size="sm"
-                        disabled={busy}
-                        onClick={() => handleSubAdminReview(reviewApp, "approve")}
-                        className="text-xs bg-primary text-primary-foreground font-semibold gap-1"
-                      >
-                        <ShieldCheck className="h-3.5 w-3.5" />
-                        1st Review Approve
                       </Button>
                     )}
 
@@ -934,7 +914,9 @@ function PaymentConfirmationsContent() {
                   </>
                 ) : (
                   <p className="text-[11px] text-muted-foreground self-center">
-                    This claim has already been decided. The details above are read only.
+                    {rf.canReview
+                      ? "Only the treasurer can act on this claim. The details above are read only."
+                      : "This claim has already been decided. The details above are read only."}
                   </p>
                 )}
               </DialogFooter>
@@ -943,7 +925,7 @@ function PaymentConfirmationsContent() {
         </DialogContent>
       </Dialog>
 
-      {/* Sub-Admin Request Correction Modal */}
+      {/* Treasurer Request Correction Modal */}
       <Dialog
         open={!!correctionApp}
         onOpenChange={(open) => {
@@ -974,14 +956,7 @@ function PaymentConfirmationsContent() {
             </Button>
             <Button
               disabled={!reason.trim() || busy}
-              onClick={() =>
-                correctionApp &&
-                handleSubAdminReview(
-                  correctionApp,
-                  "request_correction",
-                  reason.trim(),
-                )
-              }
+              onClick={handleRequestCorrection}
               className="bg-amber-600 hover:bg-amber-700 text-white"
             >
               {busy ? "Sending…" : "Send Correction Request"}

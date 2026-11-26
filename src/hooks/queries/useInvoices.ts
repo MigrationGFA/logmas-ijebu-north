@@ -223,6 +223,47 @@ export function useReplaceFoPaymentProof(
   };
 }
 
+export function useSubmitFoCorrection(
+  detailId: string,
+  invoiceNumber?: string,
+) {
+  const queryClient = useQueryClient();
+
+  const submitCorrectionMutation = useMutation({
+    mutationFn: (input: {
+      details: {
+        payerName?: string;
+        phone?: string;
+        merchantName?: string;
+        location?: string;
+      };
+      proof?: File | null;
+    }) => {
+      if (!invoiceNumber) {
+        throw new Error("Invoice not loaded yet.");
+      }
+      return invoicesService.submitFoCorrection(
+        invoiceNumber,
+        input.details,
+        input.proof,
+      );
+    },
+    onSuccess: () => {
+      toast.success("Correction sent. Awaiting treasurer confirmation.");
+      queryClient.invalidateQueries({ queryKey: invoicesKeys.detail(detailId) });
+      queryClient.invalidateQueries({ queryKey: invoicesKeys.hub() });
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Could not send the correction");
+    },
+  });
+
+  return {
+    submitFoCorrection: submitCorrectionMutation.mutate,
+    isSubmittingFoCorrection: submitCorrectionMutation.isPending,
+  };
+}
+
 // Hook for invoice payments
 export function useInvoicePayment(
   invoiceId: string,

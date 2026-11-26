@@ -480,6 +480,34 @@ export const invoicesService = {
     );
   },
 
+  // Answer a treasurer correction on an FO collection: payer details
+  // and optionally a fresh receipt. The amount is never sent.
+  submitFoCorrection: async (
+    invoiceNumber: string,
+    details: {
+      payerName?: string;
+      phone?: string;
+      merchantName?: string;
+      location?: string;
+    },
+    proof?: File | null,
+  ): Promise<{ payment: Payment }> => {
+    const formData = new FormData();
+    if (details.payerName !== undefined)
+      formData.append("payerName", details.payerName);
+    if (details.phone !== undefined) formData.append("phone", details.phone);
+    if (details.merchantName !== undefined)
+      formData.append("merchantName", details.merchantName);
+    if (details.location !== undefined)
+      formData.append("location", details.location);
+    if (proof) formData.append("proof", proof);
+    return await api.upload<{ payment: Payment }>(
+      `/invoices/${encodeURIComponent(invoiceNumber)}/fo-correction`,
+      formData,
+      { method: "PATCH" },
+    );
+  },
+
   uploadPaymentProof: async (
     invoiceNumber: string,
     file: File,

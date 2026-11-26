@@ -109,36 +109,22 @@ export function useAwaitingConfirmation() {
     },
   });
 
-  const subAdminReviewPaymentMutation = useMutation({
+  const requestCorrectionMutation = useMutation({
     mutationFn: ({
       paymentId,
-      action,
       comment,
     }: {
       paymentId: string;
-      action: "approve" | "request_correction";
-      comment?: string;
-    }) =>
-      treasurerService.subAdminReviewStaticAccountPayment(paymentId, {
-        action,
-        comment,
-      }),
-    onSuccess: (_data, variables) => {
-      if (variables.action === "approve") {
-        toast.success(
-          "Payment evidence verified by Sub-Admin and forwarded to Treasurer for final approval",
-        );
-      } else {
-        toast.info(
-          "Correction requested on payment evidence — applicant notified",
-        );
-      }
+      comment: string;
+    }) => treasurerService.requestPaymentCorrection(paymentId, comment),
+    onSuccess: () => {
+      toast.info("Correction requested on payment evidence — applicant notified");
       queryClient.invalidateQueries({
         queryKey: treasurerKeys.awaitingConfirmation(),
       });
     },
     onError: (error: any) => {
-      toast.error(error.message || "Failed to review payment evidence");
+      toast.error(error.message || "Failed to request correction");
     },
   });
 
@@ -150,9 +136,9 @@ export function useAwaitingConfirmation() {
     declinePayment: declinePaymentMutation.mutate,
     declinePaymentAsync: declinePaymentMutation.mutateAsync,
     isDeclining: declinePaymentMutation.isPending,
-    subAdminReviewPayment: subAdminReviewPaymentMutation.mutate,
-    subAdminReviewPaymentAsync: subAdminReviewPaymentMutation.mutateAsync,
-    isSubAdminReviewing: subAdminReviewPaymentMutation.isPending,
+    requestCorrection: requestCorrectionMutation.mutate,
+    requestCorrectionAsync: requestCorrectionMutation.mutateAsync,
+    isRequestingCorrection: requestCorrectionMutation.isPending,
   };
 }
 

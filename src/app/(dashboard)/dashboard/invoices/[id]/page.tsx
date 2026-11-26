@@ -46,6 +46,7 @@ import {
   useUploadInvoicePaymentProof,
   useRecordFoInvoicePayment,
   useReplaceFoPaymentProof,
+  useSubmitFoCorrection,
 } from "@/hooks/queries/useInvoices";
 import { useBankAccount } from "@/hooks/queries/useBankAccount";
 
@@ -302,6 +303,17 @@ export default function InvoiceDetail({
         p.status === "pending" &&
         p.method === "bank_transfer" &&
         p.matchStatus !== "rejected",
+    ) || null;
+
+  // A claim the treasurer sent back for correction: the officer may
+  // then edit the payer's details (never the amount) and resubmit,
+  // which returns the claim to a normal pending claim.
+  const foCorrectionPayment =
+    invoice.payments?.find(
+      (p) =>
+        p.status === "pending" &&
+        p.method === "bank_transfer" &&
+        p.matchStatus === "correction_requested",
     ) || null;
 
   // A claim the treasurer bounced back: stays visible until the officer
@@ -583,6 +595,35 @@ export default function InvoiceDetail({
                     ? "Paid online by card"
                     : "Confirmed by the treasurer"}
                 </div>
+              ) : foCorrectionPayment ? (
+                isOfficer ? (
+                  <FoCorrectionForm
+                    invoiceId={invoiceId}
+                    invoiceNumber={invoice.invoiceNumber}
+                    payerName={String(
+                      (invoice.application?.formData as any)?.payerName ?? "",
+                    )}
+                    phone={String(
+                      (invoice.application?.formData as any)?.phone ?? "",
+                    )}
+                    merchantName={String(
+                      (invoice.application?.formData as any)?.merchantName ??
+                        "",
+                    )}
+                    location={String(
+                      (invoice.application?.formData as any)?.location ?? "",
+                    )}
+                    amount={Number(invoice.amount || 0)}
+                    comment={bounceReason}
+                  />
+                ) : (
+                  <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 text-sm">
+                    The treasurer requested a correction on this collection
+                    {bounceReason ? `: ${bounceReason}.` : "."} The
+                    collecting officer has been asked to fix the payer
+                    details and send it back.
+                  </div>
+                )
               ) : foPendingPayment ? (
                 <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 text-sm">
                   Transfer recorded
@@ -1261,6 +1302,140 @@ function CashConfirmDialog({
  * twice. Card links need the payer's email (Paystack requires one); it
  * is prefilled from the collection record where one was captured.
  */
+function FoCorrectionForm({
+  invoiceId,
+  invoiceNumber,
+  payerName: initialPayerName,
+  phone: initialPhone,
+  merchantName: initialMerchantName,
+  location: initialLocation,
+  amount,
+  comment,
+}: {
+  invoiceId: string;
+  invoiceNumber: string;
+  payerName: string;
+  phone: string;
+  merchantName: string;
+  location: string;
+  amount: number;
+  comment?: string | null;
+}) {
+  const { submitFoCorrection, isSubmittingFoCorrection } =
+    useSubmitFoCorrection(invoiceId, invoiceNumber);
+  const [payerName, setPayerName] = React.useState(initialPayerName);
+  const [phone, setPhone] = React.useState(initialPhone);
+  const [merchantName, setMerchantName] = React.useState(initialMerchantName);
+  const [location, setLocation] = React.useState(initialLocation);
+  const [proofFile, setProofFile] = React.useState<File | null>(null);
+
+  const fileSize = (bytes: number) =>
+    bytes < 1024
+      ? `${bytes} B`
+      : bytes < 1024 * 1024
+        ? `${(bytes / 1024).toFixed(1)} KB`
+        : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
+  const canSend =
+    payerName.trim().length > 0 &&
+    phone.trim().length > 0 &&
+    !isSubmittingFoCorrection;
+
+  return (
+    <div className="rounded-lg border border-amber-500/40 bg-amber-500/5 p-3 text-sm space-y-3">
+      <p>
+        <span className="font-semibold">
+          The treasurer requested a correction
+        </span>
+        {comment ? `: ${comment}` : "."} Fix the payer details below and
+        send it back. The amount cannot be changed.
+      </p>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div>
+          <Label htmlFor="fo-corr-payer">Payer name</Label>
+          <Input
+            id="fo-corr-payer"
+            className="mt-1.5 bg-background"
+            value={payerName}
+            onChange={(e) => setPayerName(e.target.value)}
+          />
+        </div>
+        <div>
+          <Label htmlFor="fo-corr-phone">Payer phone number</Label>
+          <Input
+            id="fo-corr-phone"
+            className="mt-1.5 bg-background"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+          />
+        </div>
+        <div>
+          <Label htmlFor="fo-corr-business">Business (optional)</Label>
+          <Input
+            id="fo-corr-business"
+            className="mt-1.5 bg-background"
+            value={merchantName}
+            onChange={(e) => setMerchantName(e.target.value)}
+          />
+        </div>
+        <div>
+          <Label htmlFor="fo-corr-location">Location (optional)</Label>
+          <Input
+            id="fo-corr-location"
+            className="mt-1.5 bg-background"
+            value={location}
+            onChange={(e) => setLocation(e.target.value)}
+          />
+        </div>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        Amount collected:{" "}
+        <span className="font-semibold text-foreground">
+          ₦{amount.toLocaleString()}
+        </span>{" "}
+        (cannot be changed)
+      </p>
+      <div>
+        <Label htmlFor="fo-corr-proof">New receipt (optional)</Label>
+        <Input
+          id="fo-corr-proof"
+          type="file"
+          accept="image/*,.pdf"
+          className="mt-1.5 bg-background"
+          onChange={(e) => setProofFile(e.target.files?.[0] || null)}
+        />
+        {proofFile && (
+          <p className="text-xs text-muted-foreground mt-1.5">
+            {proofFile.name} ({fileSize(proofFile.size)})
+          </p>
+        )}
+      </div>
+      <Button
+        size="sm"
+        disabled={!canSend}
+        onClick={() =>
+          submitFoCorrection({
+            details: {
+              payerName: payerName.trim(),
+              phone: phone.trim(),
+              merchantName: merchantName.trim(),
+              location: location.trim(),
+            },
+            proof: proofFile,
+          })
+        }
+      >
+        {isSubmittingFoCorrection ? (
+          <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+        ) : (
+          <Upload className="h-4 w-4 mr-1.5" />
+        )}
+        Send correction
+      </Button>
+    </div>
+  );
+}
+
 function ResendInstructionsDialog({
   invoiceNumber,
   payerEmail,
