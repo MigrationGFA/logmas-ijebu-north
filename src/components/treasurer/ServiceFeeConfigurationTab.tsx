@@ -964,7 +964,7 @@ export default function ServiceFeeConfigurationTab() {
             </Table>
           </div>
           {filteredServices.length > 0 && (
-            <div className="flex flex-wrap items-center justify-between gap-3 pt-4">
+            <div className="flex flex-wrap items-center justify-between gap-3 p-4">
               <p className="text-xs text-muted-foreground">
                 Showing {pageStartIndex + 1} to{" "}
                 {Math.min(

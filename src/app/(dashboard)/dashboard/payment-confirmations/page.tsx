@@ -489,7 +489,7 @@ function PaymentConfirmationsContent() {
           if (!open && !busy) setReviewApp(null);
         }}
       >
-        <DialogContent className="max-h-[90vh] overflow-y-auto overflow-x-hidden [&>*]:min-w-0">
+        <DialogContent className="max-h-[90vh] overflow-y-auto">
           {reviewApp && rf && (
             <>
               <DialogHeader>
@@ -649,7 +649,7 @@ function PaymentConfirmationsContent() {
                           <img
                             src={rp.proofUrl}
                             alt="Payment proof"
-                            className="block w-auto h-auto max-w-none"
+                            className="block "
                           />
                         </div>
                       )}

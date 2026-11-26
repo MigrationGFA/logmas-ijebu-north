@@ -693,9 +693,9 @@ export const LGA_CONFIG: LgaConfiguration = {
     ],
 
     gallery: [
-      { id: "1", title: "Ijebu North East Local Government Secretariat Complex", category: "Infrastructure", image: "/assets/banner5.png" },
-      { id: "2", title: "Atan Modern Market Opening", category: "Commerce", image: "/assets/banner2.png" },
-      { id: "3", title: "Road Infrastructure & Public Facilities", category: "Infrastructure", image: "/assets/banner1.png" },
+      // { id: "1", title: "Ijebu North East Local Government Secretariat Complex", category: "Infrastructure", image: "/assets/banner5.png" },
+      // { id: "2", title: "Atan Modern Market Opening", category: "Commerce", image: "/assets/banner2.png" },
+      // { id: "3", title: "Road Infrastructure & Public Facilities", category: "Infrastructure", image: "/assets/banner1.png" },
       { id: "4", title: "New Classroom Block, St. Michael's Primary School, Ododeyo", category: "Education", image: "/images/stewardship/st-michaels-classroom-block.jpeg" },
       { id: "5", title: "Commissioning Plaque, St. Michael's Primary School, Ododeyo", category: "Education", image: "/images/stewardship/st-michaels-commissioning-plaque.jpeg" },
       { id: "6", title: "New Health Centres at Imomo and Odomolasa", category: "Stewardship Report", image: "/images/stewardship/health-centres-imomo-odomolasa.jpeg" },
