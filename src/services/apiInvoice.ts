@@ -18,6 +18,8 @@ export interface Payment {
   proofUrl?: string | null;
   proofUploadedAt?: string | null;
   proofUploadedById?: string | null;
+  /** Claim matching state, e.g. awaiting_verification or rejected. */
+  matchStatus?: string | null;
 }
 
 export interface Receipt {
@@ -457,6 +459,24 @@ export const invoicesService = {
     return await api.upload<{ payment: Payment }>(
       `/invoices/${encodeURIComponent(invoiceNumber)}/fo-payment`,
       formData,
+    );
+  },
+
+  /**
+   * FO-only services: the collecting officer attached the wrong receipt
+   * and swaps the proof on the same pending claim.
+   * PATCH /invoices/:invoiceNumber/fo-payment/proof.
+   */
+  replaceFoPaymentProof: async (
+    invoiceNumber: string,
+    proof: File,
+  ): Promise<{ payment: Payment }> => {
+    const formData = new FormData();
+    formData.append("proof", proof);
+    return await api.upload<{ payment: Payment }>(
+      `/invoices/${encodeURIComponent(invoiceNumber)}/fo-payment/proof`,
+      formData,
+      { method: "PATCH" },
     );
   },
 

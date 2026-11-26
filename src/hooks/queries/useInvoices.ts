@@ -194,6 +194,35 @@ export function useRecordFoInvoicePayment(
   };
 }
 
+export function useReplaceFoPaymentProof(
+  detailId: string,
+  invoiceNumber?: string,
+) {
+  const queryClient = useQueryClient();
+
+  const replaceFoProofMutation = useMutation({
+    mutationFn: (proof: File) => {
+      if (!invoiceNumber) {
+        throw new Error("Invoice not loaded yet.");
+      }
+      return invoicesService.replaceFoPaymentProof(invoiceNumber, proof);
+    },
+    onSuccess: () => {
+      toast.success("Receipt replaced. Awaiting treasurer confirmation.");
+      queryClient.invalidateQueries({ queryKey: invoicesKeys.detail(detailId) });
+      queryClient.invalidateQueries({ queryKey: invoicesKeys.hub() });
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Could not replace the receipt");
+    },
+  });
+
+  return {
+    replaceFoProof: replaceFoProofMutation.mutate,
+    isReplacingFoProof: replaceFoProofMutation.isPending,
+  };
+}
+
 // Hook for invoice payments
 export function useInvoicePayment(
   invoiceId: string,

@@ -35,6 +35,7 @@ import {
   Loader2,
   Landmark,
   Upload,
+  FileText,
   AlertCircle,
   RefreshCw,
 } from "lucide-react";
@@ -44,6 +45,7 @@ import {
   useInvoiceVirtualAccount,
   useUploadInvoicePaymentProof,
   useRecordFoInvoicePayment,
+  useReplaceFoPaymentProof,
 } from "@/hooks/queries/useInvoices";
 import { useBankAccount } from "@/hooks/queries/useBankAccount";
 
@@ -124,6 +126,10 @@ export default function InvoiceDetail({
     invoiceId,
     invoice?.invoiceNumber,
   );
+  const { replaceFoProof, isReplacingFoProof } = useReplaceFoPaymentProof(
+    invoiceId,
+    invoice?.invoiceNumber,
+  );
   const { bankAccount } = useBankAccount(
     Boolean(
       (invoice as any)?.service?.foOnly ??
@@ -132,6 +138,23 @@ export default function InvoiceDetail({
     ),
   );
   const [foProofFile, setFoProofFile] = React.useState<File | null>(null);
+  // Live preview of the receipt the officer is about to record, so a
+  // wrong pick is visible before it is committed.
+  const foProofPreviewUrl = React.useMemo(
+    () =>
+      foProofFile && foProofFile.type.startsWith("image/")
+        ? URL.createObjectURL(foProofFile)
+        : null,
+    [foProofFile],
+  );
+  React.useEffect(() => {
+    return () => {
+      if (foProofPreviewUrl) URL.revokeObjectURL(foProofPreviewUrl);
+    };
+  }, [foProofPreviewUrl]);
+  const [replaceProofFile, setReplaceProofFile] = React.useState<File | null>(
+    null,
+  );
   const [proofFile, setProofFile] = React.useState<File | null>(null);
 
   // Are-you-sure gate for the payment-method actions that commit the moment
@@ -219,6 +242,10 @@ export default function InvoiceDetail({
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     });
+  const formatFileSize = (bytes: number) =>
+    bytes >= 1024 * 1024
+      ? `${(bytes / (1024 * 1024)).toFixed(1)} MB`
+      : `${Math.max(1, Math.round(bytes / 1024))} KB`;
 
   // Proof already attached to any payment on this invoice (uploaded by the
   // citizen or staff) — drives the Bank Transfer tab's status block.
@@ -271,8 +298,22 @@ export default function InvoiceDetail({
   // not a transfer record and must never present as one.
   const foPendingPayment =
     invoice.payments?.find(
-      (p) => p.status === "pending" && p.method === "bank_transfer",
+      (p) =>
+        p.status === "pending" &&
+        p.method === "bank_transfer" &&
+        p.matchStatus !== "rejected",
     ) || null;
+
+  // A claim the treasurer bounced back: stays visible until the officer
+  // records again, so the officer knows the first receipt was refused
+  // and why.
+  const foBouncedClaim =
+    status !== "confirmed" && !foPendingPayment
+      ? invoice.payments?.find(
+          (p) => p.method === "bank_transfer" && p.matchStatus === "rejected",
+        ) || null
+      : null;
+  const bounceReason = (invoice.application as any)?.declineReason ?? null;
 
   // The method the payer is currently set to use, recorded on the
   // collection when it was created and updated whenever the officer
@@ -346,7 +387,7 @@ export default function InvoiceDetail({
           <p className="text-sm text-muted-foreground">
             {pendingMethodConfirm?.kind === "online" ? (
               <>
-                You will be redirected to Gpay to complete payment of ₦
+                You will be redirected to Paystack to complete payment of ₦
                 {formatMoney(onlineTotal)} for this invoice (₦
                 {formatMoney(totalAmount)} plus the 1.5% card processing fee
                 of ₦{formatMoney(onlineProcessingFee)}). Make sure online
@@ -356,8 +397,12 @@ export default function InvoiceDetail({
               <>
                 This records that the payer paid ₦{balanceDue.toLocaleString()}{" "}
                 by bank transfer, with the receipt you selected attached as
-                proof. The treasurer will be asked to confirm it, and the
-                record cannot be changed from this page. Make sure the
+                proof.
+                {foProofFile &&
+                  ` Receipt file: ${foProofFile.name} (${formatFileSize(foProofFile.size)}).`}{" "}
+                The treasurer will be asked to confirm it. If the file turns
+                out to be wrong, you can replace the receipt from this page
+                any time before the treasurer confirms. Make sure the
                 receipt is the right one before you confirm.
               </>
             )}
@@ -522,6 +567,15 @@ export default function InvoiceDetail({
                   />
                 </div>
               )}
+              {foBouncedClaim && (
+                <div className="rounded-lg border border-rose-500/40 bg-rose-500/5 p-3 text-sm mb-4">
+                  The treasurer declined the last receipt
+                  {bounceReason ? `: ${bounceReason}.` : "."}{" "}
+                  {isOfficer
+                    ? "Record the transfer again below with the correct receipt."
+                    : "The collecting officer has been asked to record it again with the correct receipt."}
+                </div>
+              )}
               {status === "confirmed" ? (
                 <div className="flex items-center gap-2 text-sm font-semibold text-emerald-700 dark:text-emerald-400">
                   <CheckCircle2 className="h-4 w-4" />
@@ -549,6 +603,43 @@ export default function InvoiceDetail({
                   )}
                   . Awaiting treasurer confirmation.
                   {isOfficer && " You will be notified when it is confirmed."}
+                  {isOfficer && (
+                    <div className="mt-3 border-t border-amber-500/30 pt-3 space-y-2">
+                      <Label htmlFor="fo-proof-replace">
+                        Wrong receipt? Replace it before the treasurer
+                        confirms
+                      </Label>
+                      <Input
+                        id="fo-proof-replace"
+                        type="file"
+                        accept="image/*,.pdf"
+                        onChange={(e) =>
+                          setReplaceProofFile(e.target.files?.[0] || null)
+                        }
+                      />
+                      {replaceProofFile && (
+                        <p className="text-xs text-muted-foreground">
+                          {replaceProofFile.name} (
+                          {formatFileSize(replaceProofFile.size)})
+                        </p>
+                      )}
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={!replaceProofFile || isReplacingFoProof}
+                        onClick={() =>
+                          replaceProofFile && replaceFoProof(replaceProofFile)
+                        }
+                      >
+                        {isReplacingFoProof ? (
+                          <Loader2 className="h-4 w-4 mr-1.5 animate-spin" />
+                        ) : (
+                          <Upload className="h-4 w-4 mr-1.5" />
+                        )}
+                        Replace receipt
+                      </Button>
+                    </div>
+                  )}
                 </div>
               ) : isOfficer ? (
                 <div className="space-y-3">
@@ -565,11 +656,38 @@ export default function InvoiceDetail({
                         setFoProofFile(e.target.files?.[0] || null)
                       }
                     />
-                    {!foProofFile && (
-                      <p className="text-xs text-muted-foreground mt-1.5">
-                        Upload the receipt the payer sent you. The treasurer
-                        uses it to match the payment in the LGA account.
-                      </p>
+                    <p className="text-xs text-muted-foreground mt-1.5">
+                      Images or PDF only, up to 5 MB. The treasurer uses
+                      the receipt to match the payment in the LGA account.
+                    </p>
+                    {foProofFile && (
+                      <div className="mt-3 rounded-lg border border-border/60 bg-background p-3">
+                        {foProofPreviewUrl ? (
+                          <img
+                            src={foProofPreviewUrl}
+                            alt="Selected receipt preview"
+                            className="max-h-48 rounded-md object-contain"
+                          />
+                        ) : (
+                          <div className="flex items-center gap-2 text-sm">
+                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            PDF receipt selected
+                          </div>
+                        )}
+                        <div className="mt-2 flex items-center justify-between gap-2">
+                          <span className="text-xs text-muted-foreground truncate">
+                            {foProofFile.name} ({formatFileSize(foProofFile.size)})
+                          </span>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setFoProofFile(null)}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                      </div>
                     )}
                   </div>
                   <Button
